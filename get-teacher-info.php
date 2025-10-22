@@ -23,9 +23,6 @@ if (isset($_GET['teacher-id'])) {
 
     // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED student:
     $teacher_courses = get_teachers_course($teacher_id);
-    // echo "<pre>";
-    // print_r($student_registrations);
-    // echo "</pre>";
 }
 
 ?>
@@ -81,25 +78,31 @@ if (isset($_GET['teacher-id'])) {
             if (!empty($teacher_courses)) {
             ?>
                 <h2 class="description-text">Tietoja opettajan kursseista:</p>
-                    <ul class="course-list">
+                    <table>
+                        <tr>
+                            <th>Kurssinimi</th>
+                            <th>Kurssin alkupäivä</th>
+                            <th>Kurssin loppupäivä</th>
+                            <th>Tila</th>
+                        </tr>
                         <?php
                         // Run through all the entries in the array $teacher_courses:
                         foreach ($teacher_courses as $course) {
                         ?>
                             <!-- If there is at least one course, show the name, start and end date, and the name of the auditory of the selected course: -->
-                            <li class="course-list-item">
-                                <span class="course-list-span"><?php echo $course["nimi"]; ?></span>
-                                <span class="course-list-span"><?php echo $course["alkupaiva"]; ?></span>
-                                <span class="course-list-span"><?php echo $course["loppupaiva"]; ?></span>
-                                <span class="course-list-span"><?php echo $course["tila"]; ?></span>
-                            </li>
+                            <tr class="course-table-item">
+                                <td class="course-table-column"><?php echo $course["nimi"]; ?></td>
+                                <td class="course-table-column"><?php echo $course["alkupaiva"]; ?></td>
+                                <td class="course-table-column"><?php echo $course["loppupaiva"]; ?></td>
+                                <td class="course-table-column"><?php echo $course["tila"]; ?></td>
+                            </tr>
                         <?php
                         }
                         ?>
-                    </ul>
+                    </table>
                 <?php
             }
-            // If there is no registration for the selected student:
+            // If there is no course for the selected teacher:
             else {
                 ?>
                     <h2 class="description-text">Ei ole kursseja, joista opettaja olisi vastuussa.</p>
@@ -117,7 +120,7 @@ if (isset($_GET['teacher-id'])) {
         console.log("select element is ", selectElement);
         selectElement.addEventListener('change', formAddressPath);
 
-        // Function to form address path using id of selected student:
+        // Function to form address path using id of selected teacher:
         function formAddressPath() {
             const teachId = this.value;
             console.log("Choosed id is ", teachId);
