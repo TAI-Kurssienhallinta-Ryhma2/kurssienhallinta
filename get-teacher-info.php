@@ -1,3 +1,35 @@
+<?php
+include_once 'sql-request.php';
+
+// Get an array with all the teachers from the database table 'opettajat':
+$all_teachers = get_all_teachers();
+
+// If the GET parameter (?teacher-id=) appears in the address in the browser (after teacher's selection), then the following code is executed:
+if (isset($_GET['teacher-id'])) {
+    // Read the URL-get-parameter named teacher-id:
+    $teacher_id = $_GET['teacher-id'];
+    // Store teacher's id in SESSION:
+    $_SESSION["teacher_id"] = $teacher_id;
+    // Looking for the teacher with this ID in stored array with all teachers:
+    foreach ($all_teachers as $teacher) {
+        if ($teacher['tunnusnumero'] === $teacher_id) {
+            // Save information (name, surname, subject) in the variables:
+            $teacher_name = $teacher['etunimi'];
+            $teacher_surname = $teacher['sukunimi'];
+            $teacher_subject = $teacher['aine'];
+            break;
+        }
+    }
+
+    // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED student:
+    $teacher_courses = get_teachers_course($teacher_id);
+    // echo "<pre>";
+    // print_r($student_registrations);
+    // echo "</pre>";
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,6 +43,89 @@
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
     <h1>Nähdä opettajan tiedot</h1>
+    <label for="teachers">Valitse opettaja:</label>
+    <!-- Create list of all teachers from the DB table "opettajat": -->
+    <select id="teachers" name="teaches">
+        <!-- The first line: -->
+        <option value="empty">----valitse opettaja----</option>
+        <?php
+        // Run through all the entries in the array $all_teachers:
+        foreach ($all_teachers as $teacher) {
+        ?>
+            <!-- The value of option element is teacher's ID: -->
+            <!-- Put attribute 'selected' to the option with selected teacher - only for the updated page with GET parameter '?teacher-id=': -->
+            <option value="<?php echo $teacher["tunnusnumero"]; ?>"
+
+                <?php if (isset($_SESSION["teacher_id"]) && $teacher["tunnusnumero"] == $_SESSION["teacher_id"]) {
+                ?> selected <?php
+                        } ?>>
+                <?php echo $teacher["sukunimi"] . " " . $teacher["etunimi"]; ?>
+            </option>
+        <?php
+        }
+        ?>
+    </select>
+
+    <!-- Only for the page with GET parameter '?teacher-id=': -->
+    <?php
+    if (isset($_GET['teacher-id'])) {
+    ?>
+        <!-- The information about teacher: -->
+        <section class="description-wrapper" id="description-wrapper">
+            <h2 class="description-title">Tietoja valitusta opettajasta:</h2>
+            <p class="description-text">Etunimi: <span class="description-value"><?php echo $teacher_name; ?></span></p>
+            <p class="description-text">Sukunimi: <span class="description-value"><?php echo $teacher_surname; ?></span></p>
+            <p class="description-text">Aine: <span class="description-value"><?php echo $teacher_subject; ?></span></p>
+            <?php
+            // Check if there is at least one course for which the teacher is responsible.:
+            if (!empty($teacher_courses)) {
+            ?>
+                <h2 class="description-text">Tietoja opettajan kursseista:</p>
+                    <ul class="course-list">
+                        <?php
+                        // Run through all the entries in the array $teacher_courses:
+                        foreach ($teacher_courses as $course) {
+                        ?>
+                            <!-- If there is at least one course, show the name, start and end date, and the name of the auditory of the selected course: -->
+                            <li class="course-list-item">
+                                <span class="course-list-span"><?php echo $course["nimi"]; ?></span>
+                                <span class="course-list-span"><?php echo $course["alkupaiva"]; ?></span>
+                                <span class="course-list-span"><?php echo $course["loppupaiva"]; ?></span>
+                                <span class="course-list-span"><?php echo $course["tila"]; ?></span>
+                            </li>
+                        <?php
+                        }
+                        ?>
+                    </ul>
+                <?php
+            }
+            // If there is no registration for the selected student:
+            else {
+                ?>
+                    <h2 class="description-text">Ei ole kursseja, joista opettaja olisi vastuussa.</p>
+                    <?php
+                }
+                    ?>
+        </section>
+    <?php
+    }
+    ?>
+
+    <script>
+        // script to observe the option selection event:
+        const selectElement = document.querySelector("select");
+        console.log("select element is ", selectElement);
+        selectElement.addEventListener('change', formAddressPath);
+
+        // Function to form address path using id of selected student:
+        function formAddressPath() {
+            const teachId = this.value;
+            console.log("Choosed id is ", teachId);
+            if (teachId) {
+                window.location.href = `get-teacher-info.php?teacher-id=${teachId}`;
+            }
+        }
+    </script>
 </body>
 
 </html>
