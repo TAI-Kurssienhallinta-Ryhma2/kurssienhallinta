@@ -12,7 +12,8 @@ if (isset($_GET['student-id'])) {
     $_SESSION["student_id"] = $student_id;
     // Looking for the student with this ID in stored array with all students:
     foreach ($all_students as $student) {
-        if ($student['opiskelijanumero'] === $student_id) {
+        // var_dump($all_students[0]['opiskelijanumero']);
+        if ($student['opiskelijanumero'] == $student_id) {
             // Save information (name, surname, birthday and vuosikurssi) in the variables:
             $student_name = $student['etunimi'];
             $student_surname = $student['sukunimi'];

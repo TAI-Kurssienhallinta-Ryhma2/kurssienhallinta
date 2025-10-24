@@ -66,3 +66,35 @@ function get_teachers_course($teacher_id)
 
     return $teacher_courses;
 }
+
+function get_all_courses()
+{
+    global $conn;
+
+    //Send request to the DB to the table kurssit without any parameters
+    // because we need to get all the courses from the table:
+    $stmt = $conn->prepare("SELECT tunnus, nimi, kuvaus, alkupaiva, loppupaiva, tila, opettajat.etunimi, opettajat.sukunimi 
+                            FROM  kurssit, opettajat
+                            WHERE kurssit.opettaja = opettajat.tunnusnumero
+                            ORDER BY nimi;");
+    $stmt->execute();
+
+    $all_courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $all_courses;
+}
+
+function get_students_registered_for_course($course_id)
+{
+    global $conn;
+    $stmt = $conn->prepare("SELECT opiskelijat.etunimi, opiskelijat.sukunimi, opiskelijat.vuosikurssi
+                            FROM  opiskelijat, kurssikirjautumiset
+                            WHERE  kurssikirjautumiset.kurssi = $course_id
+                            AND opiskelijat.opiskelijanumero = kurssikirjautumiset.opiskelija
+                            ORDER BY opiskelijat.sukunimi;");
+    $stmt->execute(); 
+
+    $registered_students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $registered_students;
+}
