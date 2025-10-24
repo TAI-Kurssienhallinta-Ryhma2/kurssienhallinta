@@ -12,7 +12,7 @@ if (isset($_GET['teacher-id'])) {
     $_SESSION["teacher_id"] = $teacher_id;
     // Looking for the teacher with this ID in stored array with all teachers:
     foreach ($all_teachers as $teacher) {
-        if ($teacher['tunnusnumero'] === $teacher_id) {
+        if ($teacher['tunnusnumero'] == $teacher_id) {
             // Save information (name, surname, subject) in the variables:
             $teacher_name = $teacher['etunimi'];
             $teacher_surname = $teacher['sukunimi'];
