@@ -104,7 +104,7 @@ function add_auditory($name, $capacity)
     global $conn;
     
     try {
-        // Lisätään uusi luokkahuone tietokantaan
+        // Lisätään uusi tila tietokantaan
         $stmt = $conn->prepare("INSERT INTO tilat (nimi, kapasiteetti) VALUES (:nimi, :kapasiteetti)");
         $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
         $stmt->bindParam(':kapasiteetti', $capacity, PDO::PARAM_INT);

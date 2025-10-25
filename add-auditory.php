@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
     
     // Tarkistetaan, että kentät eivät ole tyhjiä
     if (empty($auditory_name)) {
-        $errors[] = "Luokkahuoneen nimi on pakollinen.";
+        $errors[] = "Tilan nimi on pakollinen.";
     }
     
     if (empty($auditory_capacity)) {
@@ -32,21 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
     }
     
     
-    // Tarkistetaan, että samannimistä luokkahuonetta ei ole jo olemassa
+    // Tarkistetaan, että samannimistä tilaa ei ole jo olemassa
     if (!empty($auditory_name) && auditory_name_exists($auditory_name)) {
-        $errors[] = "Luokkahuone nimellä '{$auditory_name}' on jo olemassa.";
+        $errors[] = "Tila nimellä '{$auditory_name}' on jo olemassa.";
     }
     
-    // Jos ei ole virheitä, lisätään luokkahuone
+    // Jos ei ole virheitä, lisätään tila
     if (empty($errors)) {
         $result = add_auditory($auditory_name, intval($auditory_capacity));
         
         if ($result) {
-            $success_message = "Luokkahuone lisätty onnistuneesti!";
+            $success_message = "Tila lisätty onnistuneesti!";
             // Tyhjennetään lomake onnistumisen jälkeen
             unset($_POST);
         } else {
-            $error_message = "Virhe lisättäessä luokkahuonetta tietokantaan.";
+            $error_message = "Virhe lisättäessä tilaa tietokantaan.";
         }
     } else {
         // Yhdistetään kaikki virheet yhdeksi viestiksi
@@ -61,13 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lisää luokkahuone</title>
+    <title>Lisää tila</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
-    <h1>Lisää uusi luokkahuone</h1>
+    <h1>Lisää uusi tila</h1>
     
     <div class="form-wrapper">
         <?php
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
         
         <form method="POST" action="">
             <div class="form-group">
-                <label for="auditory-name">Luokkahuoneen nimi: <span style="color: red;">*</span></label>
+                <label for="auditory-name">Tilan nimi: <span style="color: red;">*</span></label>
                 <input 
                     type="text" 
                     id="auditory-name" 
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
             </div>
             
             <div class="button-wrapper">
-                <button type="submit" name="add-auditory" class="submit-btn">Lisää luokkahuone</button>
+                <button type="submit" name="add-auditory" class="submit-btn">Lisää tila</button>
             </div>
         </form>
     </div>
