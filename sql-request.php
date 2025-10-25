@@ -98,3 +98,35 @@ function get_students_registered_for_course($course_id)
 
     return $registered_students;
 }
+
+function add_auditory($name, $capacity)
+{
+    global $conn;
+    
+    try {
+        // Lisätään uusi tila tietokantaan
+        $stmt = $conn->prepare("INSERT INTO tilat (nimi, kapasiteetti) VALUES (:nimi, :kapasiteetti)");
+        $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':kapasiteetti', $capacity, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return true;
+    } catch(PDOException $e) {
+        return false;
+    }
+}
+function auditory_name_exists($name)
+{
+    global $conn;
+    
+    try {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM tilat WHERE nimi = :nimi");
+        $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        $count = $stmt->fetchColumn();
+        return $count > 0;
+    } catch(PDOException $e) {
+        return false;
+    }
+}
