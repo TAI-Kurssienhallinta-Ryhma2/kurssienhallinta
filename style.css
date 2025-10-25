@@ -66,3 +66,88 @@ a {
 .go-back-btn:hover{
     background-color: rgb(208, 91, 169);;
 }
+
+/* FORM STYLES */
+.form-wrapper {
+    width: 60%;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 1rem;
+    background-color: #f9f9f9;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: rgb(7, 78, 25);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: rgb(198, 227, 8);
+}
+
+.submit-btn {
+    padding: 0.6rem 1rem;
+    border: 1px solid rgb(198, 227, 8);
+    border-radius: 1rem;
+    background-color: rgb(244, 247, 84);
+    color: rgb(7, 78, 25);
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: rgb(212, 215, 73);
+}
+
+.button-wrapper {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* MESSAGE STYLES */
+.message {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+}
+
+.success-message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* HEADING STYLES */
+h1 {
+    text-align: center;
+    color: rgb(7, 78, 25);
+}
