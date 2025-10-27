@@ -40,10 +40,7 @@ include_once 'sql-request.php';
     </form>
 
 
-<!-- From here on
-    code does not work,
-    also I don't know what
-    I have done and why lol -->
+<!-- help :'(-->
     
 <?php 
 
