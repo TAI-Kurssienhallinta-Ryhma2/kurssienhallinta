@@ -202,10 +202,17 @@ function get_courses_by_auditory_id($auditory_id)
 
 function calculate_registered_students_for_course($reserved_courses)
 {
-    foreach ($reserved_courses as $course) {
-        $course_id = $course['tunnus'];
-        $registered_students_for_course = get_students_registered_for_course($course_id);
-        $all_registered_students[$course_id] = count($registered_students_for_course);
+    $all_registered_students = [];
+    if (!empty($reserved_courses)) {
+        foreach ($reserved_courses as $course) {
+            $course_id = $course['tunnus'];
+            $registered_students_for_course = get_students_registered_for_course($course_id);
+            if (!empty($registered_students_for_course)) {
+                $all_registered_students[$course_id] = count($registered_students_for_course);
+            } else {
+                $all_registered_students[$course_id] = 0;
+            }
+        }
     }
     return $all_registered_students;
 }

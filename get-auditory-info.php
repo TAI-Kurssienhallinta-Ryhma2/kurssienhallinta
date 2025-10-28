@@ -22,8 +22,11 @@ if (isset($_GET['auditory-id'])) {
 
     // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED student:
     $reserved_courses = get_courses_by_auditory_id($auditory_id);
+    //Get an associative array, if $reserved_courses is not empty, where the key is an course's id and the value is the number of registered students:
     $registered_students = calculate_registered_students_for_course($reserved_courses);
+
     // echo "<pre>";
+    // print_r($pay_attention);
     // print_r($registered_students);
     // echo "</pre>";
 }
@@ -37,6 +40,7 @@ if (isset($_GET['auditory-id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nähdä tilan tiedot</title>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.2.0/css/solid.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -79,43 +83,60 @@ if (isset($_GET['auditory-id'])) {
             // Check if there is at least one course reserved for the selected auditory :
             if (!empty($reserved_courses)) {
             ?>
-                <h2 class="description-text">Kurssit, jotka pidetään tilassa <?php echo $auditory_name; ?>:</p>
-                    <table class="description-table">
-                        <tr>
-                            <th class="table-header">Kurssinimi</th>
-                            <th class="table-header">Vastaava opettaja</th>
-                            <th class="table-header">Kurssin alkupäivä</th>
-                            <th class="table-header">Kurssin loppupäivä</th>
-                            <th class="table-header">Osallistujien määrä</th>
-                        </tr>
-                        <?php
-                        // Run through all the entries in the array $reserved_courses:
-                        foreach ($reserved_courses as $course) {
-                            $teacher_full_name = $course["sukunimi"] . " " . $course["etunimi"];
-                            $students_number = $registered_students[$course["tunnus"]];
-
-                        ?>
-                            <!-- If there is at least one course, show the name, start and end date, and the name of the teacher of the selected course: -->
-                            <tr class="table-item" id="course-<?php echo $course["tunnus"]; ?>">
-                                <td class="table-column"><?php echo $course["nimi"]; ?></td>
-                                <td class="table-column"><?php echo $teacher_full_name; ?></td>
-                                <td class="table-column"><?php echo $course["alkupaiva"]; ?></td>
-                                <td class="table-column"><?php echo $course["loppupaiva"]; ?></td>
-                                <td class="table-column"><?php echo $students_number; ?></td>
-                            </tr>
-                        <?php
+                <h2 class="description-text">Kurssit, jotka pidetään tilassa <?php echo $auditory_name; ?>:</h2>
+                <table class="description-table">
+                    <tr>
+                        <th class="table-header">Kurssinimi</th>
+                        <th class="table-header">Vastaava opettaja</th>
+                        <th class="table-header">Kurssin alkupäivä</th>
+                        <th class="table-header">Kurssin loppupäivä</th>
+                        <th class="table-header">Osallistujien määrä</th>
+                    </tr>
+                    <?php
+                    // Run through all the entries in the array $reserved_courses:
+                    foreach ($reserved_courses as $course) {
+                        $teacher_full_name = $course["sukunimi"] . " " . $course["etunimi"];
+                        $students_number = $registered_students[$course["tunnus"]];
+                        // Variable $pay_attention is boolean, by default is false.
+                        // If the number of students registered for the course is greater than the capacity of the auditory,
+                        // then the variable $pay_attention becomes true:
+                        $pay_attention = false;
+                        if (isset($auditory_capacity) && isset($students_number) && $students_number > $auditory_capacity) {
+                            $pay_attention = true;
                         }
-                        ?>
-                    </table>
-                <?php
+
+                    ?>
+                        <!-- If there is at least one course, show the name, start and end date, and the name of the teacher of the selected course: -->
+                        <!-- Check, if $pay_attention is true, then add additional class "pay-attention" - to highlight the row -->
+                        <tr class="table-item <?php if ($pay_attention) {
+                                                ?>pay-attention<?php
+                                                            } ?>" id="course-<?php echo $course["tunnus"]; ?>">
+                            <td class="table-column"><?php echo $course["nimi"]; ?></td>
+                            <td class="table-column"><?php echo $teacher_full_name; ?></td>
+                            <td class="table-column"><?php echo $course["alkupaiva"]; ?></td>
+                            <td class="table-column"><?php echo $course["loppupaiva"]; ?></td>
+                            <!-- Check, if $pay_attention is true, then add attention icon to the number -->
+                            <td class="table-column"><?php echo $students_number; ?><?php if ($pay_attention) {
+                                                                                    ?>
+                                <i class="uis uis-exclamation-octagon" id="attention-icon"></i>
+                                <div id="popup-<?php echo $course["tunnus"]; ?>" class="info-popup">The number of students (<?php echo $students_number; ?>) registered for the course "<?php echo $course["nimi"]; ?>" is greater than the capacity of the auditory (<?php echo $auditory_capacity ?>)!</div>
+                            <?php
+                                                                                    } ?>
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                </table>
+            <?php
             }
             // If there is no course for the selected auditory:
             else {
-                ?>
-                    <h2 class="description-text">Valitussa tilassa ei ole tarjolla kursseja.</p>
-                    <?php
-                }
-                    ?>
+            ?>
+                <h2 class="description-text">Valitussa tilassa ei ole tarjolla kursseja.</h2>
+            <?php
+            }
+            ?>
         </section>
     <?php
     }
@@ -125,7 +146,6 @@ if (isset($_GET['auditory-id'])) {
     <script>
         // script to observe the option selection event:
         const selectElement = document.querySelector("select");
-        console.log("select element is ", selectElement);
         selectElement.addEventListener('change', formAddressPath);
 
         // Function to form address path using id of selected auditory:
@@ -136,17 +156,22 @@ if (isset($_GET['auditory-id'])) {
             }
         }
 
-        // <?php
-        // if (!empty($auditory_capacity) && isset($students_number) && $students_number > $auditory_capacity) {
-        // ?>
-        //     console.log("More students have registered for this course than the auditory can accommodate.", $students_number);
-        // <?php
-        // } else {
-        // ?>
-        //     console.log("It's OK", $students_number);
-        // <?php
-        // }
-        // ?>
+        // script to add EventListener to attention icon:
+        const attentionIcons = document.querySelectorAll(".uis-exclamation-octagon");
+        attentionIcons.forEach(iconElement => {
+            const attentionText = iconElement.nextElementSibling;
+            iconElement.addEventListener("click", () => {
+                attentionText.classList.toggle("show");
+            });
+
+        // Close the attention popup window if click somewhere on the page:
+            document.addEventListener('click', (event) => {
+            if (!iconElement.contains(event.target) && !attentionText.contains(event.target)) {
+                attentionText.classList.remove('show');
+            }
+        });
+
+        });
 
     </script>
 
