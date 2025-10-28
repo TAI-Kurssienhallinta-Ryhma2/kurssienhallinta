@@ -78,23 +78,23 @@ if (isset($_GET['teacher-id'])) {
             if (!empty($teacher_courses)) {
             ?>
                 <h2 class="description-text">Tietoja opettajan kursseista:</p>
-                    <table>
+                    <table class="description-table">
                         <tr>
-                            <th>Kurssinimi</th>
-                            <th>Kurssin alkupäivä</th>
-                            <th>Kurssin loppupäivä</th>
-                            <th>Tila</th>
+                            <th class="table-header">Kurssinimi</th>
+                            <th class="table-header">Kurssin alkupäivä</th>
+                            <th class="table-header">Kurssin loppupäivä</th>
+                            <th class="table-header">Tila</th>
                         </tr>
                         <?php
                         // Run through all the entries in the array $teacher_courses:
                         foreach ($teacher_courses as $course) {
                         ?>
                             <!-- If there is at least one course, show the name, start and end date, and the name of the auditory of the selected course: -->
-                            <tr class="course-table-item">
-                                <td class="course-table-column"><?php echo $course["nimi"]; ?></td>
-                                <td class="course-table-column"><?php echo $course["alkupaiva"]; ?></td>
-                                <td class="course-table-column"><?php echo $course["loppupaiva"]; ?></td>
-                                <td class="course-table-column"><?php echo $course["tila"]; ?></td>
+                            <tr class="table-item">
+                                <td class="table-column"><?php echo $course["nimi"]; ?></td>
+                                <td class="table-column"><?php echo $course["alkupaiva"]; ?></td>
+                                <td class="table-column"><?php echo $course["loppupaiva"]; ?></td>
+                                <td class="table-column"><?php echo $course["tila"]; ?></td>
                             </tr>
                         <?php
                         }
