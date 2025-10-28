@@ -45,39 +45,39 @@ if (isset($_POST["etunimi"], $_POST["sukunimi"], $_POST["syntymapaiva"], $_POST[
     <div class="form-wrapper">
         <form action="add-student.php" method="post">
             <div class="form-group">
-                <label for=etunimi>Etunimi: <span style="color: red;">*</span></label>
+                <label for="etunimi">Etunimi: <span style="color: red;">*</span></label>
                 <input
-                    type=text
-                    id=etunimi
-                    name=etunimi
+                    type="text"
+                    id="etunimi"
+                    name="etunimi"
                     placeholder="Etunimi"
                     maxlength="100"
                 >
             </div>
             
             <div class="form-group">
-                <label for=sukunimi>Sukunimi: <span style="color: red;">*</span></label>
+                <label for="sukunimi">Sukunimi: <span style="color: red;">*</span></label>
                 <input
-                    type=text
-                    id=sukunimi
-                    name=sukunimi
+                    type="text"
+                    id="sukunimi"
+                    name="sukunimi"
                     placeholder="Sukunimi"
                     maxlength="100"
                 >
             </div>
 
             <div class="form-group">
-                <label for=syntymapaiva>Syntymäaika: <span style="color: red;">*</span></label>
+                <label for="syntymapaiva">Syntymäaika: <span style="color: red;">*</span></label>
                 <input
-                    type=date
-                    id=syntymapaiva
-                    name=syntymapaiva
+                    type="date"
+                    id="syntymapaiva"
+                    name="syntymapaiva"
                 >
             </div>
 
             <div class="form-group">
-                <label for=vuosikurssi>Vuosikurssi: <span style="color: red;">*</span></label>
-                <select id=vuosikurssi name=vuosikurssi>
+                <label for="vuosikurssi">Vuosikurssi: <span style="color: red;">*</span></label>
+                <select id="vuosikurssi" name="vuosikurssi">
                     <option value="empty">--valitse vuosikurssi--</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
