@@ -184,3 +184,21 @@ function get_all_auditories()
         return [];
     }
 }
+
+function add_teacher($firstname, $lastname, $subject)
+{
+    global $conn;
+    
+    try {
+        
+        $stmt = $conn->prepare("INSERT INTO opettajat (etunimi, sukunimi, aine) VALUES (:etunimi, :sukunimi, :aine)");
+        $stmt->bindParam(':etunimi', $firstname, PDO::PARAM_STR);
+        $stmt->bindParam(':sukunimi', $lastname, PDO::PARAM_STR);
+        $stmt->bindParam(':aine', $subject, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        return true;
+    } catch(PDOException $e) {
+        return false;
+    }
+}
