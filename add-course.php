@@ -63,9 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-course'])) {
         $result = add_course($course_name, $course_description, $start_date, $end_date, $auditory_id, $teacher_id);
         
         if ($result) {
-            $success_message = "Kurssi lisätty onnistuneesti!";
-            // Tyhjennetään lomake onnistumisen jälkeen
-            unset($_POST);
+            header("Location: add-course.php?success=1");
+            exit();
         } else {
             $error_message = "Virhe lisättäessä kurssia tietokantaan.";
         }
@@ -73,6 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-course'])) {
         // Yhdistetään kaikki virheet yhdeksi viestiksi
         $error_message = implode("<br>", $errors);
     }
+}
+
+if (isset($_GET['success']) && $_GET['success'] == 1) {
+$success_message = "Kurssi lisätty onnistuneesti!";
 }
 ?>
 

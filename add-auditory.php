@@ -42,9 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
         $result = add_auditory($auditory_name, intval($auditory_capacity));
         
         if ($result) {
-            $success_message = "Tila lisätty onnistuneesti!";
-            // Tyhjennetään lomake onnistumisen jälkeen
-            unset($_POST);
+            header("Location: add-auditory.php?success=1");
+            exit();
         } else {
             $error_message = "Virhe lisättäessä tilaa tietokantaan.";
         }
@@ -52,6 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-auditory'])) {
         // Yhdistetään kaikki virheet yhdeksi viestiksi
         $error_message = implode("<br>", $errors);
     }
+}
+
+if (isset($_GET['success']) && $_GET['success'] == 1) {
+$success_message = "Tila lisätty onnistuneesti!";
 }
 ?>
 
