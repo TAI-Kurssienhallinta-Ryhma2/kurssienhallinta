@@ -87,10 +87,10 @@ if (isset($_GET['course-id'])) {
             if (!empty($registered_students)) {
             ?>
                 <h2 class="description-text">Kurssille ilmoittautuneet opiskelijat:</p>
-                    <table>
+                    <table class="description-table">
                         <tr>
-                            <th>Opiskelijan nimi</th>
-                            <th>Opiskelijan vuosikurssi</th>
+                            <th class="table-header">Opiskelijan nimi</th>
+                            <th class="table-header">Opiskelijan vuosikurssi</th>
                         </tr>
                         <?php
                         // Run through all the entries in the array $registered_students:
@@ -98,9 +98,9 @@ if (isset($_GET['course-id'])) {
                             $fullName = $student['sukunimi'] . " " . $student["etunimi"];
                         ?>
                             <!-- If there is at least one student, show the full name and the year of the selected student: -->
-                            <tr class="student-table-item">
-                                <td class="student-table-column"><?php echo $fullName; ?></td>
-                                <td class="student-table-column"><?php echo $student["vuosikurssi"]; ?></td>
+                            <tr class="table-item">
+                                <td class="table-column"><?php echo $fullName; ?></td>
+                                <td class="table-column"><?php echo $student["vuosikurssi"]; ?></td>
                             </tr>
                         <?php
                         }

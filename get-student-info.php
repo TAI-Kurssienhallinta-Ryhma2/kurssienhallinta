@@ -84,20 +84,24 @@ if (isset($_GET['student-id'])) {
             if (!empty($student_registrations)) {
             ?>
                 <h2 class="description-text">Tietoja valituista kursseista:</p>
-                    <ul class="registration-list">
-                        <?php
+                <table class="description-table">
+                    <tr>
+                        <th class="table-header">Kurssin alkupäivä</th>
+                        <th class="table-header">Kurssinimi</th>
+                    </tr>
+                    <?php
                         // Run through all the entries in the array $student_registrations:
                         foreach ($student_registrations as $registration) {
                         ?>
                             <!-- If there is at least one registration, show the date and the name of the course: -->
-                            <li class="registration-list-item">
-                                <span class="registration-date"><?php echo $registration["alkupaiva"]; ?></span>
-                                <span class="registration-course"><?php echo $registration["nimi"]; ?></span>
-                            </li>
+                            <tr class="table-item">
+                                <td class="table-column"><?php echo $registration["alkupaiva"]; ?></td>
+                                <td class="table-column"><?php echo $registration["nimi"]; ?></td>
+                        </tr>
                         <?php
                         }
                         ?>
-                    </ul>
+                    </table>
                 <?php
             }
             // If there is no registration for the selected student:
