@@ -130,3 +130,57 @@ function auditory_name_exists($name)
         return false;
     }
 }
+
+function course_name_exists($name)
+{
+    global $conn;
+    
+    try {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM kurssit WHERE nimi = :nimi");
+        $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        $count = $stmt->fetchColumn();
+        return $count > 0;
+    } catch(PDOException $e) {
+        return false;
+    }
+}
+
+function add_course($name, $description, $start_date, $end_date, $auditory_id, $teacher_id)
+{
+    global $conn;
+    
+    try {
+        $stmt = $conn->prepare("INSERT INTO kurssit (nimi, kuvaus, alkupaiva, loppupaiva, tila, opettaja) 
+                                VALUES (:nimi, :kuvaus, :alkupaiva, :loppupaiva, :tila, :opettaja)");
+        $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':kuvaus', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':alkupaiva', $start_date, PDO::PARAM_STR);
+        $stmt->bindParam(':loppupaiva', $end_date, PDO::PARAM_STR);
+        $stmt->bindParam(':tila', $auditory_id, PDO::PARAM_INT);
+        $stmt->bindParam(':opettaja', $teacher_id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return true;
+    } catch(PDOException $e) {
+        return false;
+    }
+}
+
+function get_all_auditories()
+{
+    global $conn;
+    
+    try {
+        $stmt = $conn->prepare("SELECT tunnus, nimi, kapasiteetti 
+                                FROM tilat
+                                ORDER BY nimi;");
+        $stmt->execute();
+        
+        $all_auditories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $all_auditories;
+    } catch(PDOException $e) {
+        return [];
+    }
+}
