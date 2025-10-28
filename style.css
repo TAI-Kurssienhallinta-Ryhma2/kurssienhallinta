@@ -278,7 +278,8 @@ tr:hover td {
 /* === LABELS ABOVE SELECT === */
 label[for="students"],
 label[for="teachers"],
-label[for="courses"] {
+label[for="courses"],
+label[for="auditories"] {
   display: block;
   width: min(850px, 92%);
   margin: 1.5rem auto 0.4rem;
@@ -288,7 +289,8 @@ label[for="courses"] {
 
 select#students,
 select#teachers,
-select#courses {
+select#courses,
+select#auditories {
   display: block;
   width: min(850px, 92%);
   margin: 0 auto 1rem;

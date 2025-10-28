@@ -92,7 +92,7 @@ function get_students_registered_for_course($course_id)
                             WHERE  kurssikirjautumiset.kurssi = $course_id
                             AND opiskelijat.opiskelijanumero = kurssikirjautumiset.opiskelija
                             ORDER BY opiskelijat.sukunimi;");
-    $stmt->execute(); 
+    $stmt->execute();
 
     $registered_students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -102,31 +102,31 @@ function get_students_registered_for_course($course_id)
 function add_auditory($name, $capacity)
 {
     global $conn;
-    
+
     try {
         // Lisätään uusi tila tietokantaan
         $stmt = $conn->prepare("INSERT INTO tilat (nimi, kapasiteetti) VALUES (:nimi, :kapasiteetti)");
         $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
         $stmt->bindParam(':kapasiteetti', $capacity, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return true;
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         return false;
     }
 }
 function auditory_name_exists($name)
 {
     global $conn;
-    
+
     try {
         $stmt = $conn->prepare("SELECT COUNT(*) FROM tilat WHERE nimi = :nimi");
         $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
         $stmt->execute();
-        
+
         $count = $stmt->fetchColumn();
         return $count > 0;
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         return false;
     }
 }
@@ -134,15 +134,15 @@ function auditory_name_exists($name)
 function course_name_exists($name)
 {
     global $conn;
-    
+
     try {
         $stmt = $conn->prepare("SELECT COUNT(*) FROM kurssit WHERE nimi = :nimi");
         $stmt->bindParam(':nimi', $name, PDO::PARAM_STR);
         $stmt->execute();
-        
+
         $count = $stmt->fetchColumn();
         return $count > 0;
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         return false;
     }
 }
@@ -150,7 +150,7 @@ function course_name_exists($name)
 function add_course($name, $description, $start_date, $end_date, $auditory_id, $teacher_id)
 {
     global $conn;
-    
+
     try {
         $stmt = $conn->prepare("INSERT INTO kurssit (nimi, kuvaus, alkupaiva, loppupaiva, tila, opettaja) 
                                 VALUES (:nimi, :kuvaus, :alkupaiva, :loppupaiva, :tila, :opettaja)");
@@ -161,9 +161,9 @@ function add_course($name, $description, $start_date, $end_date, $auditory_id, $
         $stmt->bindParam(':tila', $auditory_id, PDO::PARAM_INT);
         $stmt->bindParam(':opettaja', $teacher_id, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return true;
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         return false;
     }
 }
@@ -171,34 +171,59 @@ function add_course($name, $description, $start_date, $end_date, $auditory_id, $
 function get_all_auditories()
 {
     global $conn;
-    
+
     try {
         $stmt = $conn->prepare("SELECT tunnus, nimi, kapasiteetti 
                                 FROM tilat
                                 ORDER BY nimi;");
         $stmt->execute();
-        
+
         $all_auditories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $all_auditories;
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         return [];
     }
+}
+
+function get_courses_by_auditory_id($auditory_id)
+{
+    global $conn;
+    $stmt = $conn->prepare("SELECT nimi, opettajat.etunimi, opettajat.sukunimi, alkupaiva, loppupaiva, tila, tunnus 
+                            FROM  kurssit, opettajat
+                            WHERE  kurssit.tila = $auditory_id
+                            AND opettajat.tunnusnumero = kurssit.opettaja
+                            ORDER BY kurssit.nimi;");
+    $stmt->execute();
+
+    $reserved_courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $reserved_courses;
+}
+
+function calculate_registered_students_for_course($reserved_courses)
+{
+    foreach ($reserved_courses as $course) {
+        $course_id = $course['tunnus'];
+        $registered_students_for_course = get_students_registered_for_course($course_id);
+        $all_registered_students[$course_id] = count($registered_students_for_course);
+    }
+    return $all_registered_students;
 }
 
 function add_teacher($firstname, $lastname, $subject)
 {
     global $conn;
-    
+
     try {
-        
+
         $stmt = $conn->prepare("INSERT INTO opettajat (etunimi, sukunimi, aine) VALUES (:etunimi, :sukunimi, :aine)");
         $stmt->bindParam(':etunimi', $firstname, PDO::PARAM_STR);
         $stmt->bindParam(':sukunimi', $lastname, PDO::PARAM_STR);
         $stmt->bindParam(':aine', $subject, PDO::PARAM_STR);
         $stmt->execute();
-        
+
         return true;
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         return false;
     }
 }
