@@ -278,25 +278,37 @@ tr:hover {
 .pay-attention {
   background-color: #f6c7c7 !important;
 }
+.icon-wrap {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.icon-wrap i{
+  position: relative;
+  z-index: 1;
+}
+
 .uis-exclamation-octagon {
   color: red;
   font-size: 1.3rem;
   margin-left: 0.15rem;
-  cursor: pointer;
-  position: relative;
 }
 
-.info-popup{
+table, tr, td {
+  overflow: visible !important;
+}
+
+.info-popup {
   position: absolute;
   display: none;
   background-color: white;
   color: red;
-  max-width: 335px;
+  width: 335px;
   border: 1px solid black;
   border-radius: 1rem;
   padding: 0.5rem 0.8rem;
   font-size: 0.9rem;
-  z-index: 10;
+  z-index: 9999;
 }
 
 .info-popup.show {

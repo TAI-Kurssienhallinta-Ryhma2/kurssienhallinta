@@ -83,7 +83,7 @@ if (isset($_GET['student-id'])) {
             // Check if the student has at least one registration for the course:
             if (!empty($student_registrations)) {
             ?>
-                <h2 class="description-text">Tietoja valituista kursseista:</h2>
+                <h2 class="description-title">Tietoja valituista kursseista:</h2>
                 <table class="description-table">
                     <tr>
                         <th class="table-header">Kurssin alkupäivä</th>
@@ -107,7 +107,7 @@ if (isset($_GET['student-id'])) {
             // If there is no registration for the selected student:
             else {
                 ?>
-                    <h2 class="description-text">Opiskelija ei ole vielä valinnut kursseja.</h2>
+                    <h2 class="description-title message success-message">Opiskelija ei ole vielä valinnut kursseja.</h2>
                     <?php
                 }
                     ?>

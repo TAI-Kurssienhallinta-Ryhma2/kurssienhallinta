@@ -41,6 +41,7 @@ if (isset($_GET['auditory-id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nähdä tilan tiedot</title>
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.2.0/css/solid.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -83,7 +84,7 @@ if (isset($_GET['auditory-id'])) {
             // Check if there is at least one course reserved for the selected auditory :
             if (!empty($reserved_courses)) {
             ?>
-                <h2 class="description-text">Kurssit, jotka pidetään tilassa <?php echo $auditory_name; ?>:</h2>
+                <h2 class="description-title">Kurssit, jotka pidetään tilassa <?php echo $auditory_name; ?>:</h2>
                 <table class="description-table">
                     <tr>
                         <th class="table-header">Kurssinimi</th>
@@ -118,7 +119,9 @@ if (isset($_GET['auditory-id'])) {
                             <!-- Check, if $pay_attention is true, then add attention icon to the number -->
                             <td class="table-column"><?php echo $students_number; ?><?php if ($pay_attention) {
                                                                                     ?>
-                                <i class="uis uis-exclamation-octagon" id="attention-icon"></i>
+                                <div class="icon-wrap animate__animated animate__heartBeat">
+                                    <i class="uis uis-exclamation-octagon" id="attention-icon"></i>
+                                </div>
                                 <div id="popup-<?php echo $course["tunnus"]; ?>" class="info-popup">The number of students (<?php echo $students_number; ?>) registered for the course "<?php echo $course["nimi"]; ?>" is greater than the capacity of the auditory (<?php echo $auditory_capacity ?>)!</div>
                             <?php
                                                                                     } ?>
@@ -133,7 +136,7 @@ if (isset($_GET['auditory-id'])) {
             // If there is no course for the selected auditory:
             else {
             ?>
-                <h2 class="description-text">Valitussa tilassa ei ole tarjolla kursseja.</h2>
+                <h2 class="description-title message success-message">Valitussa tilassa ei ole tarjolla kursseja.</h2>
             <?php
             }
             ?>
@@ -157,20 +160,46 @@ if (isset($_GET['auditory-id'])) {
         }
 
         // script to add EventListener to attention icon:
-        const attentionIcons = document.querySelectorAll(".uis-exclamation-octagon");
+        const attentionIcons = document.querySelectorAll(".icon-wrap");
         attentionIcons.forEach(iconElement => {
             const attentionText = iconElement.nextElementSibling;
             iconElement.addEventListener("click", () => {
                 attentionText.classList.toggle("show");
             });
 
-        // Close the attention popup window if click somewhere on the page:
+            // Close the attention popup window if click somewhere on the page:
             document.addEventListener('click', (event) => {
-            if (!iconElement.contains(event.target) && !attentionText.contains(event.target)) {
-                attentionText.classList.remove('show');
-            }
+                if (!iconElement.contains(event.target) && !attentionText.contains(event.target)) {
+                    attentionText.classList.remove('show');
+                }
+            });
+
         });
 
+        // script to repeat animation of the attention icon every n-seconds:
+        //Gather all elements with class "animate__heartBeat":
+        const attentionWrappers = document.querySelectorAll(".animate__heartBeat");
+        //set interval 5 sec for each element with class "animate__heartBeat":
+        attentionWrappers.forEach(wrapper => {
+            setInterval(() => {
+                //first, delete class "animate__heartBeat":
+                wrapper.classList.remove("animate__heartBeat");
+                //forces the browser to "reread" the state of the element (called reflow), 
+                //and this causes CSS to treat the re-adding of the class as a new animation:
+                void wrapper.offsetWidth;
+                // add class "animate__heartBeat":
+                wrapper.classList.add("animate__heartBeat");
+                // console.log("animate__heartBeat added");
+                // delete class "animate__heartBeat" after animation is finished:
+                wrapper.addEventListener('animationend', () => {
+                    wrapper.classList.remove("animate__heartBeat");
+                    // console.log("animate__heartBeat deleted");
+                }, {
+                    //so that handlers do not accumulate each time the interval is triggered, 
+                    //we remove the handler after the animation has finished:
+                    once: true
+                });
+            }, 5000);
         });
 
     </script>
