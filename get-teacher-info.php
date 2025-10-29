@@ -77,7 +77,7 @@ if (isset($_GET['teacher-id'])) {
             // Check if there is at least one course for which the teacher is responsible.:
             if (!empty($teacher_courses)) {
             ?>
-                <h2 class="description-text">Tietoja opettajan kursseista:</p>
+                <h2 class="description-title">Tietoja opettajan kursseista:</h2>
                     <table class="description-table">
                         <tr>
                             <th class="table-header">Kurssinimi</th>
@@ -105,7 +105,7 @@ if (isset($_GET['teacher-id'])) {
             // If there is no course for the selected teacher:
             else {
                 ?>
-                    <h2 class="description-text">Ei ole kursseja, joista opettaja olisi vastuussa.</p>
+                    <h2 class="description-title message success-message">Ei ole kursseja, joista opettaja olisi vastuussa.</h2>
                     <?php
                 }
                     ?>

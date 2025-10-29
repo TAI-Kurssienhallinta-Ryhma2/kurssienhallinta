@@ -267,18 +267,59 @@ th {
   font-weight: 800;
 }
 
-tr:nth-child(even) td {
+tr:nth-child(even) {
   background: #fafafa;
 }
 
-tr:hover td {
+tr:hover {
   background: #f5f5f5;
+}
+
+.pay-attention {
+  background-color: #f6c7c7 !important;
+}
+.icon-wrap {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.icon-wrap i{
+  position: relative;
+  z-index: 1;
+}
+
+.uis-exclamation-octagon {
+  color: red;
+  font-size: 1.3rem;
+  margin-left: 0.15rem;
+}
+
+table, tr, td {
+  overflow: visible !important;
+}
+
+.info-popup {
+  position: absolute;
+  display: none;
+  background-color: white;
+  color: red;
+  width: 335px;
+  border: 1px solid black;
+  border-radius: 1rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  z-index: 9999;
+}
+
+.info-popup.show {
+  display: block;
 }
 
 /* === LABELS ABOVE SELECT === */
 label[for="students"],
 label[for="teachers"],
-label[for="courses"] {
+label[for="courses"],
+label[for="auditories"] {
   display: block;
   width: min(850px, 92%);
   margin: 1.5rem auto 0.4rem;
@@ -288,7 +329,8 @@ label[for="courses"] {
 
 select#students,
 select#teachers,
-select#courses {
+select#courses,
+select#auditories {
   display: block;
   width: min(850px, 92%);
   margin: 0 auto 1rem;

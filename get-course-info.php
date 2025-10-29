@@ -86,7 +86,7 @@ if (isset($_GET['course-id'])) {
             // Check if there is at least one student who registered for this course:
             if (!empty($registered_students)) {
             ?>
-                <h2 class="description-text">Kurssille ilmoittautuneet opiskelijat:</p>
+                <h2 class="description-title">Kurssille ilmoittautuneet opiskelijat:</h2>
                     <table class="description-table">
                         <tr>
                             <th class="table-header">Opiskelijan nimi</th>
@@ -111,7 +111,7 @@ if (isset($_GET['course-id'])) {
             // If there is no student for the selected course:
             else {
                 ?>
-                    <h2 class="description-text">Tälle kurssille ei ole vielä ilmoittautuneita opiskelijoita.</p>
+                    <h2 class="description-title message success-message">Tälle kurssille ei ole vielä ilmoittautuneita opiskelijoita.</h2>
                     <?php
                 }
                     ?>
@@ -123,13 +123,11 @@ if (isset($_GET['course-id'])) {
     <script>
         // script to observe the option selection event:
         const selectElement = document.querySelector("select");
-        console.log("select element is ", selectElement);
         selectElement.addEventListener('change', formAddressPath);
 
         // Function to form address path using id of selected course:
         function formAddressPath() {
             const courseId = this.value;
-            console.log("Choosed id is ", courseId);
             if (courseId) {
                 window.location.href = `get-course-info.php?course-id=${courseId}`;
             }
