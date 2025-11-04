@@ -841,12 +841,12 @@ class TreeMap implements Map {
                     }
                 }
 
-                public function hasPrevious(): bool {
+                public function hasPreviousElement(): bool {
                     $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
                     return $this->iterator !== $NULL_GUARD;
                 }
 
-                public function previous(): TreeEntry {
+                public function previousElement(): TreeEntry {
                     $this->checkForModifications();
 
                     $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
@@ -869,12 +869,12 @@ class TreeMap implements Map {
                     return $entry;
                 }
 
-                public function hasNext(): bool {
+                public function hasNextElement(): bool {
                     $nullGuard = (function() { return $this->NULL_GUARD; })->call($this->outer);
                     return $this->iterator !== $nullGuard;
                 }
 
-                public function nextC(): TreeEntry {
+                public function nextElement(): TreeEntry {
                     $this->checkForModifications();
 
                     $nullGuard = (function() { return $this->NULL_GUARD; })->call($this->outer);
@@ -1134,14 +1134,14 @@ class TreeMap implements Map {
                         }
                     }
 
-                    public function hasPrevious(): bool {
+                    public function hasPreviousElement(): bool {
                         return $this->iterator !== $this->NULL_GUARD;
                     }
 
                     /**
                      * @return K
                      */
-                    public function previous(): mixed {
+                    public function previousElement(): mixed {
                         $this->checkForModifications();
 
                         if ($this->iterator === $this->NULL_GUARD) {
@@ -1154,11 +1154,11 @@ class TreeMap implements Map {
                         return $key;
                     }
 
-                    public function hasNext(): bool {
+                    public function hasNextElement(): bool {
                         return $this->iterator !== $this->NULL_GUARD;
                     }
 
-                    public function nextC(): mixed {
+                    public function nextElement(): mixed {
                         $this->checkForModifications();
 
                         if ($this->iterator === $this->NULL_GUARD) {
@@ -1390,14 +1390,14 @@ class TreeMap implements Map {
                         }
                     }
 
-                    public function hasPrevious(): bool {
+                    public function hasPreviousElement(): bool {
                         return $this->iterator !== $this->NULL_GUARD;
                     }
 
                     /**
                      * @return V
                      */
-                    public function previous(): mixed {
+                    public function previousElement(): mixed {
                         $this->checkForModifications();
 
                         if ($this->iterator === $this->NULL_GUARD) {
@@ -1410,11 +1410,11 @@ class TreeMap implements Map {
                         return $value;
                     }
 
-                    public function hasNext(): bool {
+                    public function hasNextElement(): bool {
                         return $this->iterator !== $this->NULL_GUARD;
                     }
 
-                    public function nextC(): mixed {
+                    public function nextElement(): mixed {
                         $this->checkForModifications();
 
                         if ($this->iterator === $this->NULL_GUARD) {
@@ -1592,6 +1592,20 @@ class TreeMap implements Map {
         }
         $this->postOrderDisplayHelper($this->root, $action);
         echo "<br>";
+    }
+
+    public function __tostring(): string {
+        if($this->size == 0) {
+            return "{}";
+        }
+
+        /** @var TreeIterator<Entry<int,int>> */ $it = $this->entrySet()->getIterator();
+        $str = "{" . $it->nextElement();
+        while($it->hasNextElement()) {
+            $str .= ", {$it->nextElement()}";
+        }
+        $str .= "}";
+        return $str;
     }
 
     // public function heightTree(): int {

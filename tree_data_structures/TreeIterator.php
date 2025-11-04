@@ -13,19 +13,19 @@ enum IteratorOptions {
  */
 interface TreeIterator extends Iterator {
 
-    public function hasNext(): bool;
+    public function hasNextElement(): bool;
 
     /**
      * @return E
      */
-    public function nextC(): mixed;
+    public function nextElement(): mixed;
 
-    public function hasPrevious(): bool;
+    public function hasPreviousElement(): bool;
 
     /**
      * @return E
      */
-    public function previous() : mixed;
+    public function previousElement() : mixed;
     public function reset(IteratorOptions $iteratorOptions): static;
     public function remove(): void;
 }
