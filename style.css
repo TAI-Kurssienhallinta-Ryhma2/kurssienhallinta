@@ -283,7 +283,7 @@ tr:hover {
   cursor: pointer;
 }
 
-.icon-wrap i{
+.icon-wrap i {
   position: relative;
   z-index: 1;
 }
@@ -294,7 +294,9 @@ tr:hover {
   margin-left: 0.15rem;
 }
 
-table, tr, td {
+table,
+tr,
+td {
   overflow: visible !important;
 }
 
@@ -303,7 +305,7 @@ table, tr, td {
   display: none;
   background-color: white;
   color: red;
-  width: 335px;
+  max-width: 335px;
   border: 1px solid black;
   border-radius: 1rem;
   padding: 0.5rem 0.8rem;
@@ -465,4 +467,66 @@ select#auditories {
   .submit-btn {
     padding: 0.75rem 1rem;
   }
+}
+
+.filters {
+  margin: 0 auto;
+  display: flex;
+  gap: 2rem;
+  /* flex-direction: row;
+  flex-wrap: wrap; */
+  width: 90%;
+}
+
+.colspan-table-item {
+  background-color: var(--line) !important;
+}
+
+.data-wrapper,
+.pagination-wrapper {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+
+.filters-wrapper h2,
+.filters-wrapper label {
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  margin: 0;
+}
+
+.table-column-center,
+.table-header-center {
+  text-align: center;
+}
+
+.pagination-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.pagination-list-item {
+  display: block;
+  padding: 0.1rem 0.2rem;
+  border: 1px solid var(--muted);
+  border-radius: 0.5rem;
+  width: 2rem;
+  text-align: center;
+  background-color: var(--accent);
+}
+
+.pagination-list-item:hover{
+  background-color: var(--accent-hover);
+  cursor: pointer;
+}
+
+.active-page {
+  background-color: var(--accent-hover);
+}
+.pagination-list-item-link{
+  display: block;
+  width: 100%;
 }

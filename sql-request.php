@@ -234,3 +234,46 @@ function add_teacher($firstname, $lastname, $subject)
         return false;
     }
 }
+
+function get_all_registrations($start_from, $limit=null) {
+    global $conn;
+
+    //Send request to the DB to the table kurssikirjautumiset without any parameters
+    // because we need to get all the registrations from the table:
+    $sql = "SELECT kurssikirjautumiset.tunnus AS registrationId, kurssikirjautumiset.kirjautumispaiva, 
+                                   opiskelijat.opiskelijanumero AS studentId, opiskelijat.etunimi AS studentname, 
+                                   opiskelijat.sukunimi AS studentsurname, opiskelijat.vuosikurssi,
+                                   kurssit.nimi AS coursename, kurssit.tunnus AS courseId,
+                                   opettajat.sukunimi AS teachersurname, opettajat.etunimi AS teachername, 
+                                   opettajat.tunnusnumero AS teacherId,
+                                   tilat.nimi AS auditoryname, tilat.tunnus AS auditoryId
+                            FROM  kurssikirjautumiset, opiskelijat, kurssit, opettajat, tilat
+                            WHERE kurssikirjautumiset.opiskelija = opiskelijat.opiskelijanumero
+                            AND   kurssikirjautumiset.kurssi = kurssit.tunnus
+                            AND kurssit.opettaja = opettajat.tunnusnumero
+                            AND kurssit.tila = tilat.tunnus
+                            ORDER BY courseId, opiskelijat.vuosikurssi, opiskelijat.sukunimi";
+
+    if ($limit !== null) {
+        $sql .= " LIMIT :start_from, :limit";
+    }
+
+    $stmt = $conn->prepare($sql);
+
+    if ($limit !== null) {
+        $stmt->bindValue(':start_from', (int)$start_from, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    }
+
+    $stmt->execute();
+
+    $all_registrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $all_registrations;
+}
+
+function count_regestrations() {
+    $all_registrations = get_all_registrations(0);
+    $total_records = count($all_registrations);
+    return $total_records;
+}
