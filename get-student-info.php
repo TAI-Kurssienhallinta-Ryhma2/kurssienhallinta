@@ -1,8 +1,11 @@
 <?php
 include_once 'sql-request.php';
+require_once __DIR__ . '/utilities/utilities.php';
+require_once __DIR__ . '/tree_data_structures/TreeMap.php';
 
 // Get an array with all the students from the database:
 $all_students = get_all_students();
+/** @var TreeMap<int, array> */ $student_map = createTreeMap($all_students, "opiskelijanumero");
 
 // If the GET parameter (?student-id=) appears in the address in the browser (after student's selection), then the following code is executed:
 if (isset($_GET['student-id'])) {
@@ -10,18 +13,15 @@ if (isset($_GET['student-id'])) {
     $student_id = $_GET['student-id'];
     // Store student's id in SESSION:
     $_SESSION["student_id"] = $student_id;
-    // Looking for the student with this ID in stored array with all students:
-    foreach ($all_students as $student) {
+    // Looking for the student with this ID in stored in the TreeMap data structure:
+        $student = $student_map->get((int)$student_id);
         // var_dump($all_students[0]['opiskelijanumero']);
-        if ($student['opiskelijanumero'] == $student_id) {
-            // Save information (name, surname, birthday and vuosikurssi) in the variables:
-            $student_name = $student['etunimi'];
-            $student_surname = $student['sukunimi'];
-            $student_birthday = $student['syntymapaiva'];
-            $student_grade = $student['vuosikurssi'];
-            break;
-        }
-    }
+        // Save information (name, surname, birthday and vuosikurssi) in the variables:
+        $student_name = $student['etunimi'];
+        $student_surname = $student['sukunimi'];
+        $student_birthday = $student['syntymapaiva'];
+        $student_grade = $student['vuosikurssi'];
+            
 
     // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED student:
     $student_registrations = get_student_registrations($student_id);
