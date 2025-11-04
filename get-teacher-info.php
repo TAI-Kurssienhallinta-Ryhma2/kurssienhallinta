@@ -33,16 +33,16 @@ if (isset($_GET['teacher-id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nähdä opettajan tiedot</title>
+    <title>Tarkastele opettajan tietoja</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
-    <h1>Nähdä opettajan tiedot</h1>
+    <h1>Tarkastele opettajan tietoja</h1>
     <label for="teachers">Valitse opettaja:</label>
     <!-- Create list of all teachers from the DB table "opettajat": -->
-    <select id="teachers" name="teaches">
+    <select id="teachers" name="teachers">
         <!-- The first line: -->
         <option value="empty">----valitse opettaja----</option>
         <?php

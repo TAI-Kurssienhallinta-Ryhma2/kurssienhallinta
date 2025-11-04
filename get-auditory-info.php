@@ -39,7 +39,7 @@ if (isset($_GET['auditory-id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nähdä tilan tiedot</title>
+    <title>Tarkastele tilan tietoja</title>
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.2.0/css/solid.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="style.css">
@@ -47,7 +47,7 @@ if (isset($_GET['auditory-id'])) {
 
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
-    <h1>Nähdä tilan tiedot</h1>
+    <h1>Tarkastele tilan tietoja</h1>
     <label for="auditories">Valitse tila:</label>
     <!-- Create list of all auditories from the DB table "tilat": -->
     <select id="auditories" name="auditories">

@@ -46,19 +46,19 @@
         </ul>
         <ul class="review-list">
             <li class="review-list-item">
-                <a href="./get-student-info.php" class="review-list-link">Nähdä opiskelijan tiedot</a>
+                <a href="./get-student-info.php" class="review-list-link">Tarkastele opiskelijan tietoja</a>
             </li>
             <li class="review-list-item">
-                <a href="./get-teacher-info.php" class="review-list-link">Nähdä opettajan tiedot</a>
+                <a href="./get-teacher-info.php" class="review-list-link">Tarkastele opettajan tietoja</a>
             </li>
             <li class="review-list-item">
-                <a href="./get-auditory-info.php" class="review-list-link">Nähdä tilan tiedot</a>
+                <a href="./get-auditory-info.php" class="review-list-link">Tarkastele tilan tietoja</a>
             </li>
             <li class="review-list-item">
-                <a href="./get-course-info.php" class="review-list-link">Nähdä kurssin tiedot</a>
+                <a href="./get-course-info.php" class="review-list-link">Tarkastele kurssin tietoja</a>
             </li>
             <li class="review-list-item">
-                <a href="./get-course-registration-info.php" class="review-list-link">Nähdä kurssikirjautumisen tiedot</a>
+                <a href="./get-course-registration-info.php" class="review-list-link">Tarkastele kurssikirjautumisen tietoja</a>
             </li>
         </ul>
     </div>

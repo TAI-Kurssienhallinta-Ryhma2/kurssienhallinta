@@ -39,13 +39,13 @@ if (isset($_GET['course-id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nähdä kurssin tiedot</title>
+    <title>Tarkastele kurssin tietoja</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
-    <h1>Nähdä kurssin tiedot</h1>
+    <h1>Tarkastele kurssin tietoja</h1>
     <label for="courses">Valitse kirssi:</label>
     <!-- Create list of all courses from the DB table "kurssit": -->
     <select id="courses" name="courses">

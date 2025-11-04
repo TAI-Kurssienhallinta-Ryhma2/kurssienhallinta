@@ -38,13 +38,13 @@ if (isset($_GET['student-id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nähdä opiskelijan tiedot</title>
+    <title>Tarkastele opiskelijan tietoja</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
-    <h1>Nähdä opiskelijan tiedot</h1>
+    <h1>Tarkastele opiskelijan tietoja</h1>
     <label for="students">Valitse opiskelija:</label>
     <!-- Create list of all students from the DB table "opiskelijat": -->
     <select id="students" name="students">
