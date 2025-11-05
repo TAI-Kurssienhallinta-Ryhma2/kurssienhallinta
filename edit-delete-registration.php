@@ -81,9 +81,9 @@ if (isset($_GET['registration-id'])) {
     <div class="filters-wrapper">
         <h2>Suodattimet</h2>
         <div class="filters">
-            <label for="courses">Valitse kurssi:</label>
+            <!-- <label for="courses">Valitse kurssi:</label> -->
             <!-- Create list of all courses from the DB table "kurssit": -->
-            <select id="courses" name="courses">
+            <select id="courses" name="courses" class="filter-select">
                 <!-- The first line: -->
                 <option value="empty">----valitse kurssi----</option>
                 <?php
@@ -104,9 +104,9 @@ if (isset($_GET['registration-id'])) {
                 ?>
             </select>
 
-            <label for="students">Valitse opiskelija:</label>
+            <!-- <label for="students">Valitse opiskelija:</label> -->
             <!-- Create list of all students from the DB table "opiskelijat": -->
-            <select id="students" name="students">
+            <select id="students" name="students" class="filter-select">
                 <!-- The first line: -->
                 <option value="empty">----valitse opiskelija----</option>
                 <?php
@@ -127,9 +127,9 @@ if (isset($_GET['registration-id'])) {
                 ?>
             </select>
 
-            <label for="teachers">Valitse opettaja:</label>
+            <!-- <label for="teachers">Valitse opettaja:</label> -->
             <!-- Create list of all teachers from the DB table "opettajat": -->
-            <select id="teachers" name="teachers">
+            <select id="teachers" name="teachers" class="filter-select">
                 <!-- The first line: -->
                 <option value="empty">----valitse opettaja----</option>
                 <?php
@@ -150,9 +150,9 @@ if (isset($_GET['registration-id'])) {
                 ?>
             </select>
 
-            <label for="auditories">Valitse tila:</label>
+            <!-- <label for="auditories">Valitse tila:</label> -->
             <!-- Create list of all auditories from the DB table "tilat": -->
-            <select id="auditories" name="auditories">
+            <select id="auditories" name="auditories" class="filter-select">
                 <!-- The first line: -->
                 <option value="empty">----valitse tila----</option>
                 <?php

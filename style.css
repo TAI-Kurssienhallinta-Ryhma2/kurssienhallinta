@@ -492,7 +492,7 @@ select#auditories {
 .filters-wrapper h2,
 .filters-wrapper label {
   font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-  margin: 0;
+  /* margin: 0; */
 }
 
 .table-column-center,
@@ -530,4 +530,13 @@ select#auditories {
 }
 .pagination-list-item-link {
   padding: 0.3rem 0.3rem;
+}
+
+select#students.filter-select, 
+select#teachers.filter-select, 
+select#courses.filter-select,
+select#auditories.filter-select{
+  margin: 0;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
 }
