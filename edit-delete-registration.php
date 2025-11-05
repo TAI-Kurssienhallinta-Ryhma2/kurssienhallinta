@@ -5,7 +5,7 @@ include_once 'sql-request.php';
 // We will use this info to define the amount of pages for pagination:
 $total_records = count_regestrations();
 // Set the maximum number of records to be shown in a single page:
-$limit = 10;
+$limit = 7;
 // Define the amount of pages for pagination:
 $total_pages = ceil($total_records / $limit);
 
@@ -195,7 +195,7 @@ if (isset($_GET['registration-id'])) {
 
             $current_course_id = null;
 
-            // Run through all the entries in the array $all_registrations:
+            // Run through all the entries in the array $registration_portion:
             foreach ($registration_portion as $registration) {
                 $course_id = $registration['courseId'];
                 $course_name = $registration['coursename'];
@@ -240,16 +240,45 @@ if (isset($_GET['registration-id'])) {
     <div class="pagination-wrapper">
         <ul class="pagination-list">
             <?php
+            // K is assumed to be the middle index.
+            $k = (($pn + 2 > $total_pages) ? $total_pages - 2 : (($pn - 2 < 1) ? 3 : $pn));
+
+            //initialize a variable to form a string that will contain the pagination buttons:
             $pagLink = "";
-            for ($i = 1; $i <= $total_pages; $i++) {
-                if ($i == $pn) {
-                    $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page="
-                        . $i . "'>" . $i . "</a></li>";
-                } else {
-                    $pagLink .= "<li class='pagination-list-item'><a  class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $i . "'>
-                                                " . $i . "</a></li>";
-                }
+
+            //form the First Page (<<) and Previous Page (<) buttons, provided that the page number is greater than or equal to 2:
+            if ($pn >= 2) {
+                $pagLink .= "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=1'><<</a></li>";
+                $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn - 1) . "'> Prev </a></li>";
+            }
+
+            // Show sequential links.
+            for ($i = -2; $i <= 2; $i++) {
+                if ($k + $i == $pn)
+                // adding style by class "active-page" for active page button: 
+                    $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
+                else
+                //all another buttons, not active:
+                    $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
             };
+
+            // for ($i = 1; $i <= $total_pages; $i++) {
+            //     if ($i == $pn) {
+            //         // adding style by class "active-page" for active page button: 
+            //         $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page="
+            //             . $i . "'>" . $i . "</a></li>";
+            //     } else {
+            //         //all another buttons, not active:
+            //         $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $i . "'>
+            //                                     " . $i . "</a></li>";
+            //     }
+            // };
+
+            //form the Last Page (>>) and Next Page (>) buttons, provided that the page number is greater than or equal to 2:
+            if ($pn < $total_pages) {
+                $pagLink .=  "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn + 1) . "'> Next </a></li>";
+                $pagLink .=  "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $total_pages . "'>>></a></li>";
+            }
             echo $pagLink;
             ?>
         </ul>

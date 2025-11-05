@@ -502,31 +502,32 @@ select#auditories {
 
 .pagination-list {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.5rem;
   justify-content: center;
 }
 
 .pagination-list-item {
-  display: block;
-  padding: 0.1rem 0.2rem;
-  border: 1px solid var(--muted);
-  border-radius: 0.5rem;
-  width: 2rem;
-  text-align: center;
-  background-color: var(--accent);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 34px;
+  height: 34px;
+  color: #155724;
 }
 
-.pagination-list-item:hover{
-  background-color: var(--accent-hover);
+.pagination-list-item:hover {
+  background-color: #19672b;
+  color: white;
   cursor: pointer;
 }
 
-.active-page {
-  background-color: var(--accent-hover);
+.pagination-list-item-marginal:hover {
+  background-color: #19672b;
+  border-radius: 50%;
 }
-.pagination-list-item-link{
-  display: block;
-  width: 100%;
+.active-page {
+  background-color: #155724;
+  color: white;
+}
+.pagination-list-item-link {
+  padding: 0.3rem 0.3rem;
 }
