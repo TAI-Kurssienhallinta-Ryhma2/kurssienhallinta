@@ -1,8 +1,11 @@
 <?php
 include_once 'sql-request.php';
+require_once __DIR__ . '/utilities/utilities.php';
+require_once __DIR__ . '/tree_data_structures/TreeMap.php';
 
 // Get an array with all the teachers from the database table 'opettajat':
 $all_teachers = get_all_teachers();
+$teacher_map = createTreeMap($all_teachers, "tunnusnumero");
 
 // If the GET parameter (?teacher-id=) appears in the address in the browser (after teacher's selection), then the following code is executed:
 if (isset($_GET['teacher-id'])) {
@@ -10,16 +13,12 @@ if (isset($_GET['teacher-id'])) {
     $teacher_id = $_GET['teacher-id'];
     // Store teacher's id in SESSION:
     $_SESSION["teacher_id"] = $teacher_id;
-    // Looking for the teacher with this ID in stored array with all teachers:
-    foreach ($all_teachers as $teacher) {
-        if ($teacher['tunnusnumero'] == $teacher_id) {
-            // Save information (name, surname, subject) in the variables:
-            $teacher_name = $teacher['etunimi'];
-            $teacher_surname = $teacher['sukunimi'];
-            $teacher_subject = $teacher['aine'];
-            break;
-        }
-    }
+    // Looking for the teacher with this ID stored in the TreeMap data structure:
+        $teacher = $teacher_map->get((int)$teacher_id);
+        // Save information (name, surname, subject) in the variables:
+        $teacher_name = $teacher['etunimi'];
+        $teacher_surname = $teacher['sukunimi'];
+        $teacher_subject = $teacher['aine'];
 
     // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED student:
     $teacher_courses = get_teachers_course($teacher_id);
