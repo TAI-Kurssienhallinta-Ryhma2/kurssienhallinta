@@ -235,9 +235,9 @@ function add_teacher($firstname, $lastname, $subject)
     }
 }
 
-function count_regestrations()
+function count_regestrations($all_registrations)
 {
-    $all_registrations = get_registrations(0);
+    // $all_registrations = get_registrations(0);
     $total_records = count($all_registrations);
     return $total_records;
 }
@@ -276,7 +276,7 @@ function get_registrations($start_from, $limit = null, $filters = [])
                             }
     //Continue to form SQL statement:
                             $sql .= " ORDER BY courseId, opiskelijat.vuosikurssi, opiskelijat.sukunimi";
-                            
+
     //Depending on the start position and limits, continue to form SQL statement:
                             if ($limit !== null) {
                                 $sql .= " LIMIT :start_from, :limit";

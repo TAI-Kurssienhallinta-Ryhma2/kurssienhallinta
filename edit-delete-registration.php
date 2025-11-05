@@ -1,11 +1,13 @@
 <?php
 include_once 'sql-request.php';
 
-// Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
-// We will use this info to define the amount of pages for pagination:
-$total_records = count_regestrations();
 // Set the maximum number of records to be shown in a single page:
 $limit = 7;
+
+
+// Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
+// We will use this info to define the amount of pages for pagination:
+$total_records = count_regestrations(get_registrations(0, null));
 // Define the amount of pages for pagination:
 $total_pages = ceil($total_records / $limit);
 
@@ -20,46 +22,43 @@ if (isset($_GET["page"])) {
 // when the page is initially loaded, the starting index will be 0 (i.e. from the very first record in the table 'kurssikirjautumiset'):
 $start_from = ($pn - 1) * $limit;
 
-//Get an array from the DB from table 'kurssikirjautumiset' starting from index $start_from and limiting up to $limit records 
-// and store in the $registration_portion variable:
-$registration_portion = get_registrations($start_from, $limit);
-
 //Get arrays with students, teachers, courses and auditories for filters:
 $all_students = get_all_students();
 $all_teachers = get_all_teachers();
 $all_courses = get_all_courses();
 $all_auditories = get_all_auditories();
 
-//Filtered array:
-// $selected_student_registration = get_registrations(0, null, ['selected_student_id' => 583]);
-// $selected_course_registration = get_registrations(0, null, ['selected_course_id' => 134]);
-
-echo "<pre>";
-// print_r($selected_student_registration);
-// print_r($selected_course_registration);
-// print_r($total_records);
-echo "</pre>";
-
-// If the GET parameter (?registration-id=) appears in the address in the browser (after registration's selection), then the following code is executed:
-if (isset($_GET['registration-id'])) {
-    // Read the URL-get-parameter named registration-id:
-    $registration_id = $_GET['registration-id'];
-    // Store registration's id in SESSION:
-    $_SESSION["registration_id"] = $registration_id;
-    // Looking for the registration with this ID in stored array with all registrations:
-    foreach ($registration_portion as $registration) {
-        if ($registration['tunnus'] == $registration_id) {
-            // Save information (name, capacity) in the variables:
-            $course_name = $registration['coursename'];
-            $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
-            $auditory_name = $registration['auditoryname'];
-            $registration_date = $registration['kirjautumispaiva'];
-            $student_fullname = $registration['studentsurname'] . " " . $registration['studentname'];
-            $student_grade = $registration['vuosikurssi'];
-            break;
-        }
-    }
+if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
+    $_SESSION["auditory_id"] = $_GET['auditory-id'];
+    $registration_portion = get_registrations(0, null, ['selected_auditory_id' => (int)$_GET['auditory-id']]);
+    $total_records = count_regestrations($registration_portion);
+    $total_pages = ceil($total_records / $limit);
+} elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null) {
+    $_SESSION["student_id"] = $_GET['student-id'];
+    $registration_portion = get_registrations(0, null, ['selected_student_id' => (int)$_GET['student-id']]);
+    $total_records = count_regestrations($registration_portion);
+    $total_pages = ceil($total_records / $limit);
+} elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null) {
+    $_SESSION["teacher_id"] = $_GET['teacher-id'];
+    $registration_portion = get_registrations(0, null, ['selected_teacher_id' => (int)$_GET['teacher-id']]);
+    $total_records = count_regestrations($registration_portion);
+    $total_pages = ceil($total_records / $limit);
+} elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null) {
+    $_SESSION["course_id"] = $_GET['course-id'];
+    $registration_portion = get_registrations(0, null, ['selected_course_id' => (int)$_GET['course-id']]);
+    $total_records = count_regestrations($registration_portion);
+    $total_pages = ceil($total_records / $limit);
+} else {
+    //Get an array from the DB from table 'kurssikirjautumiset' starting from index $start_from and limiting up to $limit records 
+    // and store in the $registration_portion variable:
+    $registration_portion = get_registrations($start_from, $limit);
 }
+
+// echo "<pre>";
+// print_r($registration_portion);
+// print_r($total_records);
+// print_r($total_pages);
+// echo "</pre>";
 
 ?>
 
@@ -179,64 +178,92 @@ if (isset($_GET['registration-id'])) {
     <div class="data-wrapper">
         <h2>Kurssikirjautumiset</h2>
 
-        <table class="description-table">
-            <!-- <tr>
+        <?php
+
+        if (!empty($registration_portion)) {
+
+        ?>
+            <table class="description-table">
+                <!-- <tr>
                 <th class="table-header" colspan="5">Kurssinimi - Vastaava opettaja - Kurssin tila</th>
             </tr> -->
-            <tr>
-                <th class="table-header-center">Kirjautumispäivä</th>
-                <th class="table-header-center">Opiskelija</th>
-                <th class="table-header">Kurssi</th>
-                <th class="table-header-center">Poistaa</th>
-                <th class="table-header-center">Muokkaa</th>
-            </tr>
+                <tr>
+                    <th class="table-header-center">Kirjautumispäivä</th>
+                    <th class="table-header-center">Opiskelija</th>
+                    <th class="table-header">Kurssi</th>
+                    <th class="table-header-center">Poistaa</th>
+                    <th class="table-header-center">Muokkaa</th>
+                </tr>
+                <?php
 
-            <?php
+                $current_course_id = null;
 
-            $current_course_id = null;
+                // Run through all the entries in the array $registration_portion:
+                foreach ($registration_portion as $registration) {
+                    $course_id = $registration['courseId'];
+                    $course_name = $registration['coursename'];
+                    $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
+                    $auditory_name = $registration['auditoryname'];
+                    $registration_date = $registration['kirjautumispaiva'];
+                    $student_fullname = $registration['studentsurname'] . " " . $registration['studentname'];
+                    $student_grade = $registration['vuosikurssi'];
 
-            // Run through all the entries in the array $registration_portion:
-            foreach ($registration_portion as $registration) {
-                $course_id = $registration['courseId'];
-                $course_name = $registration['coursename'];
-                $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
-                $auditory_name = $registration['auditoryname'];
-                $registration_date = $registration['kirjautumispaiva'];
-                $student_fullname = $registration['studentsurname'] . " " . $registration['studentname'];
-                $student_grade = $registration['vuosikurssi'];
-
-                if ($course_id !== $current_course_id) {
-            ?>
-                    <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
-                        <td class="table-column" colspan="3">Kurssi <b><?php echo $course_name; ?></b>, Opettaja <?php echo $teacher_fullname; ?>, tila <?php echo $auditory_name; ?></td>
+                    if ($course_id !== $current_course_id) {
+                ?>
+                        <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
+                            <td class="table-column" colspan="3">Kurssi <b><?php echo $course_name; ?></b>, Opettaja <?php echo $teacher_fullname; ?>, tila <?php echo $auditory_name; ?></td>
+                            <td class="table-column-center">
+                                <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>">
+                            </td>
+                            <td></td>
+                        </tr>
+                    <?php
+                        $current_course_id = $course_id;
+                    }
+                    ?>
+                    <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
+                        <td class="table-column"><?php echo $registration_date; ?></td>
+                        <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
+                        <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
                         <td class="table-column-center">
-                            <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>">
+                            <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete" value="delete-<?php echo $registration["registrationId"]; ?>">
                         </td>
-                        <td></td>
+                        <td class="table-column-center">
+                            <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit" value="edit-<?php echo $registration["registrationId"]; ?>">
+                        </td>
+
                     </tr>
                 <?php
-                    $current_course_id = $course_id;
                 }
                 ?>
-                <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
-                    <td class="table-column"><?php echo $registration_date; ?></td>
-                    <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
-                    <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
-                    <td class="table-column-center">
-                        <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete" value="delete-<?php echo $registration["registrationId"]; ?>">
-                    </td>
-                    <td class="table-column-center">
-                        <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit" value="edit-<?php echo $registration["registrationId"]; ?>">
-                    </td>
-
-                </tr>
-            <?php
-            }
-            ?>
-        </table>
+            </table>
     </div>
+    <?php
+        } else {
+            if (isset($_GET["auditory-id"])) {
+    ?>
+        <h2 class="description-title message success-message">Valitulle tilalle ei ole kurssiilmoittautumisia.</h2>
+    <?php
+            } elseif (isset($_GET["student-id"])) {
+    ?>
+        <h2 class="description-title message success-message">Opiskelija ei ole vielä ilmoittautunut millekään kurssille.</h2>
+    <?php
+            } elseif (isset($_GET["teacher-id"])) {
+    ?>
+        <h2 class="description-title message success-message">Kukaan ei ole vielä rekisteröitynyt opettajan luokse.</h2>
+    <?php
+            } elseif (isset($_GET["course-id"])) {
+    ?>
+        <h2 class="description-title message success-message">Kurssille ei ole ilmoittautumista.</h2>
+<?php
+            }
+        }
+?>
 
-    <!-- Section with pagination -->
+<!-- Section with pagination -->
+<?php
+if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET["teacher-id"]) && !isset($_GET["course-id"])) {
+?>
     <div class="pagination-wrapper">
         <ul class="pagination-list">
             <?php
@@ -255,24 +282,12 @@ if (isset($_GET['registration-id'])) {
             // Show sequential links.
             for ($i = -2; $i <= 2; $i++) {
                 if ($k + $i == $pn)
-                // adding style by class "active-page" for active page button: 
+                    // adding style by class "active-page" for active page button: 
                     $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
                 else
-                //all another buttons, not active:
+                    //all another buttons, not active:
                     $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
             };
-
-            // for ($i = 1; $i <= $total_pages; $i++) {
-            //     if ($i == $pn) {
-            //         // adding style by class "active-page" for active page button: 
-            //         $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page="
-            //             . $i . "'>" . $i . "</a></li>";
-            //     } else {
-            //         //all another buttons, not active:
-            //         $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $i . "'>
-            //                                     " . $i . "</a></li>";
-            //     }
-            // };
 
             //form the Last Page (>>) and Next Page (>) buttons, provided that the page number is greater than or equal to 2:
             if ($pn < $total_pages) {
@@ -283,7 +298,45 @@ if (isset($_GET['registration-id'])) {
             ?>
         </ul>
     </div>
+<?php
+}
+?>
 
+<!-- Scripts -->
+<script>
+    // script to observe the option selection event for courses:
+    const selectElements = document.querySelectorAll("select");
+    selectElements.forEach(selectElement => {
+        selectElement.addEventListener('change', formAddressPath);
+    });
+
+    // console.log(selectElements);
+
+    // Function to form address path using id of selected course:
+    function formAddressPath() {
+        const itemId = this.value;
+        // console.log("this is", this);
+        // console.log("this.id is", this.id);
+        // console.log("itemId is", itemId);
+        switch (this.id) {
+            case "courses":
+                window.location.href = `edit-delete-registration.php?course-id=${itemId}`;
+
+                break;
+            case "students":
+                window.location.href = `edit-delete-registration.php?student-id=${itemId}`;
+                break;
+            case "teachers":
+                window.location.href = `edit-delete-registration.php?teacher-id=${itemId}`;
+                break;
+            case "auditories":
+                window.location.href = `edit-delete-registration.php?auditory-id=${itemId}`;
+                break;
+            default:
+                break;
+        }
+    }
+</script>
 </body>
 
 </html>
