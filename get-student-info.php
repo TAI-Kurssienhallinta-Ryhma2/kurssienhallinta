@@ -13,7 +13,7 @@ if (isset($_GET['student-id'])) {
     $student_id = $_GET['student-id'];
     // Store student's id in SESSION:
     $_SESSION["student_id"] = $student_id;
-    // Looking for the student with this ID in stored in the TreeMap data structure:
+    // Looking for the student with this ID stored in the TreeMap data structure:
         $student = $student_map->get((int)$student_id);
         // var_dump($all_students[0]['opiskelijanumero']);
         // Save information (name, surname, birthday and vuosikurssi) in the variables:

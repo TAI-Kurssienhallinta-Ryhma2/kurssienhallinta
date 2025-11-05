@@ -1,8 +1,11 @@
 <?php
 include_once 'sql-request.php';
+require_once __DIR__ . '/utilities/utilities.php';
+require_once __DIR__ . '/tree_data_structures/TreeMap.php';
 
 // Get an array with alle courses from the database table 'kurssit':
 $all_courses = get_all_courses();
+$course_map = createTreeMap($all_courses, "tunnus");
 // echo "<pre>";
 // print_r($all_courses);
 // echo "</pre>";
@@ -13,9 +16,8 @@ if (isset($_GET['course-id'])) {
     $course_id = $_GET['course-id'];
     // Store course's id in SESSION:
     $_SESSION["course_id"] = $course_id;
-    // Looking for the course with this ID in stored array with all courses:
-    foreach ($all_courses as $course) {
-        if ($course['tunnus'] == $course_id) {
+    // Looking for the course with this ID stored in the TreeMap data structure:
+        $course = $course_map->get((int)$course_id);
             // Save information (name, description, the start date and end date, teacher's name and auditory in the variables:
             $course_name = $course['nimi'];
             $course_description = $course['kuvaus'];
@@ -23,9 +25,6 @@ if (isset($_GET['course-id'])) {
             $course_end_date = $course['loppupaiva'];
             $course_auditory = $course['tila'];
             $course_teacher = $course['sukunimi'] . " " . $course['etunimi'];
-            break;
-        }
-    }
 
     // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED course:
     $registered_students = get_students_registered_for_course($course_id);
