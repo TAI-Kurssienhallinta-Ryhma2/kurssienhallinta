@@ -1,28 +1,42 @@
 <?php
 include_once 'sql-request.php';
+
+// Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
+// We will use this info to define the amount of pages for pagination:
 $total_records = count_regestrations();
+// Set the maximum number of records to be shown in a single page:
 $limit = 10;
+// Define the amount of pages for pagination:
 $total_pages = ceil($total_records / $limit);
 
-if (isset($_GET["page"])) { 
-    $pn  = $_GET["page"]; 
-  } 
-  else { 
-    $pn = 1; 
-  };  
+// Read GET parameter (the number of the page) from url:
+if (isset($_GET["page"])) {
+    $pn  = $_GET["page"];
+} else {
+    $pn = 1; // define the start page - 1 (when the URL does not yet have a GET parameter)
+};
 
-  $start_from = ($pn - 1) * $limit;
-// $start_from = 0;
+// Define the start position to start our fetch:
+// when the page is initially loaded, the starting index will be 0 (i.e. from the very first record in the table 'kurssikirjautumiset'):
+$start_from = ($pn - 1) * $limit;
 
-// Get an array with all the registrations from the database table 'kurssikirjautumiset':
-$limited_registrations = get_all_registrations($start_from, $limit);
+//Get an array from the DB from table 'kurssikirjautumiset' starting from index $start_from and limiting up to $limit records 
+// and store in the $registration_portion variable:
+$registration_portion = get_registrations($start_from, $limit);
+
+//Get arrays with students, teachers, courses and auditories for filters:
 $all_students = get_all_students();
 $all_teachers = get_all_teachers();
 $all_courses = get_all_courses();
 $all_auditories = get_all_auditories();
 
+//Filtered array:
+// $selected_student_registration = get_registrations(0, null, ['selected_student_id' => 583]);
+// $selected_course_registration = get_registrations(0, null, ['selected_course_id' => 134]);
+
 echo "<pre>";
-// print_r($total_pages);
+// print_r($selected_student_registration);
+// print_r($selected_course_registration);
 // print_r($total_records);
 echo "</pre>";
 
@@ -33,7 +47,7 @@ if (isset($_GET['registration-id'])) {
     // Store registration's id in SESSION:
     $_SESSION["registration_id"] = $registration_id;
     // Looking for the registration with this ID in stored array with all registrations:
-    foreach ($limited_registrations as $registration) {
+    foreach ($registration_portion as $registration) {
         if ($registration['tunnus'] == $registration_id) {
             // Save information (name, capacity) in the variables:
             $course_name = $registration['coursename'];
@@ -63,6 +77,7 @@ if (isset($_GET['registration-id'])) {
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
     <h1>Poista/muokkaa kurssikirjautuminen</h1>
 
+    <!-- Section with filters -->
     <div class="filters-wrapper">
         <h2>Suodattimet</h2>
         <div class="filters">
@@ -160,6 +175,7 @@ if (isset($_GET['registration-id'])) {
         </div>
     </div>
 
+    <!-- Section with data-table -->
     <div class="data-wrapper">
         <h2>Kurssikirjautumiset</h2>
 
@@ -180,7 +196,7 @@ if (isset($_GET['registration-id'])) {
             $current_course_id = null;
 
             // Run through all the entries in the array $all_registrations:
-            foreach ($limited_registrations as $registration) {
+            foreach ($registration_portion as $registration) {
                 $course_id = $registration['courseId'];
                 $course_name = $registration['coursename'];
                 $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
@@ -204,8 +220,8 @@ if (isset($_GET['registration-id'])) {
                 ?>
                 <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
                     <td class="table-column"><?php echo $registration_date; ?></td>
-                    <td class="table-column"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
-                    <td class="table-column"><?php echo $course_name; ?></td>
+                    <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
+                    <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
                     <td class="table-column-center">
                         <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete" value="delete-<?php echo $registration["registrationId"]; ?>">
                     </td>
@@ -217,27 +233,26 @@ if (isset($_GET['registration-id'])) {
             <?php
             }
             ?>
-
         </table>
     </div>
 
+    <!-- Section with pagination -->
     <div class="pagination-wrapper">
-    <ul class="pagination-list">
-      <?php  
-        $pagLink = "";                        
-        for ($i = 1; $i <= $total_pages; $i++) {
-          if ($i == $pn) {
-              $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page="
-                                                .$i."'>".$i."</a></li>";
-          }            
-          else  {
-              $pagLink .= "<li class='pagination-list-item'><a  class='pagination-list-item-link' href='edit-delete-registration.php?page=".$i."'>
-                                                ".$i."</a></li>";  
-          }
-        };  
-        echo $pagLink;  
-      ?>
-      </ul>
+        <ul class="pagination-list">
+            <?php
+            $pagLink = "";
+            for ($i = 1; $i <= $total_pages; $i++) {
+                if ($i == $pn) {
+                    $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page="
+                        . $i . "'>" . $i . "</a></li>";
+                } else {
+                    $pagLink .= "<li class='pagination-list-item'><a  class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $i . "'>
+                                                " . $i . "</a></li>";
+                }
+            };
+            echo $pagLink;
+            ?>
+        </ul>
     </div>
 
 </body>
