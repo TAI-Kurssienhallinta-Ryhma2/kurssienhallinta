@@ -1,8 +1,11 @@
 <?php
 include_once 'sql-request.php';
+require_once __DIR__ . '/utilities/utilities.php';
+require_once __DIR__ . '/tree_data_structures/TreeMap.php';
 
 // Get an array with all the auditories from the database table 'tilat':
 $all_auditories = get_all_auditories();
+$auditory_map = createTreeMap($all_auditories, "tunnus");
 
 // If the GET parameter (?auditory-id=) appears in the address in the browser (after auditory's selection), then the following code is executed:
 if (isset($_GET['auditory-id'])) {
@@ -10,15 +13,11 @@ if (isset($_GET['auditory-id'])) {
     $auditory_id = $_GET['auditory-id'];
     // Store auditory's id in SESSION:
     $_SESSION["auditory_id"] = $auditory_id;
-    // Looking for the auditory with this ID in stored array with all auditories:
-    foreach ($all_auditories as $auditory) {
-        if ($auditory['tunnus'] == $auditory_id) {
+    // Looking for the auditory with this ID in in the TreeMap data structure:
+        $auditory = $auditory_map->get((int)$auditory_id);
             // Save information (name, capacity) in the variables:
             $auditory_name = $auditory['nimi'];
             $auditory_capacity = $auditory['kapasiteetti'];
-            break;
-        }
-    }
 
     // Get an array with all registrations from the DB table "kurssikirjautumiset" for the SELECTED student:
     $reserved_courses = get_courses_by_auditory_id($auditory_id);
