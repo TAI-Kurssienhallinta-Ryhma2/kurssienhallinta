@@ -521,11 +521,7 @@ select#auditories {
   cursor: pointer;
 }
 
-/* .pagination-list-item-marginal{
- 
-
-} */
-.pagination-list-item-marginal .pagination-list-item-link{
+.pagination-list-item-marginal .pagination-list-item-link {
   font-size: 33px;
   line-height: 25px;
   height: 33px;
@@ -542,14 +538,28 @@ select#auditories {
 }
 .pagination-list-item-link {
   padding: 0.3rem 0.3rem;
-
 }
 
-select#students.filter-select, 
-select#teachers.filter-select, 
+select#students.filter-select,
+select#teachers.filter-select,
 select#courses.filter-select,
-select#auditories.filter-select{
+select#auditories.filter-select {
   margin: 0;
   font-size: 0.75rem;
   padding: 0.4rem 0.6rem;
+}
+.button-wrapp {
+  /* display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap; */
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+.inner-wrapper{
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }

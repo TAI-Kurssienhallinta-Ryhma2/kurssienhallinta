@@ -63,43 +63,45 @@ $error_message = null;
 /* DELETE STUDENT LOGIC */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
     $ids = $_POST['delete'] ?? [];
-    echo "<pre>";
-    print_r($ids);
-    echo "</pre>";
+    // echo "<pre>";
+    // print_r($ids);
+    // echo "</pre>";
 
-    foreach ($ids as $id) {
-        if ($id === '' || !ctype_digit($id)) {
-            $error_message = "Virheellinen kurssikirjautuminen tunnus.";
-        } else {
-            try {
-                global $conn;
-                $conn->beginTransaction(); // Start transaction (delete registrations)
+    if (empty($ids)) {
+        header("Location: edit-delete-registration.php?success=error");
+        exit();
+    } else {
+        global $conn;
+        $conn->beginTransaction(); // Start transaction (delete registrations)
+
+        try {
+            foreach ($ids as $id) {
+                if ($id === '' || !ctype_digit($id)) {
+                    throw new Exception("Virheellinen kurssikirjautuminen tunnus.");
+                }
 
                 // Delete registration:
                 $delReg = $conn->prepare("DELETE FROM kurssikirjautumiset WHERE tunnus = :id");
                 $delReg->bindParam(':id', $id, PDO::PARAM_INT);
                 $delReg->execute();
-
-                $conn->commit();
-                // exit();
-            } catch (PDOException $e) {
-                if ($conn->inTransaction()) $conn->rollBack();
-                $error_message = "Poistovirhe: " . htmlspecialchars($e->getMessage());
-                exit();
             }
-
-        }
-    }
+            $conn->commit();
             // After delete - go back without selected registration
             header("Location: edit-delete-registration.php?success=deleted");
+            exit();
+        } catch (Exception $e) {
+            if ($conn->inTransaction()) $conn->rollBack();
+            $error_message = "Poistovirhe: " . htmlspecialchars($e->getMessage());
+        }
+    }
 }
 
 /* READ SUCCESS MESSAGES FROM URL */
 if (isset($_GET['success'])) {
     if ($_GET['success'] === 'updated') $success_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
     if ($_GET['success'] === 'deleted') $success_message = "Kurssikirjautuminen poistettu onnistuneesti!";
+    if ($_GET['success'] === 'error') $success_message = "Valitse vähintään yksi poistettava kohde.";
 }
-
 
 echo "<pre>";
 // print_r($registration_portion);
@@ -366,12 +368,15 @@ echo "</pre>";
     ?>
 
     <!-- Section with button -->
-    <div class="button-wrapper" style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;">
-        <button type="submit" name="update-reg" class="submit-btn">Tallenna muutokset</button>
-        <button type="submit" name="delete-reg" class="submit-btn"
-            onclick="return confirm('Haluatko varmasti poistaa tämän kurssikirjautumisen?');">
-            Poista kurssinkirjautuminen
-        </button>
+    <div <?php if (empty($registration_portion)) {?>hidden <?php }?> class="button-wrapp">
+        <div class="inner-wrapper">
+            <button type="submit" name="update-reg" class="submit-btn">Tallenna muutokset</button>
+            <button type="submit" name="delete-reg" class="submit-btn"
+                onclick="return confirm('Haluatko varmasti poistaa tämän kurssikirjautumisen?');">
+                Poista kurssinkirjautuminen
+            </button>
+        </div>
+
     </div>
     </form>
 
