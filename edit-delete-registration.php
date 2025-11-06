@@ -56,6 +56,51 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
     $registration_portion = get_registrations($start_from, $limit);
 }
 
+
+$success_message = null;
+$error_message = null;
+
+/* DELETE STUDENT LOGIC */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
+    $ids = $_POST['delete'] ?? [];
+    echo "<pre>";
+    print_r($ids);
+    echo "</pre>";
+
+    foreach ($ids as $id) {
+        if ($id === '' || !ctype_digit($id)) {
+            $error_message = "Virheellinen kurssikirjautuminen tunnus.";
+        } else {
+            try {
+                global $conn;
+                $conn->beginTransaction(); // Start transaction (delete registrations)
+
+                // Delete registration:
+                $delReg = $conn->prepare("DELETE FROM kurssikirjautumiset WHERE tunnus = :id");
+                $delReg->bindParam(':id', $id, PDO::PARAM_INT);
+                $delReg->execute();
+
+                $conn->commit();
+                // exit();
+            } catch (PDOException $e) {
+                if ($conn->inTransaction()) $conn->rollBack();
+                $error_message = "Poistovirhe: " . htmlspecialchars($e->getMessage());
+                exit();
+            }
+
+        }
+    }
+            // After delete - go back without selected registration
+            header("Location: edit-delete-registration.php?success=deleted");
+}
+
+/* READ SUCCESS MESSAGES FROM URL */
+if (isset($_GET['success'])) {
+    if ($_GET['success'] === 'updated') $success_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
+    if ($_GET['success'] === 'deleted') $success_message = "Kurssikirjautuminen poistettu onnistuneesti!";
+}
+
+
 echo "<pre>";
 // print_r($registration_portion);
 // print_r($total_records);
@@ -176,207 +221,237 @@ echo "</pre>";
         </div>
     </div>
 
+    <!-- Section with message -->
+    <?php if (isset($success_message) ?? isset($error_message)) {
+    ?>
+        <div class="form-wrapper">
+            <?php if ($success_message): ?>
+                <div class="message success-message"><?php echo htmlspecialchars($success_message); ?></div>
+            <?php endif; ?>
+            <?php if ($error_message): ?>
+                <div class="message error-message"><?php echo $error_message; ?></div>
+            <?php endif; ?>
+        </div>
+    <?php
+    } ?>
+
+
     <!-- Section with data-table -->
-    <div class="data-wrapper">
-        <h2>Kurssikirjautumiset</h2>
+    <form action="" method="POST">
+        <div class="data-wrapper">
+            <h2>Kurssikirjautumiset</h2>
 
-        <?php
 
-        if (!empty($registration_portion)) {
 
-        ?>
-            <table class="description-table">
+            <?php
 
-                <tr>
-                    <th class="table-header-center">Kirjautumispäivä</th>
-                    <th class="table-header-center">Opiskelija</th>
-                    <th class="table-header">Kurssi</th>
-                    <th class="table-header-center">Poistaa</th>
-                    <th class="table-header-center">Muokkaa</th>
-                </tr>
-                <?php
+            if (!empty($registration_portion)) {
 
-                $current_course_id = null;
+            ?>
+                <table class="description-table">
 
-                // Run through all the entries in the array $registration_portion:
-                foreach ($registration_portion as $registration) {
-                    $course_id = $registration['courseId'];
-                    $course_name = $registration['coursename'];
-                    $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
-                    $auditory_name = $registration['auditoryname'];
-                    $registration_date = $registration['kirjautumispaiva'];
-                    $student_fullname = $registration['studentsurname'] . " " . $registration['studentname'];
-                    $student_grade = $registration['vuosikurssi'];
+                    <tr>
+                        <th class="table-header-center">Kirjautumispäivä</th>
+                        <th class="table-header-center">Opiskelija</th>
+                        <th class="table-header">Kurssi</th>
+                        <th class="table-header-center">Poistaa</th>
+                        <th class="table-header-center">Muokkaa</th>
+                    </tr>
+                    <?php
 
-                    if ($course_id !== $current_course_id) {
-                ?>
-                        <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
-                            <td class="table-column" colspan="3">Kurssi <b>&laquo<?php echo $course_name; ?>&raquo</b> (opettaja <b><?php echo $teacher_fullname; ?></b>, tila <b><?php echo $auditory_name; ?></b>)</td>
+                    $current_course_id = null;
+
+                    // Run through all the entries in the array $registration_portion:
+                    foreach ($registration_portion as $registration) {
+                        $course_id = $registration['courseId'];
+                        $course_name = $registration['coursename'];
+                        $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
+                        $auditory_name = $registration['auditoryname'];
+                        $registration_date = $registration['kirjautumispaiva'];
+                        $student_fullname = $registration['studentsurname'] . " " . $registration['studentname'];
+                        $student_grade = $registration['vuosikurssi'];
+
+                        if ($course_id !== $current_course_id) {
+                    ?>
+                            <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
+                                <td class="table-column" colspan="3">Kurssi <b>&laquo<?php echo $course_name; ?>&raquo</b> (opettaja <b><?php echo $teacher_fullname; ?></b>, tila <b><?php echo $auditory_name; ?></b>)</td>
+                                <td class="table-column-center">
+                                    <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>" data-course="<?php echo $course_id; ?>" data-group="grouped">
+                                </td>
+                                <td></td>
+                            </tr>
+                        <?php
+                            $current_course_id = $course_id;
+                        }
+                        ?>
+                        <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
+                            <td class="table-column"><?php echo $registration_date; ?></td>
+                            <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
+                            <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
                             <td class="table-column-center">
-                                <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>" data-course="<?php echo $course_id; ?>" data-group="grouped">
+                                <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete[]" value="<?php echo $registration["registrationId"]; ?>" data-course="<?php echo $course_id; ?>" data-regid="<?php echo $registration["registrationId"]; ?>">
                             </td>
-                            <td></td>
+                            <td class="table-column-center">
+                                <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit[]" value="edit-<?php echo $registration["registrationId"]; ?>">
+                            </td>
+
                         </tr>
                     <?php
-                        $current_course_id = $course_id;
                     }
                     ?>
-                    <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
-                        <td class="table-column"><?php echo $registration_date; ?></td>
-                        <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
-                        <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
-                        <td class="table-column-center">
-                            <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete" value="delete-<?php echo $registration["registrationId"]; ?>" data-course="<?php echo $course_id; ?>">
-                        </td>
-                        <td class="table-column-center">
-                            <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit" value="edit-<?php echo $registration["registrationId"]; ?>">
-                        </td>
-
-                    </tr>
-                <?php
+                </table>
+        </div>
+        <?php
+            } else { //if there is no records in table "kurssikirjautumiset" for selected filters:
+                if (isset($_GET["auditory-id"])) {
+        ?>
+            <h2 class="description-title message success-message">Valitulle tilalle ei ole kurssiilmoittautumisia.</h2>
+        <?php
+                } elseif (isset($_GET["student-id"])) {
+        ?>
+            <h2 class="description-title message success-message">Opiskelija ei ole vielä ilmoittautunut millekään kurssille.</h2>
+        <?php
+                } elseif (isset($_GET["teacher-id"])) {
+        ?>
+            <h2 class="description-title message success-message">Kukaan ei ole vielä rekisteröitynyt opettajan luokse.</h2>
+        <?php
+                } elseif (isset($_GET["course-id"])) {
+        ?>
+            <h2 class="description-title message success-message">Kurssille ei ole ilmoittautumista.</h2>
+    <?php
                 }
+            }
+    ?>
+
+    <!-- Section with pagination -->
+    <?php
+    if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET["teacher-id"]) && !isset($_GET["course-id"])) {
+    ?>
+        <div class="pagination-wrapper">
+            <ul class="pagination-list">
+                <?php
+                // K is assumed to be the middle index.
+                $k = (($pn + 2 > $total_pages) ? $total_pages - 2 : (($pn - 2 < 1) ? 3 : $pn));
+
+                //initialize a variable to form a string that will contain the pagination buttons:
+                $pagLink = "";
+
+                //form the First Page (<<) and Previous Page (<) buttons, provided that the page number is greater than or equal to 2:
+                if ($pn >= 2) {
+                    $pagLink .= "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=1'>&laquo</a></li>";
+                    $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn - 1) . "'> Prev </a></li>";
+                }
+
+                // Show sequential links.
+                for ($i = -2; $i <= 2; $i++) {
+                    if ($k + $i == $pn)
+                        // adding style by class "active-page" for active page button: 
+                        $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
+                    else
+                        //all another buttons, not active:
+                        $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
+                };
+
+                //form the Last Page (>>) and Next Page (>) buttons, provided that the page number is greater than or equal to 2:
+                if ($pn < $total_pages) {
+                    $pagLink .=  "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn + 1) . "'> Next </a></li>";
+                    $pagLink .=  "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $total_pages . "'>&raquo</a></li>";
+                }
+                echo $pagLink;
                 ?>
-            </table>
-    </div>
+            </ul>
+        </div>
     <?php
-        } else { //if there is no records in table "kurssikirjautumiset" for selected filters:
-            if (isset($_GET["auditory-id"])) {
-    ?>
-        <h2 class="description-title message success-message">Valitulle tilalle ei ole kurssiilmoittautumisia.</h2>
-    <?php
-            } elseif (isset($_GET["student-id"])) {
-    ?>
-        <h2 class="description-title message success-message">Opiskelija ei ole vielä ilmoittautunut millekään kurssille.</h2>
-    <?php
-            } elseif (isset($_GET["teacher-id"])) {
-    ?>
-        <h2 class="description-title message success-message">Kukaan ei ole vielä rekisteröitynyt opettajan luokse.</h2>
-    <?php
-            } elseif (isset($_GET["course-id"])) {
-    ?>
-        <h2 class="description-title message success-message">Kurssille ei ole ilmoittautumista.</h2>
-<?php
-            }
-        }
-?>
-
-<!-- Section with pagination -->
-<?php
-if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET["teacher-id"]) && !isset($_GET["course-id"])) {
-?>
-    <div class="pagination-wrapper">
-        <ul class="pagination-list">
-            <?php
-            // K is assumed to be the middle index.
-            $k = (($pn + 2 > $total_pages) ? $total_pages - 2 : (($pn - 2 < 1) ? 3 : $pn));
-
-            //initialize a variable to form a string that will contain the pagination buttons:
-            $pagLink = "";
-
-            //form the First Page (<<) and Previous Page (<) buttons, provided that the page number is greater than or equal to 2:
-            if ($pn >= 2) {
-                $pagLink .= "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=1'>&laquo</a></li>";
-                $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn - 1) . "'> Prev </a></li>";
-            }
-
-            // Show sequential links.
-            for ($i = -2; $i <= 2; $i++) {
-                if ($k + $i == $pn)
-                    // adding style by class "active-page" for active page button: 
-                    $pagLink .= "<li class='pagination-list-item active-page'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
-                else
-                    //all another buttons, not active:
-                    $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($k + $i) . "'>" . ($k + $i) . "</a></li>";
-            };
-
-            //form the Last Page (>>) and Next Page (>) buttons, provided that the page number is greater than or equal to 2:
-            if ($pn < $total_pages) {
-                $pagLink .=  "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn + 1) . "'> Next </a></li>";
-                $pagLink .=  "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $total_pages . "'>&raquo</a></li>";
-            }
-            echo $pagLink;
-            ?>
-        </ul>
-    </div>
-<?php
-}
-?>
-
-<!-- Scripts -->
-<script>
-    // script to observe the option selection event for courses:
-    const selectElements = document.querySelectorAll("select");
-    selectElements.forEach(selectElement => {
-        selectElement.addEventListener('change', formAddressPath);
-    });
-
-    // console.log(selectElements);
-
-    // Function to form address path using id of selected course:
-    function formAddressPath() {
-        const itemId = this.value;
-        // console.log("this is", this);
-        // console.log("this.id is", this.id);
-        // console.log("itemId is", itemId);
-        switch (this.id) {
-            case "courses":
-                window.location.href = `edit-delete-registration.php?course-id=${itemId}`;
-
-                break;
-            case "students":
-                window.location.href = `edit-delete-registration.php?student-id=${itemId}`;
-                break;
-            case "teachers":
-                window.location.href = `edit-delete-registration.php?teacher-id=${itemId}`;
-                break;
-            case "auditories":
-                window.location.href = `edit-delete-registration.php?auditory-id=${itemId}`;
-                break;
-            default:
-                break;
-        }
     }
+    ?>
 
-    // add eventListener to the checkbox "delete record"
-    const checkboxElements = document.querySelectorAll("input[type='checkbox']");
-    checkboxElements.forEach(checkboxElement => {
-        // console.log(checkboxElement);
-        // checkboxElement.setAttribute("checked", "true");
-        checkboxElement.addEventListener("click", handleCheckedMark);
-    });
+    <!-- Section with button -->
+    <div class="button-wrapper" style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;">
+        <button type="submit" name="update-reg" class="submit-btn">Tallenna muutokset</button>
+        <button type="submit" name="delete-reg" class="submit-btn"
+            onclick="return confirm('Haluatko varmasti poistaa tämän kurssikirjautumisen?');">
+            Poista kurssinkirjautuminen
+        </button>
+    </div>
+    </form>
 
-    function handleCheckedMark() {
-        //Store the type (delete or edit) of the clicked checkbox:
-        const typeOfSelectedCheckbox = this.name;
-        let isGrouped = this.hasAttribute('data-group');
-        let isChecked = this.checked;
-        let isDeleteElement = false;
-        let data_course_id = this.getAttribute('data-course') || null;
-        if (this.getAttribute('data-course')) {
-            isDeleteElement = true;
-        }
 
-        const checkboxElements = document.querySelectorAll("input[type='checkbox']");
-
-        checkboxElements.forEach(checkboxElement => {
-            //Define the type (delete or edit) for each element of input type=checkbox:
-            const typeOfCheckElement = checkboxElement.name;
-            //If user changed selection from edit to delete or from delete to edit:
-            if (typeOfSelectedCheckbox !== typeOfCheckElement) {
-                //Unchecked all before checked elements:
-                checkboxElement.checked = false;
-            }
+    <!-- Scripts -->
+    <script>
+        // script to observe the option selection event for courses:
+        const selectElements = document.querySelectorAll("select");
+        selectElements.forEach(selectElement => {
+            selectElement.addEventListener('change', formAddressPath);
         });
 
-        //Make the selected element as checked or uncheck:
-        if (this.checked == true) {
-                        this.checked.checked = false;
-                    } else {
-                        this.checked.checked = true;
-                    }
-        //Make all elements in grouped section as cheched:
-        if (isGrouped == true) {
-            console.log(this);
+        // console.log(selectElements);
+
+        // Function to form address path using id of selected course:
+        function formAddressPath() {
+            const itemId = this.value;
+            // console.log("this is", this);
+            // console.log("this.id is", this.id);
+            // console.log("itemId is", itemId);
+            switch (this.id) {
+                case "courses":
+                    window.location.href = `edit-delete-registration.php?course-id=${itemId}`;
+
+                    break;
+                case "students":
+                    window.location.href = `edit-delete-registration.php?student-id=${itemId}`;
+                    break;
+                case "teachers":
+                    window.location.href = `edit-delete-registration.php?teacher-id=${itemId}`;
+                    break;
+                case "auditories":
+                    window.location.href = `edit-delete-registration.php?auditory-id=${itemId}`;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // add eventListener to the checkbox "delete record"
+        const checkboxElements = document.querySelectorAll("input[type='checkbox']");
+        checkboxElements.forEach(checkboxElement => {
+            // console.log(checkboxElement);
+            // checkboxElement.setAttribute("checked", "true");
+            checkboxElement.addEventListener("click", handleCheckedMark);
+        });
+
+        function handleCheckedMark() {
+            //Store the type (delete or edit) of the clicked checkbox:
+            console.log(this.getAttribute("data-regid"));
+            const typeOfSelectedCheckbox = this.name;
+            let isGrouped = this.hasAttribute('data-group');
+            let isChecked = this.checked;
+            let isDeleteElement = false;
+            let data_course_id = this.getAttribute('data-course') || null;
+            if (this.getAttribute('data-course')) {
+                isDeleteElement = true;
+            }
+
+            const checkboxElements = document.querySelectorAll("input[type='checkbox']");
+
+            checkboxElements.forEach(checkboxElement => {
+                //Define the type (delete or edit) for each element of input type=checkbox:
+                const typeOfCheckElement = checkboxElement.name;
+                //If user changed selection from edit to delete or from delete to edit:
+                if (typeOfSelectedCheckbox !== typeOfCheckElement) {
+                    //Unchecked all before checked elements:
+                    checkboxElement.checked = false;
+                }
+            });
+
+            //Make the selected element as checked or uncheck:
+            if (this.checked == true) {
+                this.checked.checked = false;
+            } else {
+                this.checked.checked = true;
+            }
+            //Make all elements in grouped section as cheched:
+            if (isGrouped == true) {
+                // console.log(this);
                 const groupedElements = document.querySelectorAll(`input[type='checkbox'][data-course="${data_course_id}"]`);
                 groupedElements.forEach(element => {
                     if (this.checked == true) {
@@ -384,12 +459,12 @@ if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET[
                     } else {
                         element.checked = false;
                     }
-                    
+
                 });
             }
 
-    }
-</script>
+        }
+    </script>
 </body>
 
 </html>

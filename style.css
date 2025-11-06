@@ -512,6 +512,7 @@ select#auditories {
   min-width: 34px;
   height: 34px;
   color: #155724;
+  transition: background-color 1s ease;
 }
 
 .pagination-list-item:hover {
