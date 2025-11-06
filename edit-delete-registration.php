@@ -2,7 +2,7 @@
 include_once 'sql-request.php';
 
 // Set the maximum number of records to be shown in a single page:
-$limit = 7;
+$limit = 10;
 
 
 // Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
@@ -28,6 +28,8 @@ $all_teachers = get_all_teachers();
 $all_courses = get_all_courses();
 $all_auditories = get_all_auditories();
 
+
+// Form the array of records depending on the selected filters:
 if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
     $_SESSION["auditory_id"] = $_GET['auditory-id'];
     $registration_portion = get_registrations(0, null, ['selected_auditory_id' => (int)$_GET['auditory-id']]);
@@ -54,11 +56,11 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
     $registration_portion = get_registrations($start_from, $limit);
 }
 
-// echo "<pre>";
+echo "<pre>";
 // print_r($registration_portion);
 // print_r($total_records);
 // print_r($total_pages);
-// echo "</pre>";
+echo "</pre>";
 
 ?>
 
@@ -211,7 +213,7 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
                     if ($course_id !== $current_course_id) {
                 ?>
                         <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
-                            <td class="table-column" colspan="3">Kurssi <b><?php echo $course_name; ?></b>, Opettaja <?php echo $teacher_fullname; ?>, tila <?php echo $auditory_name; ?></td>
+                            <td class="table-column" colspan="3">Kurssi <b>&laquo<?php echo $course_name; ?>&raquo</b> (opettaja <b><?php echo $teacher_fullname; ?></b>, tila <b><?php echo $auditory_name; ?></b>)</td>
                             <td class="table-column-center">
                                 <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>">
                             </td>
@@ -239,7 +241,7 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
             </table>
     </div>
     <?php
-        } else {
+        } else { //if there is no records in table "kurssikirjautumiset" for selected filters:
             if (isset($_GET["auditory-id"])) {
     ?>
         <h2 class="description-title message success-message">Valitulle tilalle ei ole kurssiilmoittautumisia.</h2>
@@ -275,7 +277,7 @@ if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET[
 
             //form the First Page (<<) and Previous Page (<) buttons, provided that the page number is greater than or equal to 2:
             if ($pn >= 2) {
-                $pagLink .= "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=1'><<</a></li>";
+                $pagLink .= "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=1'>&laquo</a></li>";
                 $pagLink .= "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn - 1) . "'> Prev </a></li>";
             }
 
@@ -292,7 +294,7 @@ if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET[
             //form the Last Page (>>) and Next Page (>) buttons, provided that the page number is greater than or equal to 2:
             if ($pn < $total_pages) {
                 $pagLink .=  "<li class='pagination-list-item'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . ($pn + 1) . "'> Next </a></li>";
-                $pagLink .=  "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $total_pages . "'>>></a></li>";
+                $pagLink .=  "<li class='pagination-list-item pagination-list-item-marginal'><a class='pagination-list-item-link' href='edit-delete-registration.php?page=" . $total_pages . "'>&raquo</a></li>";
             }
             echo $pagLink;
             ?>

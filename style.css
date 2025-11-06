@@ -520,6 +520,17 @@ select#auditories {
   cursor: pointer;
 }
 
+/* .pagination-list-item-marginal{
+ 
+
+} */
+.pagination-list-item-marginal .pagination-list-item-link{
+  font-size: 33px;
+  line-height: 25px;
+  height: 33px;
+  padding: 0;
+}
+
 .pagination-list-item-marginal:hover {
   background-color: #19672b;
   border-radius: 50%;
@@ -530,6 +541,7 @@ select#auditories {
 }
 .pagination-list-item-link {
   padding: 0.3rem 0.3rem;
+
 }
 
 select#students.filter-select, 
