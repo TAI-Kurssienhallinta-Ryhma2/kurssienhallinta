@@ -186,9 +186,7 @@ echo "</pre>";
 
         ?>
             <table class="description-table">
-                <!-- <tr>
-                <th class="table-header" colspan="5">Kurssinimi - Vastaava opettaja - Kurssin tila</th>
-            </tr> -->
+
                 <tr>
                     <th class="table-header-center">Kirjautumispäivä</th>
                     <th class="table-header-center">Opiskelija</th>
@@ -215,7 +213,7 @@ echo "</pre>";
                         <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
                             <td class="table-column" colspan="3">Kurssi <b>&laquo<?php echo $course_name; ?>&raquo</b> (opettaja <b><?php echo $teacher_fullname; ?></b>, tila <b><?php echo $auditory_name; ?></b>)</td>
                             <td class="table-column-center">
-                                <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>">
+                                <input type="checkbox" id="del-course-<?php echo $course_id; ?>" name="delete" value="delete-<?php echo $course_id; ?>" data-course="<?php echo $course_id; ?>" data-group="grouped">
                             </td>
                             <td></td>
                         </tr>
@@ -228,7 +226,7 @@ echo "</pre>";
                         <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
                         <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
                         <td class="table-column-center">
-                            <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete" value="delete-<?php echo $registration["registrationId"]; ?>">
+                            <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete" value="delete-<?php echo $registration["registrationId"]; ?>" data-course="<?php echo $course_id; ?>">
                         </td>
                         <td class="table-column-center">
                             <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit" value="edit-<?php echo $registration["registrationId"]; ?>">
@@ -337,6 +335,59 @@ if (!isset($_GET["auditory-id"]) && !isset($_GET["student-id"]) && !isset($_GET[
             default:
                 break;
         }
+    }
+
+    // add eventListener to the checkbox "delete record"
+    const checkboxElements = document.querySelectorAll("input[type='checkbox']");
+    checkboxElements.forEach(checkboxElement => {
+        // console.log(checkboxElement);
+        // checkboxElement.setAttribute("checked", "true");
+        checkboxElement.addEventListener("click", handleCheckedMark);
+    });
+
+    function handleCheckedMark() {
+        //Store the type (delete or edit) of the clicked checkbox:
+        const typeOfSelectedCheckbox = this.name;
+        let isGrouped = this.hasAttribute('data-group');
+        let isChecked = this.checked;
+        let isDeleteElement = false;
+        let data_course_id = this.getAttribute('data-course') || null;
+        if (this.getAttribute('data-course')) {
+            isDeleteElement = true;
+        }
+
+        const checkboxElements = document.querySelectorAll("input[type='checkbox']");
+
+        checkboxElements.forEach(checkboxElement => {
+            //Define the type (delete or edit) for each element of input type=checkbox:
+            const typeOfCheckElement = checkboxElement.name;
+            //If user changed selection from edit to delete or from delete to edit:
+            if (typeOfSelectedCheckbox !== typeOfCheckElement) {
+                //Unchecked all before checked elements:
+                checkboxElement.checked = false;
+            }
+        });
+
+        //Make the selected element as checked or uncheck:
+        if (this.checked == true) {
+                        this.checked.checked = false;
+                    } else {
+                        this.checked.checked = true;
+                    }
+        //Make all elements in grouped section as cheched:
+        if (isGrouped == true) {
+            console.log(this);
+                const groupedElements = document.querySelectorAll(`input[type='checkbox'][data-course="${data_course_id}"]`);
+                groupedElements.forEach(element => {
+                    if (this.checked == true) {
+                        element.checked = true;
+                    } else {
+                        element.checked = false;
+                    }
+                    
+                });
+            }
+
     }
 </script>
 </body>
