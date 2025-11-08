@@ -63,9 +63,9 @@ $error_message = null;
 /* DELETE STUDENT LOGIC */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
     $ids = $_POST['delete'] ?? [];
-    // echo "<pre>";
-    // print_r($ids);
-    // echo "</pre>";
+    echo "<pre>";
+    print_r($ids);
+    echo "</pre>";
 
     if (empty($ids)) {
         header("Location: edit-delete-registration.php?success=error");
@@ -368,7 +368,7 @@ echo "</pre>";
     ?>
 
     <!-- Section with button -->
-    <div <?php if (empty($registration_portion)) {?>hidden <?php }?> class="button-wrapp">
+    <div <?php if (empty($registration_portion)) { ?>hidden <?php } ?> class="button-wrapp">
         <div class="inner-wrapper">
             <button type="submit" name="update-reg" class="submit-btn">Tallenna muutokset</button>
             <button type="submit" name="delete-reg" class="submit-btn"
@@ -420,55 +420,52 @@ echo "</pre>";
         const checkboxElements = document.querySelectorAll("input[type='checkbox']");
         checkboxElements.forEach(checkboxElement => {
             // console.log(checkboxElement);
-            // checkboxElement.setAttribute("checked", "true");
             checkboxElement.addEventListener("click", handleCheckedMark);
         });
 
+
         function handleCheckedMark() {
             //Store the type (delete or edit) of the clicked checkbox:
-            console.log(this.getAttribute("data-regid"));
             const typeOfSelectedCheckbox = this.name;
-            let isGrouped = this.hasAttribute('data-group');
-            let isChecked = this.checked;
-            let isDeleteElement = false;
-            let data_course_id = this.getAttribute('data-course') || null;
-            if (this.getAttribute('data-course')) {
-                isDeleteElement = true;
-            }
 
+            //Get all input[type='checkbox'] on the page:
             const checkboxElements = document.querySelectorAll("input[type='checkbox']");
-
+            //For each input[type='checkbox']:
             checkboxElements.forEach(checkboxElement => {
                 //Define the type (delete or edit) for each element of input type=checkbox:
                 const typeOfCheckElement = checkboxElement.name;
-                //If user changed selection from edit to delete or from delete to edit:
-                if (typeOfSelectedCheckbox !== typeOfCheckElement) {
-                    //Unchecked all before checked elements:
-                    checkboxElement.checked = false;
+
+                if (typeOfSelectedCheckbox == "edit[]") {
+                    if (typeOfCheckElement == "delete" || typeOfCheckElement == "delete[]") {
+                        //Unchecked all before checked elements:
+                        checkboxElement.checked = false;
+                    }
+                } else {
+                    if (typeOfCheckElement == "edit[]") {
+                        //Unchecked all before checked elements:
+                        checkboxElement.checked = false;
+                    }
                 }
             });
 
-            //Make the selected element as checked or uncheck:
-            if (this.checked == true) {
-                this.checked.checked = false;
+            if (typeOfSelectedCheckbox == 'delete[]' || typeOfSelectedCheckbox == 'delete') {
+                let isChecked = this.checked;
+                let isGrouped = this.hasAttribute('data-group');
+                if (isGrouped == true) {
+                    let course_id = this.getAttribute('data-course');
+                    console.log("Click on grouped line for course ", course_id);
+                    let all_courses_registration = document.getElementsByName('delete[]');
+                    all_courses_registration.forEach(registration => {
+                        if (registration.getAttribute('data-course') == course_id) {
+                            registration.checked = isChecked;
+                        }
+                    });
+                }
             } else {
-                this.checked.checked = true;
+                console.log("Click on edit checkbox:", typeOfSelectedCheckbox);
             }
-            //Make all elements in grouped section as cheched:
-            if (isGrouped == true) {
-                // console.log(this);
-                const groupedElements = document.querySelectorAll(`input[type='checkbox'][data-course="${data_course_id}"]`);
-                groupedElements.forEach(element => {
-                    if (this.checked == true) {
-                        element.checked = true;
-                    } else {
-                        element.checked = false;
-                    }
-
-                });
-            }
-
         }
+
     </script>
 </body>
 
