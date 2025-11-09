@@ -557,9 +557,28 @@ select#auditories.filter-select {
   margin: 0 auto;
   margin-top: 2rem;
 }
-.inner-wrapper{
+.inner-wrapper {
   display: flex;
   justify-content: center;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+.input-data,
+select.input-data,
+.input-data option {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--brand);
+  border: 1px solid transparent;
+  background-color: inherit;
+  font-size: 0.9rem;
+  border-radius: 0.3rem;
+  padding: 0.1rem 0.2rem;
+  /* box-sizing: content-box; */
+}
+
+.input-data-available,
+select.input-data-available,
+.input-data-available option  {
+  border-color: var(--accent-hover);
 }

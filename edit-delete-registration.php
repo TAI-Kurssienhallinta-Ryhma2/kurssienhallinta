@@ -287,14 +287,50 @@ echo "</pre>";
                         }
                         ?>
                         <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
-                            <td class="table-column"><?php echo $registration_date; ?></td>
-                            <td class="table-column" id="student-<?php echo $registration['studentId']; ?>"><?php echo $student_fullname; ?> (<?php echo $student_grade; ?>)</td>
-                            <td class="table-column" id="course-<?php echo $registration['courseId']; ?>"><?php echo $course_name; ?></td>
+                            <td><input disabled type="datetime" name="reg-date[]" id="reg-date-<?php echo $registration["registrationId"]; ?>" value="<?php echo $registration_date; ?>" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>"></td>
+                            <!-- <td class="table-column"><php echo $registration_date; ?></td> -->
+                            <td>
+                                <select disabled id="student-<?php echo $registration['studentId']; ?>" name="reg-student[]" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>">
+                                    <?php
+                                    foreach ($all_students as $student) {
+                                    ?>
+                                        <option value="<?php echo $student["opiskelijanumero"]; ?>"
+                                            <?php if ($student["opiskelijanumero"] == $registration["studentId"]) {
+                                            ?> selected <?php
+                                                    } ?>>
+                                            <?php echo $student["sukunimi"] . " " . $student["etunimi"] . " (" . $student["vuosikurssi"] . ")"; ?>
+                                        </option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+
+                            <!-- <td><input disabled type="text" name="reg-student[]" id="reg-st-<php echo $registration["studentId"]; ?>" value="<php echo $student_fullname; ?>" class="input-data" data-registration="<php echo $registration["registrationId"]; ?>"></td> -->
+                            <!-- <td class="table-column" id="student-<php echo $registration['studentId']; ?>"><php echo $student_fullname; ?> (<php echo $student_grade; ?>)</td> -->
+                            <!-- <td class="table-column" id="course-<php echo $registration['courseId']; ?>"><php echo $course_name; ?></td> -->
+                            <td>
+                                <select disabled id="courses-<?php echo $registration['courseId']; ?>" name="courses[]" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>">
+                                    <?php
+                                    foreach ($all_courses as $course) {
+                                    ?>
+                                        <option value="<?php echo $course["tunnus"]; ?>"
+                                            <?php if ($course["tunnus"] == $registration['courseId']) {
+                                            ?> selected <?php
+                                            } ?>>
+                                            <?php echo $course["nimi"]; ?>
+                                        </option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+
                             <td class="table-column-center">
                                 <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete[]" value="<?php echo $registration["registrationId"]; ?>" data-course="<?php echo $course_id; ?>" data-regid="<?php echo $registration["registrationId"]; ?>">
                             </td>
                             <td class="table-column-center">
-                                <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit[]" value="edit-<?php echo $registration["registrationId"]; ?>">
+                                <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit[]" value="<?php echo $registration["registrationId"]; ?>">
                             </td>
 
                         </tr>
@@ -444,6 +480,11 @@ echo "</pre>";
                     if (typeOfCheckElement == "edit[]") {
                         //Unchecked all before checked elements:
                         checkboxElement.checked = false;
+                        const editInputElements = document.querySelectorAll(".input-data");
+                        editInputElements.forEach(element => {
+                            element.setAttribute("disabled", "true");
+                            element.classList.remove("input-data-available");
+                        });
                     }
                 }
             });
@@ -463,9 +504,33 @@ echo "</pre>";
                 }
             } else {
                 console.log("Click on edit checkbox:", typeOfSelectedCheckbox);
+                handleInputField(this.value, this.checked);
             }
         }
 
+        //Function to handle input fields Kirjautumispäivä, Opiskelija and Kurssi
+        // after click on checkbox "edit":
+        function handleInputField(elId, isChecked) {
+            // console.log("The id of the registration to edit:", elId);
+            // console.log("IsChecked for element is:", isChecked);
+            // const editInputElements = document.querySelectorAll("input[type='datetime']");
+            const editInputElements = document.querySelectorAll(".input-data");
+            editInputElements.forEach(element => {
+                if (element.getAttribute('data-registration') == elId) {
+                    if (isChecked == false) {
+                        // const studentId = element.id;
+                        // console.log(studentId);
+                        // console.log(`The value of the element before is ${studentId} and after uncheck is ${element.value}`);
+                        element.setAttribute("disabled", "true");
+                        element.classList.remove("input-data-available");
+                    } else {
+                        element.removeAttribute("disabled");
+                        element.classList.add("input-data-available");
+                    }
+                }
+            });
+
+        }
     </script>
 </body>
 
