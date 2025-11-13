@@ -12,21 +12,32 @@ require_once "Comparable.php";
 /* ------------------------------------- || TreeEntry class ||---------------------------------- */
 
 /**
- * Summary of Entry
- * @template K
- * @template V
- * @implements Entry<K,V>
+ * Represents a key-value pair (entry) in a tree map.
+ * 
+ * @template K K - The type of the key.
+ * @template V V - The type of the value.
+ * @implements Entry
  */
 class TreeEntry implements Entry {
-    /** @var K */
+    /** 
+     * The key of this entry.
+     * 
+     * @var K 
+     */
     protected mixed $key;
-    /** @var V */
+
+    /** 
+     * The value associated with the key.
+     * 
+     * @var V 
+     */
     protected mixed $value;
 
     /**
-     * Summary of __construct
-     * @param K $key
-     * @param V $value
+     * Constructs a new TreeEntry with the specified key and value.
+     *
+     * @param K $key The key for this entry.
+     * @param V $value The value for this entry.
      */
     public function __construct($key, $value) {
         $this->key = $key;
@@ -34,8 +45,9 @@ class TreeEntry implements Entry {
     }
 
     /**
-     * Summary of setKey
-     * @param K $key
+     * Sets the key of this entry.
+     *
+     * @param K|null $key The new key.
      * @return void
      */
     public function setKey($key): void {
@@ -43,23 +55,29 @@ class TreeEntry implements Entry {
     }
 
      /**
-     * @return K
+     * Returns the key of this entry.
+     *
+     * @return K The key.
      */
     public function getKey(): mixed {
         return $this->key;
     }
 
     /**
-     * @return V
+     * Returns the value of this entry.
+     *
+     * @return V The value.
      */
    public function getValue(): mixed {
     return $this->value;
    }
 
    /**
-    * @param V $value
-    * @return V
-    */
+     * Sets a new value for this entry and returns the old value.
+     *
+     * @param V $value The new value.
+     * @return V The previous value.
+     */
    public function setValue($value): mixed {
     /** @var V $oldvalue */
     $oldValue = $this->value;
@@ -67,10 +85,21 @@ class TreeEntry implements Entry {
     return $oldValue;
    }
 
+   /**
+     * Creates a copy of the given TreeEntry.
+     *
+     * @param TreeEntry<K,V> $entry The entry to copy.
+     * @return TreeEntry<K,V> A new TreeEntry instance with the same key and value.
+     */
    public static function copy(TreeEntry $entry): TreeEntry {
     return new self($entry->getKey(), $entry->getValue());
    }
 
+   /**
+     * Returns a string representation of the entry in the format "key=value".
+     *
+     * @return string String representation of this entry.
+     */
    public function __tostring(): string {
     return "{$this->key}={$this->value}";
    }
@@ -91,22 +120,58 @@ class TreeEntry implements Entry {
 /* ------------------------------------- || TreeNode class ||---------------------------------- */
 
 /**
- * @template K
- * @template V
+ * Represents a node in a tree structure, holding an entry and references to parent and child nodes.
+ * 
+ * @template K K - The type of the key.
+ * @template V V - The type of the value.
  */
 class TreeNode {
+
+    /**
+     * Reference to the parent node.
+     * 
+     * @var TreeNode<K,V>|null
+     */
     protected ?TreeNode $parent;
+
+    /**
+     * Reference to the left child node.
+     * 
+     * @var TreeNode<K,V>|null
+     */
     protected ?TreeNode $left;
+
+    /**
+     * Reference to the right child node.
+     * 
+     * @var TreeNode<K,V>|null
+     */
     protected ?TreeNode $right;
-    /** @var TreeEntry<K,V>|null */
+
+    /**
+     * The key-value entry stored in this node.
+     * 
+     * @var TreeEntry<K,V>|null
+     */
     protected ?TreeEntry $entry;
+
+    /**
+     * Height of the node in the tree.
+     * 
+     * @var int
+     */
     protected int $height;
 
     /**
-     * Summary of __construct
-     * @param K|null $key
-     * @param V|null $value
-     * @param ?TreeNode $NULL_GUARD
+     * Constructs a TreeNode instance.
+     * 
+     * If $NULL_GUARD is provided, initializes the node with the given key and value,
+     * and sets parent, left, and right to the sentinel node ($NULL_GUARD).
+     * If $NULL_GUARD is null, creates a sentinel node pointing to itself with no entry and height -1.
+     *
+     * @param K|null $key The key for the node's entry, or null for sentinel.
+     * @param V|null $value The value for the node's entry, or null for sentinel.
+     * @param TreeNode<K,V>|null $NULL_GUARD Sentinel node reference, or null to create sentinel.
      */
     protected function __construct($key, $value, ?TreeNode $NULL_GUARD) {
         if($NULL_GUARD !== null) {
@@ -125,59 +190,118 @@ class TreeNode {
         }
     }
 
+    /**
+     * Creates a sentinel node used as a null guard.
+     * 
+     * @return TreeNode<K,V> The sentinel node.
+     */
     public static function createSentinel(): TreeNode {
         return new self(null, null, null);
     }
 
     /**
-     * Summary of createNode
-     * @param K $key
-     * @param V $value
-     * @param TreeNode $NULL_GUARD
-     * @return TreeNode<K, V>
+     * Creates a new tree node with the given key and value.
+     * 
+     * @param K $key The key for the node's entry.
+     * @param V $value The value for the node's entry.
+     * @param TreeNode<K,V> $NULL_GUARD The sentinel node used as null guard.
+     * @return TreeNode<K,V> The newly created node.
      */
     public static function createNode($key, $value, TreeNode $NULL_GUARD): TreeNode {
         return new self($key, $value, $NULL_GUARD);
     }
 
+    /**
+     * Sets the parent node.
+     * 
+     * @param TreeNode<K,V>|null $parent The new parent node or null.
+     * @return void
+     */
     public function setParent(?TreeNode $parent): void {
         $this->parent = $parent;
     }
 
+    /**
+     * Returns the parent node.
+     * 
+     * @return TreeNode<K,V>|null The parent node or null if none.
+     */
     public function getParent(): ?TreeNode {
         return $this->parent;
     }
 
+    /**
+     * Sets the left child node.
+     * 
+     * @param TreeNode<K,V>|null $left The new left child or null.
+     * @return void
+     */
     public function setLeft(?TreeNode $left): void {
         $this->left = $left;
     }
 
+    /**
+     * Returns the left child node.
+     * 
+     * @return TreeNode<K,V>|null The left child or null if none.
+     */
     public function getLeft(): ?TreeNode {
         return $this->left;
     }
 
+    /**
+     * Sets the right child node.
+     * 
+     * @param TreeNode<K,V>|null $right The new right child or null.
+     * @return void
+     */
     public function setRight(?TreeNode $right): void {
         $this->right = $right;
     }
 
+    /**
+     * Returns the right child node.
+     * 
+     * @return TreeNode<K,V>|null The right child or null if none.
+     */
     public function getRight(): ?TreeNode {
         return $this->right;
     }
 
-    /** @param TreeEntry<K,V>|null $entry */
+    /**
+     * Sets the entry (key-value pair) for this node.
+     * 
+     * @param TreeEntry<K,V>|null $entry The entry to set or null.
+     * @return void
+     */
     public function setEntry(?TreeEntry $entry): void {
         $this->entry = $entry;
     }
 
-    /** @return TreeEntry<K,V>|null */
+    /**
+     * Returns the entry (key-value pair) stored in this node.
+     * 
+     * @return TreeEntry<K,V>|null The entry or null if none.
+     */
     public function getEntry(): ?TreeEntry {
         return $this->entry;
     }
 
+    /**
+     * Sets the height of this node.
+     * 
+     * @param int $height The new height.
+     * @return void
+     */
     public function setHeight(int $height): void {
         $this->height = $height;
     }
 
+    /**
+     * Returns the height of this node.
+     * 
+     * @return int The height.
+     */
     public function getHeight(): int {
         return $this->height;
     }
@@ -196,26 +320,84 @@ class TreeNode {
 
 
 /* ------------------------------------- || TreeMap class ||---------------------------------- */
+
 /**
- * @template K
- * @template V
- * @implements Map<K,V>
+ * TreeMap is a map implementation based on a self-balancing binary search tree.
+ * It stores key-value pairs in sorted order according to the keys.
+ *
+ * This implementation is similar to Java's TreeMap class but uses an AVL tree 
+ * for balancing instead of a Red-Black tree.
+ *
+ * @template K K - The type of keys maintained by this map
+ * @template V V - The type of mapped values
+ * 
+ * @implements Map
+ * 
+ * This class provides efficient operations for insertion, removal, and lookup
+ * with average time complexity of O(log n).
+ * 
+ * Keys must be comparable either by natural ordering or via a provided comparator.
+ * 
+ * Common usage:
+ * ```php
+ * $map = new TreeMap();
+ * $map->put($key, $value);
+ * $value = $map->get($key);
+ * ```
  */
 class TreeMap implements Map {
 
+    /**
+     * Sentinel node used as a null guard to simplify tree operations.
+     * @var TreeNode<K,V>
+     */
     private TreeNode $NULL_GUARD;
+
+    /**
+     * Root node of the AVL tree representing the map.
+     * @var TreeNode<K,V>
+     */
     private TreeNode $root;
+
+    /**
+     * Number of key-value mappings currently stored in the map.
+     * @var int
+     */
     private int $size;
-    /** @var Comparator<K> */
+
+    /**
+     * Comparator instance used to compare keys for ordering.
+     * Must implement Comparator<K>.
+     * @var Comparator $comparator Comparator used to order keys.
+     */
     private Comparator $comparator;
+
+    /**
+     * Closure used for checking equality of keys.
+     * Signature: function(K, K): bool
+     * @var Closure
+     */
     private Closure $equalsKeyFunctionPointer;
 
+    /**
+     * Closure used for checking equality of values.
+     * Signature: function(V, V): bool
+     * @var Closure
+     */
     private Closure $equalsValueFunctionPointer;
+
+    /**
+     * Modification count to track structural changes to the map
+     * (used to detect concurrent modifications during iteration).
+     * @var int
+     */
     private int $modCount;
 
     /**
-     * @param TreeNode $node
-     * @return V|null
+     * Adds a node to the AVL tree and balances the tree as needed.
+     *
+     * @param TreeNode<K,V> $node The node to add to the tree.
+     * @return V|null Returns the previous value associated with the key if replaced, or null if the key is new.
      */
     private function addNode(TreeNode $node) : mixed {
         /** @var TreeNode */ $root = $this->root;
@@ -252,7 +434,10 @@ class TreeMap implements Map {
     }
 
     /**
-     * @param K $key
+     * Searches for the node with the specified key in the tree.
+     *
+     * @param K $key The key to search for.
+     * @return TreeNode<K,V> The node containing the key, or the sentinel node if not found.
      */
     private function searchNode($key): TreeNode {
         /** @var TreeNode */ $root = $this->root;
@@ -267,29 +452,62 @@ class TreeMap implements Map {
         return $root;
     }
 
-    private function firstTreeNode(TreeNode $root): TreeNode {
-        while($root->getLeft() !== $this->NULL_GUARD) {
-            $root = $root->getLeft();
+    /**
+     * Returns the first node in the tree, starting from the given node, 
+     * according to the effective ordering.
+     * 
+     * If a comparator is provided, it determines the ordering of keys.
+     * If no comparator is provided and the key is an object implementing {@see Comparable},
+     * the object's natural ordering is used.
+     * For primitive keys, normal comparison operators are used.
+     *
+     * @param TreeNode<K,V> $node The node from which to begin the search.
+     * @return TreeNode<K,V> The first node reachable from the given node based on the effective ordering.
+     */
+    private function firstTreeNode(TreeNode $node): TreeNode {
+        while($node->getLeft() !== $this->NULL_GUARD) {
+            $node = $node->getLeft();
         }
-        return $root;
+        return $node;
     }
 
-    private function lastTreeNode(TreeNode $root): TreeNode {
-        while($root->getRight() !== $this->NULL_GUARD) {
-            $root = $root->getRight();
+    /**
+     * Returns the last node in the tree, starting from the given node,
+     * according to the effective ordering.
+     * 
+     * If a comparator is provided, it determines the ordering of keys.
+     * If no comparator is provided and the key is an object implementing {@see Comparable},
+     * the object's natural ordering is used.
+     * For primitive keys, normal comparison operators are used.
+     *
+     * @param TreeNode<K,V> $node The node from which to begin the search.
+     * @return TreeNode<K,V> The last node reachable from the given node based on the effective ordering.
+     */
+    private function lastTreeNode(TreeNode $node): TreeNode {
+        while($node->getRight() !== $this->NULL_GUARD) {
+            $node = $node->getRight();
         }
-        return $root;
+        return $node;
     }
 
-    private function removeNode(TreeNode $root): TreeNode {
+    /**
+     * Removes the specified node from the tree and rebalances it if necessary.
+     * 
+     * This operation maintains the AVL balance property after removal.
+     * 
+     * @param TreeNode<K,V> $node The node to remove from the tree.
+     * @return TreeNode<K,V> The node that replaced the removed node, 
+     *                       or the sentinel node if the subtree becomes empty.
+     */
+    private function removeNode(TreeNode $node): TreeNode {
         /** @var TreeNode */ $current = $this->NULL_GUARD;
         /** @var TreeNode */ $parent = $this->NULL_GUARD;
         /** @var TreeNode */ $child = $this->NULL_GUARD;
 
-        if($root->getLeft() === $this->NULL_GUARD || $root->getRight() === $this->NULL_GUARD) {
-            $current = $root;
+        if($node->getLeft() === $this->NULL_GUARD || $node->getRight() === $this->NULL_GUARD) {
+            $current = $node;
         } else {
-            $current = $this->firstTreeNode($root->getRight());
+            $current = $this->firstTreeNode($node->getRight());
         }
 
         if($current->getLeft() === $this->NULL_GUARD) {
@@ -310,40 +528,75 @@ class TreeMap implements Map {
         //if($child !== $this->NULL_GUARD)
         $child->setParent($parent);
 
-        if($root !== $current) {
-            $root->getEntry()->setKey($current->getEntry()->getKey());
-            $root->getEntry()->setValue($current->getEntry()->getValue());
+        if($node !== $current) {
+            $node->getEntry()->setKey($current->getEntry()->getKey());
+            $node->getEntry()->setValue($current->getEntry()->getValue());
         }
 
         return $current;
     }
 
-    private function previousTreeNode(TreeNode $root): TreeNode {
-        if($root->getLeft() !== $this->NULL_GUARD) {
-            return $this->lastTreeNode($root->getLeft());
+    /**
+     * Returns the node that precedes the given node according to the effective ordering.
+     * 
+     * If a comparator is provided, it determines the ordering of keys.
+     * If no comparator is provided and the key is an object implementing {@see Comparable},
+     * the object's natural ordering is used.
+     * For primitive keys, normal comparison operators are used.
+     *
+     * @param TreeNode<K,V> $node The reference node.
+     * @return TreeNode<K,V> The previous node in the ordering, 
+     *                       or the sentinel node if there is no previous node.
+     */
+    private function previousTreeNode(TreeNode $node): TreeNode {
+        if($node->getLeft() !== $this->NULL_GUARD) {
+            return $this->lastTreeNode($node->getLeft());
         } else {
-            /** @var TreeNode */ $current = $root->getParent();
-            while($current !== $this->NULL_GUARD && $root === $current->getLeft()) {
-                $root = $root->getParent();
-                $current = $root->getParent();
+            /** @var TreeNode */ $current = $node->getParent();
+            while($current !== $this->NULL_GUARD && $node === $current->getLeft()) {
+                $node = $node->getParent();
+                $current = $node->getParent();
             }
             return $current;
         }
     }
 
-    private function nextTreeNode(TreeNode $root): TreeNode {
-        if($root->getRight() !== $this->NULL_GUARD) {
-            return $this->firstTreeNode($root->getRight());
+    /**
+     * Returns the node that follows the given node according to the effective ordering.
+     * 
+     * If a comparator is provided, it determines the ordering of keys.
+     * If no comparator is provided and the key is an object implementing {@see Comparable},
+     * the object's natural ordering is used.
+     * For primitive keys, normal comparison operators are used.
+     *
+     * @param TreeNode<K,V> $node The reference node.
+     * @return TreeNode<K,V> The next node in the ordering, 
+     *                       or the sentinel node if there is no next node.
+     */
+    private function nextTreeNode(TreeNode $node): TreeNode {
+        if($node->getRight() !== $this->NULL_GUARD) {
+            return $this->firstTreeNode($node->getRight());
         } else {
-            /** @var TreeNode */ $current = $root->getParent();
-            while($current !== $this->NULL_GUARD && $root === $current->getRight()) {
-                $root = $root->getParent();
-                $current = $root->getParent();
+            /** @var TreeNode */ $current = $node->getParent();
+            while($current !== $this->NULL_GUARD && $node === $current->getRight()) {
+                $node = $node->getParent();
+                $current = $node->getParent();
             }
             return $current;
         }
     }
 
+    /**
+     * Removes all nodes from the tree starting at the specified node.
+     * 
+     * This method is intended to clear the entire tree structure and is 
+     * typically called internally by {@see clear()} with the root node as the argument.
+     * 
+     * All node references are released to allow garbage collection.
+     *
+     * @param TreeNode<K,V> $root The node from which to start clearing (usually the root).
+     * @return void
+     */
     private function clearTree(TreeNode $root): void {
         if($root === $this->NULL_GUARD) {
             return;
@@ -359,102 +612,225 @@ class TreeMap implements Map {
         $root->setEntry(null);
     }
 
-    private function setHeight(TreeNode $root): void {
-        /** @var int */ $hLeft = $root->getLeft()->getHeight();
-        /** @var int */ $hRight = $root->getRight()->getHeight();
-        $root->setHeight((($hLeft > $hRight) ? $hLeft : $hRight) + 1);
+    /**
+     * Updates the height of the specified node based on the heights of its children.
+     *
+     * The height is typically the maximum height of the left and right child nodes plus one.
+     * This method helps maintain the AVL tree balance property after modifications.
+     *
+     * @param TreeNode<K,V> $node The node for which the height is being updated.
+     * @return void
+     */
+    private function setHeight(TreeNode $node): void {
+        /** @var int */ $hLeft = $node->getLeft()->getHeight();
+        /** @var int */ $hRight = $node->getRight()->getHeight();
+        $node->setHeight((($hLeft > $hRight) ? $hLeft : $hRight) + 1);
     }
 
-    private function balanceFactor(TreeNode $root): int {
-        return ($root->getRight()->getHeight() + 1) - ($root->getLeft()->getHeight() + 1);
+    /**
+     * Calculates the balance factor of the given node.
+     *
+     * The balance factor is defined as:
+     * (height of right subtree + 1) - (height of left subtree + 1).
+     *
+     * A positive balance factor indicates the right subtree is taller,
+     * a negative value indicates the left subtree is taller,
+     * and zero means both subtrees have equal height.
+     *
+     * @param TreeNode $node The node for which to calculate the balance factor.
+     * @return int The balance factor of the node.
+     */
+    private function balanceFactor(TreeNode $node): int {
+        return ($node->getRight()->getHeight() + 1) - ($node->getLeft()->getHeight() + 1);
     }
 
-    private function leftRotation(TreeNode $root): void {
-        /** @var TreeNode */ $parent = $root->getParent();
+    /**
+     * Performs a left rotation on the specified node to rebalance the AVL tree.
+     *
+     * In this operation:
+     * - The node's right child (pivot) becomes the new root of the rotated subtree.
+     * - The pivot's left subtree is moved to be the right subtree of the original node.
+     * - Parent references are updated to maintain correct tree structure.
+     * - Heights of the affected nodes are recalculated after rotation.
+     *
+     * This rotation is typically applied when the right subtree is heavier,
+     * to restore the AVL tree's balance property.
+     *
+     * @param TreeNode $node The node at which to perform the left rotation.
+     * @return void
+     */
+    private function leftRotation(TreeNode $node): void {
+        /** @var TreeNode */ $parent = $node->getParent();
 
-        /** @var TreeNode */ $pivot = $root->getRight();
-        $root->setRight($pivot->getLeft());
+        /** @var TreeNode */ $pivot = $node->getRight();
+        $node->setRight($pivot->getLeft());
         if($pivot->getLeft() !== $this->NULL_GUARD) {
-            $pivot->getLeft()->setParent($root);
+            $pivot->getLeft()->setParent($node);
         }
 
         $pivot->setParent($parent);
         if($parent === $this->NULL_GUARD) {
             $this->root = $pivot;
-        } else if($root === $parent->getLeft()) {
+        } else if($node === $parent->getLeft()) {
             $parent->setLeft($pivot);
         } else {
             $parent->setRight($pivot);
         }
 
-        $pivot->setLeft($root);
-        $root->setParent($pivot);
+        $pivot->setLeft($node);
+        $node->setParent($pivot);
 
-        $this->setHeight($root);
+        $this->setHeight($node);
         $this->setHeight($pivot);
     }
 
-    private function rightRotation(TreeNode $root): void {
-        /** @var TreeNode */ $parent = $root->getParent();
+    /**
+     * Performs a right rotation on the specified node to rebalance the AVL tree.
+     *
+     * In this operation:
+     * - The node's left child (pivot) becomes the new root of the rotated subtree.
+     * - The pivot's right subtree is moved to be the left subtree of the original node.
+     * - Parent references are updated to maintain correct tree structure.
+     * - Heights of the affected nodes are recalculated after rotation.
+     *
+     * This rotation is typically applied when the left subtree is heavier,
+     * to restore the AVL tree's balance property.
+     *
+     * @param TreeNode $node The node at which to perform the right rotation.
+     * @return void
+     */
+    private function rightRotation(TreeNode $node): void {
+        /** @var TreeNode */ $parent = $node->getParent();
 
-        /** @var TreeNode */ $pivot = $root->getLeft();
-        $root->setLeft($pivot->getRight());
+        /** @var TreeNode */ $pivot = $node->getLeft();
+        $node->setLeft($pivot->getRight());
         if($pivot->getRight() !== $this->NULL_GUARD) {
-            $pivot->getRight()->setParent($root);
+            $pivot->getRight()->setParent($node);
         }
 
         $pivot->setParent($parent);
         if($parent === $this->NULL_GUARD) {
             $this->root = $pivot;
-        } else if($root === $parent->getLeft()) {
+        } else if($node === $parent->getLeft()) {
             $parent->setLeft($pivot);
         } else {
             $parent->setRight($pivot);
         }
 
-        $pivot->setRight($root);
-        $root->setParent($pivot);
+        $pivot->setRight($node);
+        $node->setParent($pivot);
 
-        $this->setHeight($root);
+        $this->setHeight($node);
         $this->setHeight($pivot);
     }
 
-    private function doubleLeftRotation(TreeNode $root): void {
-        $this->rightRotation($root->getRight());
-        $this->leftRotation($root);
+    /**
+     * Performs a double left rotation (right-left rotation) on the given node to rebalance the AVL tree.
+     *
+     * This operation consists of two steps:
+     * 1. A right rotation on the right child of the given node.
+     * 2. A left rotation on the given node itself.
+     *
+     * It is typically applied when the right subtree's left child causes imbalance,
+     * restoring the AVL tree's balance property.
+     *
+     * @param TreeNode $node The node at which to perform the double left rotation.
+     * @return void
+     */
+    private function doubleLeftRotation(TreeNode $node): void {
+        $this->rightRotation($node->getRight());
+        $this->leftRotation($node);
     }
 
-    private function doubleRightRotation(TreeNode $root): void {
-        $this->leftRotation($root->getLeft());
-        $this->rightRotation($root);
+    /**
+     * Performs a double right rotation (left-right rotation) on the given node to rebalance the AVL tree.
+     *
+     * This operation consists of two steps:
+     * 1. A left rotation on the left child of the given node.
+     * 2. A right rotation on the given node itself.
+     *
+     * It is typically applied when the left subtree's right child causes imbalance,
+     * restoring the AVL tree's balance property.
+     *
+     * @param TreeNode $node The node at which to perform the double right rotation.
+     * @return void
+     */
+    private function doubleRightRotation(TreeNode $node): void {
+        $this->leftRotation($node->getLeft());
+        $this->rightRotation($node);
     }
 
-    private function checkTreeBalance(TreeNode $root): void {
-        /** @var int */ $bf = $this->balanceFactor($root);
+    /**
+     * Checks the balance factor of the given node and performs the necessary rotations
+     * to restore the AVL tree's balance property.
+     *
+     * If the node is right-heavy (balance factor >= 2), it performs either a single left rotation
+     * or a double left rotation (right-left) depending on the balance factor of the right child.
+     * 
+     * If the node is left-heavy (balance factor <= -2), it performs either a single right rotation
+     * or a double right rotation (left-right) depending on the balance factor of the left child.
+     *
+     * @param TreeNode $node The node at which to check and correct the balance.
+     * @return void
+     */
+    private function checkTreeBalance(TreeNode $node): void {
+        /** @var int */ $bf = $this->balanceFactor($node);
 
         if($bf >= 2) {
-            if($this->balanceFactor($root->getRight()) == -1) {
-                $this->doubleLeftRotation($root);
+            if($this->balanceFactor($node->getRight()) == -1) {
+                $this->doubleLeftRotation($node);
             } else {
-                $this->leftRotation($root);
+                $this->leftRotation($node);
             }
         } else if($bf <= -2) {
-            if($this->balanceFactor($root->getLeft()) == 1) {
-                $this->doubleRightRotation($root);
+            if($this->balanceFactor($node->getLeft()) == 1) {
+                $this->doubleRightRotation($node);
             } else {
-                $this->rightRotation($root);
+                $this->rightRotation($node);
             }
         }
     }
 
-    private function autoBalance(TreeNode $root): void {
-        while($root !== $this->NULL_GUARD) {
-            $this->checkTreeBalance($root);
-            $this->setHeight($root);
-            $root = $root->getParent();
+    /**
+     * Automatically balances the tree starting from the given node up to the root.
+     *
+     * This method traverses upwards from the specified node towards the root,
+     * checking and restoring the AVL tree balance at each node by applying rotations if needed,
+     * and updating the height of each node along the path.
+     *
+     * @param TreeNode $node The node from which to start balancing upwards.
+     * @return void
+     */
+    private function autoBalance(TreeNode $node): void {
+        while($node !== $this->NULL_GUARD) {
+            $this->checkTreeBalance($node);
+            $this->setHeight($node);
+            $node = $node->getParent();
         }
     }
 
+    /**
+     * Constructs a new TreeMap instance.
+     *
+     * Initializes the AVL tree structure with a sentinel NULL_GUARD node and sets
+     * the root to this sentinel. The size of the map is initialized to zero.
+     *
+     * The comparator used for key ordering can be:
+     * - Explicitly provided as a Comparator instance or a callable function.
+     * - If null, a default comparator is created that:
+     *     - Uses the key's own `compareTo` method if it exists (for objects).
+     *     - Uses numeric comparison for numeric keys.
+     *     - Uses string comparison for string keys.
+     *     - Uses the spaceship operator `<=>` for other types.
+     *
+     * Two closure functions are initialized to check key equality and value equality:
+     * - If the objects have an `equals` method, it is used.
+     * - Otherwise, strict equality (`===`) is used.
+     *
+     * The modification count `modCount` is initialized to zero, used to track structural changes.
+     *
+     * @param Comparator|callable|null $comparator Optional custom comparator for keys.
+     */
     public function __construct(Comparator|callable $comparator = null) {
     $this->NULL_GUARD = TreeNode::createSentinel();
     $this->root = $this->NULL_GUARD;
@@ -518,10 +894,18 @@ class TreeMap implements Map {
 
 
     /**
-     * Summary of put
-     * @param K $key
-     * @param V $value
-     * @return V
+     * Inserts a key-value pair into the TreeMap.
+     * 
+     * If the key already exists in the map, its value is updated with the new value,
+     * and the old value is returned.
+     * If the key does not exist, a new entry is created and null is returned.
+     * 
+     * The keys are ordered according to the comparator or natural ordering.
+     * 
+     * @param K $key The key to insert or update.
+     * @param V $value The value associated with the key.
+     * 
+     * @return V|null The previous value associated with the key, or null if there was none.
      */
     public function put($key, $value): mixed {
         if($key === null) {
@@ -540,11 +924,13 @@ class TreeMap implements Map {
         return $oldValue;
     }
 
-    /**
-     * Summary of get
-     * @param K $key
-     * @return V
-     */
+   /**
+    * Retrieves the value associated with the specified key.
+    * 
+    * @param K $key The key whose associated value is to be returned.
+    * 
+    * @return V|null The value associated with the specified key, or null if the key is not found.
+    */
     public function get($key): mixed {
         if($key === null) {
             throw new NullPointerException("Key cannot be null");
@@ -553,9 +939,13 @@ class TreeMap implements Map {
     }
 
     /**
-     * Summary of remove
-     * @param k $key
-     * @return V
+     * Removes the mapping for the specified key from this map if present.
+     *
+     * @param K $key The key whose mapping is to be removed from the map.
+     * 
+     * @throws NullPointerException if the key is null.
+     * 
+     * @return V|null The previous value associated with the specified key, or null if there was no mapping for the key.
      */
     public function remove($key): mixed {
         if($key === null) {
@@ -584,10 +974,12 @@ class TreeMap implements Map {
     }
 
     /**
-     * Summary of removeIfEquals
-     * @param K $key
-     * @param V $value
-     * @return bool
+     * Removes the entry for the specified key only if it is currently mapped to the specified value.
+     *
+     * @param K $key The key whose mapping is to be removed if it matches the specified value.
+     * @param V $value The value expected to be associated with the specified key.
+     * 
+     * @return bool True if the entry was removed, false otherwise.
      */
     public function removeIfEquals($key, $value): bool {
         /** @var TreeNode */ $root = $this->searchNode($key);
@@ -615,8 +1007,10 @@ class TreeMap implements Map {
     }
 
     /**
-     * Summary of first
-     * @return Entry<K,V>|null
+     * Returns the first entry in the TreeMap according to the sorting order defined by the comparator.
+     * This is the entry with the "lowest" key based on the comparator or natural ordering.
+     *
+     * @return Entry<K,V>|null The first entry in the map, or null if the map is empty.
      */
     public function first(): mixed {
         if($this->root === $this->NULL_GUARD) {
@@ -626,8 +1020,10 @@ class TreeMap implements Map {
     }
 
     /**
-     * Summary of last
-     * @return Entry<K,V>|null
+     * Returns the last entry in the TreeMap according to the sorting order defined by the comparator.
+     * This is the entry with the "highest" key based on the comparator or natural ordering.
+     *
+     * @return Entry<K,V>|null The last entry in the map, or null if the map is empty.
      */
     public function last(): mixed {
         if($this->root === $this->NULL_GUARD) {
@@ -637,8 +1033,14 @@ class TreeMap implements Map {
     }
 
     /**
-     * Summary of popFirst
-     * @return Entry<K,V>|null
+     * Removes and returns the first entry in the TreeMap according to the sorting order.
+     * The "first" entry is determined by the comparator or natural ordering of the keys.
+     * If the map is empty, returns null.
+     *
+     * This method removes the node corresponding to the first entry, balances the tree,
+     * updates the size and modification count, and clears references of the removed node.
+     *
+     * @return Entry<K,V>|null The removed first entry, or null if the TreeMap is empty.
      */
     public function popFirst(): mixed {
         if($this->root === $this->NULL_GUARD) {
@@ -664,8 +1066,14 @@ class TreeMap implements Map {
     }
 
     /**
-     * Summary of popLast
-     * @return Entry<K,V>|null
+     * Removes and returns the last entry in the TreeMap according to the sorting order.
+     * The "last" entry is determined by the comparator or natural ordering of the keys.
+     * If the map is empty, returns null.
+     *
+     * This method removes the node corresponding to the last entry, balances the tree,
+     * updates the size and modification count, and clears references of the removed node.
+     *
+     * @return Entry<K,V>|null The removed last entry, or null if the TreeMap is empty.
      */
     public function popLast(): mixed {
         if($this->root === $this->NULL_GUARD) {
@@ -691,8 +1099,11 @@ class TreeMap implements Map {
     }
 
     /**
-     * @param K $key
-     * @return bool
+     * Checks if the TreeMap contains a mapping for the specified key.
+     *
+     * @param K $key The key to check for presence in the map.
+     * @return bool True if the key exists in the map, false otherwise.
+     * @throws NullPointerException if the key is null.
      */
     public function containsKey($key): bool {
         if($key === null) {
@@ -702,8 +1113,12 @@ class TreeMap implements Map {
     }
 
     /**
-     * @param V $value
-     * @return bool
+     * Checks if the TreeMap contains one or more mappings to the specified value.
+     *
+     * This method performs a breadth-first traversal of the tree to search for the value.
+     *
+     * @param V $value The value to search for in the map.
+     * @return bool True if the value exists in the map, false otherwise.
      */
     public function containsValue($value): bool {
         /** @var SplQueue */ $queue = new SplQueue();
@@ -728,8 +1143,11 @@ class TreeMap implements Map {
     }
 
     /**
-     * @param K $key
-     * @return Entry<K,V>|null
+     * Returns the entry immediately preceding the entry for the given key in the TreeMap,
+     * or null if the key is not found or there is no preceding entry.
+     *
+     * @param K $key The key whose preceding entry is to be returned.
+     * @return Entry<K,V>|null The entry immediately before the given key, or null if none exists.
      */
     public function previous($key): mixed {
         /** @var TreeNode */ $root = $this->searchNode($key);
@@ -746,8 +1164,11 @@ class TreeMap implements Map {
     }
 
     /**
-     * @param K $key
-     * @return Entry<K,V>|null
+     * Returns the entry immediately following the entry for the given key in the TreeMap,
+     * or null if the key is not found or there is no following entry.
+     *
+     * @param K $key The key whose succeeding entry is to be returned.
+     * @return Entry<K,V>|null The entry immediately after the given key, or null if none exists.
      */
     public function next($key): mixed {
         /** @var TreeNode */ $root = $this->searchNode($key);
@@ -764,6 +1185,8 @@ class TreeMap implements Map {
     }
 
     /**
+     * Removes all entries from the tree, resetting it to an empty state.
+     *
      * @return void
      */
     public function clear(): void {
@@ -778,245 +1201,298 @@ class TreeMap implements Map {
     }
 
     /**
-     * @return int
+     * Returns the number of entries currently stored in the tree.
+     *
+     * @return int The size of the tree.
      */
     public function size(): int {
         return $this->size;
     }
 
     /**
-     * @return bool
+     * Checks whether the tree is empty.
+     *
+     * @return bool True if the tree contains no entries, false otherwise.
      */
     public function isEmpty(): bool {
         return $this->size === 0;
     }
 
+    /**
+     * Returns a view of the entries contained in the tree map.
+     * 
+     * The returned object is an anonymous class implementing the TreeMapView interface.
+     * It supports iteration over the tree entries in sorted order.
+     * 
+     * This view provides:
+     * - Standard PHP iteration support, including usage in `foreach` loops.
+     * - Full compatibility with PHP's `foreach` construct for easy traversal.
+     * - Java-like iteration syntax compatibility for users familiar with Java collections.
+     * 
+     * @return TreeMapView<K,V> An iterable view over the map entries.
+     */
     public function entrySet(): mixed {
-    $outer = $this; // capture outer instance for anonymous classes
+        $outer = $this; // capture outer instance for anonymous classes
 
-    return new class($outer) implements TreeMapView {
+        return new class($outer) implements TreeMapView {
 
-        private $outer;
+            private $outer;
 
-        public function __construct($outer) {
-            $this->outer = $outer;
-        }
+            public function __construct($outer) {
+                $this->outer = $outer;
+            }
 
-        public function getIterator(): TreeIterator {
-            $outer = $this->outer;
+            public function getIterator(): TreeIterator {
+                $outer = $this->outer;
 
-            return new class($outer) implements TreeIterator {
+                return new class($outer) implements TreeIterator {
 
-                private $outer;
-                private TreeNode $iterator;
-                private TreeNode $trackNode;
-                private int $expectedModCount;
-                private int $index;
+                    private $outer;
+                    private TreeNode $iterator;
+                    private TreeNode $trackNode;
+                    private int $expectedModCount;
+                    private int $index;
 
-                public function __construct($outer) {
-                    $this->outer = $outer;
+                    /**
+                     * Closure::bind creates a new Closure (anonymous function) with a specific bound object and class scope.
+                     * 
+                     * This allows the Closure to access private or protected members of the bound object,
+                     * even if called from outside the original class scope.
+                     * 
+                     * Parameters:
+                     * - The first argument is the Closure to be bound.
+                     * - The second argument is the object to which `$this` inside the Closure will refer.
+                     * - The third argument is the class scope for access control (usually the class name of the bound object).
+                     * 
+                     * The bound Closure can be stored and called later multiple times, maintaining the bound context.
+                     * 
+                     * ---
+                     * 
+                     * Difference from `Closure::call`:
+                     * 
+                     * - `Closure::call` immediately invokes the Closure with the given object bound to `$this`.
+                     * - It cannot be reused later since it calls the Closure right away.
+                     * - `Closure::call` does not accept a class scope parameter; it uses the scope of the Closure itself.
+                     * 
+                     * Use `Closure::bind` when you want to create a new Closure with bound context for later reuse,
+                     * and `Closure::call` for a one-time immediate invocation with a specific `$this` context.
+                     */
+                    public function __construct($outer) {
+                        $this->outer = $outer;
 
-                    // Access NULL_GUARD and modCount from outer via closure binding
-                    $this->trackNode = (function() { return $this->NULL_GUARD; })->call($this->outer);
-                    $this->expectedModCount = (function() { return $this->modCount; })->call($this->outer);
+                        // Access NULL_GUARD and modCount from outer via closure binding
+                        $this->trackNode = (function() { return $this->NULL_GUARD; })->call($this->outer);
+                        $this->expectedModCount = (function() { return $this->modCount; })->call($this->outer);
 
-                    // Call firstTreeNode method bound to outer
-                    $firstTreeNode = Closure::bind(function($root) {
-                        return $this->firstTreeNode($root);
-                    }, $this->outer, get_class($this->outer));
+                        // Call firstTreeNode method bound to outer
+                        $firstTreeNode = Closure::bind(function($root) {
+                            return $this->firstTreeNode($root);
+                        }, $this->outer, get_class($this->outer));
 
-                    $root = (function() { return $this->root; })->call($outer);
-                    $this->iterator = $firstTreeNode($root);
+                        $root = (function() { return $this->root; })->call($outer);
+                        $this->iterator = $firstTreeNode($root);
 
-                    $this->index = 0;
-                }
-
-                private function checkForModifications(): void {
-                    $modCount = (function() { return $this->modCount; })->call($this->outer);
-
-                    if ($modCount !== $this->expectedModCount) {
-                        throw new ConcurrentModificationException(
-                            "The iterator is no longer valid. Modifications have been made."
-                        );
-                    }
-                }
-
-                public function hasPreviousElement(): bool {
-                    $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
-                    return $this->iterator !== $NULL_GUARD;
-                }
-
-                public function previousElement(): TreeEntry {
-                    $this->checkForModifications();
-
-                    $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
-                    if ($this->iterator === $NULL_GUARD) {
-                        throw new NoSuchElementException("Iterator has no more elements");
-                    }
-
-                    $this->trackNode = $this->iterator;
-
-                    /** @var TreeEntry */ 
-                    $entry = TreeEntry::copy($this->iterator->getEntry());
-
-                    // Call previousTreeNode bound to outer
-                    $previousTreeNode = Closure::bind(function($node) {
-                        return $this->previousTreeNode($node);
-                    }, $this->outer, get_class($this->outer));
-
-                    $this->iterator = $previousTreeNode($this->iterator);
-
-                    return $entry;
-                }
-
-                public function hasNextElement(): bool {
-                    $nullGuard = (function() { return $this->NULL_GUARD; })->call($this->outer);
-                    return $this->iterator !== $nullGuard;
-                }
-
-                public function nextElement(): TreeEntry {
-                    $this->checkForModifications();
-
-                    $nullGuard = (function() { return $this->NULL_GUARD; })->call($this->outer);
-                    if ($this->iterator === $nullGuard) {
-                        throw new NoSuchElementException("Iterator has no more elements");
+                        $this->index = 0;
                     }
 
-                    $this->trackNode = $this->iterator;
+                    private function checkForModifications(): void {
+                        $modCount = (function() { return $this->modCount; })->call($this->outer);
 
-                    /** @var TreeEntry */
-                    $entry = TreeEntry::copy($this->iterator->getEntry());
-
-                    // Call nextTreeNode bound to outer
-                    $nextTreeNode = Closure::bind(function($node) {
-                        return $this->nextTreeNode($node);
-                    }, $this->outer, get_class($this->outer));
-
-                    $this->iterator = $nextTreeNode($this->iterator);
-
-                    return $entry;
-                }
-
-                public function reset(IteratorOptions $iteratorOptions): static {
-                    $this->checkForModifications();
-
-                    $firstTreeNode = Closure::bind(function($root) {
-                        return $this->firstTreeNode($root);
-                    }, $this->outer, get_class($this->outer));
-
-                    $lastTreeNode = Closure::bind(function($root) {
-                        return $this->lastTreeNode($root);
-                    }, $this->outer, get_class($this->outer));
-
-                    $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
-                    $root = (function() { return $this->root;})->call($this->outer);
-
-                    switch ($iteratorOptions) {
-                        case IteratorOptions::HEAD:
-                            $this->iterator = $firstTreeNode($root);
-                            break;
-                        case IteratorOptions::TAIL:
-                            $this->iterator = $lastTreeNode($root);
-                            break;
-                        default:
-                            throw new InvalidArgumentException("Invalid iterator option");
+                        if ($modCount !== $this->expectedModCount) {
+                            throw new ConcurrentModificationException(
+                                "The iterator is no longer valid. Modifications have been made."
+                            );
+                        }
                     }
 
-                    $this->trackNode = $NULL_GUARD;
-
-                    return $this;
-                }
-
-                public function remove(): void {
-                    $this->checkForModifications();
-
-                    $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
-
-                    if ($this->trackNode === $NULL_GUARD) {
-                        return;
+                    public function hasPreviousElement(): bool {
+                        $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
+                        return $this->iterator !== $NULL_GUARD;
                     }
 
-                    $iterator = $this->trackNode;
+                    public function previousElement(): TreeEntry {
+                        $this->checkForModifications();
 
-                    // Call removeNode and autoBalance bound to outer
-                    $removeNode = Closure::bind(function($node) {
-                        return $this->removeNode($node);
-                    }, $this->outer, get_class($this->outer));
+                        $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
+                        if ($this->iterator === $NULL_GUARD) {
+                            throw new NoSuchElementException("Iterator has no more elements");
+                        }
 
-                    $autoBalance = Closure::bind(function($node) {
-                        $this->autoBalance($node);
-                    }, $this->outer, get_class($this->outer));
+                        $this->trackNode = $this->iterator;
 
-                    $iterator = $removeNode($iterator);
-                    $autoBalance($iterator->getParent());
+                        /** @var TreeEntry */ 
+                        $entry = TreeEntry::copy($this->iterator->getEntry());
 
-                    // Decrement outer size safely
-                    (function() { $this->size -= 1; })->call($this->outer);
+                        // Call previousTreeNode bound to outer
+                        $previousTreeNode = Closure::bind(function($node) {
+                            return $this->previousTreeNode($node);
+                        }, $this->outer, get_class($this->outer));
 
-                    $iterator->setParent(null);
-                    $iterator->setLeft(null);
-                    $iterator->setRight(null);
-                    $iterator->getEntry()->setKey(null);
-                    $iterator->getEntry()->setValue(null);
-                    $iterator->setEntry(null);
+                        $this->iterator = $previousTreeNode($this->iterator);
 
-                    $this->trackNode = $NULL_GUARD;
+                        return $entry;
+                    }
 
-                    // Increment modCount on outer and expectedModCount on this
-                    (function() { $this->modCount += 1; })->call($this->outer);
-                    $this->expectedModCount += 1;
-                }
+                    public function hasNextElement(): bool {
+                        $nullGuard = (function() { return $this->NULL_GUARD; })->call($this->outer);
+                        return $this->iterator !== $nullGuard;
+                    }
 
-                // Placeholder implementations for Iterator interface methods 
-                public function current() : mixed {
-                    return $this->iterator->getEntry();
-                }
+                    public function nextElement(): TreeEntry {
+                        $this->checkForModifications();
 
-                public function key() : mixed {
-                    return $this->index;
-                }
+                        $nullGuard = (function() { return $this->NULL_GUARD; })->call($this->outer);
+                        if ($this->iterator === $nullGuard) {
+                            throw new NoSuchElementException("Iterator has no more elements");
+                        }
+
+                        $this->trackNode = $this->iterator;
+
+                        /** @var TreeEntry */
+                        $entry = TreeEntry::copy($this->iterator->getEntry());
+
+                        // Call nextTreeNode bound to outer
+                        $nextTreeNode = Closure::bind(function($node) {
+                            return $this->nextTreeNode($node);
+                        }, $this->outer, get_class($this->outer));
+
+                        $this->iterator = $nextTreeNode($this->iterator);
+
+                        return $entry;
+                    }
+
+                    public function reset(IteratorOptions $iteratorOptions): static {
+                        $this->checkForModifications();
+
+                        $firstTreeNode = Closure::bind(function($root) {
+                            return $this->firstTreeNode($root);
+                        }, $this->outer, get_class($this->outer));
+
+                        $lastTreeNode = Closure::bind(function($root) {
+                            return $this->lastTreeNode($root);
+                        }, $this->outer, get_class($this->outer));
+
+                        $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
+                        $root = (function() { return $this->root;})->call($this->outer);
+
+                        switch ($iteratorOptions) {
+                            case IteratorOptions::HEAD:
+                                $this->iterator = $firstTreeNode($root);
+                                break;
+                            case IteratorOptions::TAIL:
+                                $this->iterator = $lastTreeNode($root);
+                                break;
+                            default:
+                                throw new InvalidArgumentException("Invalid iterator option");
+                        }
+
+                        $this->trackNode = $NULL_GUARD;
+
+                        return $this;
+                    }
+
+                    public function remove(): void {
+                        $this->checkForModifications();
+
+                        $NULL_GUARD = (function() { return $this->NULL_GUARD; })->call($this->outer);
+
+                        if ($this->trackNode === $NULL_GUARD) {
+                            return;
+                        }
+
+                        $iterator = $this->trackNode;
+
+                        // Call removeNode and autoBalance bound to outer
+                        $removeNode = Closure::bind(function($node) {
+                            return $this->removeNode($node);
+                        }, $this->outer, get_class($this->outer));
+
+                        $autoBalance = Closure::bind(function($node) {
+                            $this->autoBalance($node);
+                        }, $this->outer, get_class($this->outer));
+
+                        $iterator = $removeNode($iterator);
+                        $autoBalance($iterator->getParent());
+
+                        // Decrement outer size safely
+                        (function() { $this->size -= 1; })->call($this->outer);
+
+                        $iterator->setParent(null);
+                        $iterator->setLeft(null);
+                        $iterator->setRight(null);
+                        $iterator->getEntry()->setKey(null);
+                        $iterator->getEntry()->setValue(null);
+                        $iterator->setEntry(null);
+
+                        $this->trackNode = $NULL_GUARD;
+
+                        // Increment modCount on outer and expectedModCount on this
+                        (function() { $this->modCount += 1; })->call($this->outer);
+                        $this->expectedModCount += 1;
+                    }
+
+                    // Placeholder implementations for Iterator interface methods 
+                    public function current() : mixed {
+                        return $this->iterator->getEntry();
+                    }
+
+                    public function key() : mixed {
+                        return $this->index;
+                    }
 
 
-                public function next() : void {
-                    $this->iterator = (function($iterator){
-                        return $this->nextTreeNode($iterator);
-                    })->call($this->outer, $this->iterator);
-                    $this->index += 1;
-                }
-                
-                public function rewind() : void {
-                    $this->reset(IteratorOptions::HEAD);
-                    $this->index = 0;
-                }
+                    public function next() : void {
+                        $this->iterator = (function($iterator){
+                            return $this->nextTreeNode($iterator);
+                        })->call($this->outer, $this->iterator);
+                        $this->index += 1;
+                    }
+                    
+                    public function rewind() : void {
+                        $this->reset(IteratorOptions::HEAD);
+                        $this->index = 0;
+                    }
 
-                public function valid() : bool {
-                    $NULL_GUARD = (function(){return $this->NULL_GUARD;})->call($this->outer);
-                    return $this->iterator !== $NULL_GUARD;
-                }
-            };
-        }
+                    public function valid() : bool {
+                        $NULL_GUARD = (function(){return $this->NULL_GUARD;})->call($this->outer);
+                        return $this->iterator !== $NULL_GUARD;
+                    }
+                };
+            }
 
-        public function size(): int {
-            return (function() { return $this->size; })->call($this->outer);
-        }
+            public function size(): int {
+                return (function() { return $this->size; })->call($this->outer);
+            }
 
-        public function clear(): void {
-            $clear = Closure::bind(function() {
-                $this->clear();
-            }, $this->outer, get_class($this->outer));
-            $clear();
-        }
+            public function clear(): void {
+                $clear = Closure::bind(function() {
+                    $this->clear();
+                }, $this->outer, get_class($this->outer));
+                $clear();
+            }
 
-        public function remove(mixed $object): bool {
-            throw new UnsupportedOperationException("This operation is not supported for Map.Entry<K,V> objects");
-        }
-    };
-}
+            public function remove(mixed $object): bool {
+                throw new UnsupportedOperationException("This operation is not supported for Map.Entry<K,V> objects");
+            }
+        };
+    }
 
 
 
     /**
-     * @return TreeMapView<K>
+     * Returns a view of the keys contained in the tree map.
+     * 
+     * The returned object is an anonymous class implementing the TreeMapView interface,
+     * which provides an iterable view over the keys in sorted order.
+     * 
+     * This view supports:
+     * - Standard PHP iteration, allowing usage in `foreach` loops.
+     * - Java-like iteration syntax compatibility for users familiar with Java collections.
+     * 
+     * Note:
+     * The anonymous class internally captures the outer TreeMap instance to access the tree structure.
+     * 
+     * @return TreeMapView An iterable view over the map keys.
      */
     public function keySet(): mixed {
         $outer = $this; // capture outer instance for anonymous classes
@@ -1076,6 +1552,30 @@ class TreeMap implements Map {
                     }
 
 
+                    /**
+                     * Closure::bind creates a new Closure (anonymous function) with a specific bound object and class scope.
+                     * 
+                     * This allows the Closure to access private or protected members of the bound object,
+                     * even if called from outside the original class scope.
+                     * 
+                     * Parameters:
+                     * - The first argument is the Closure to be bound.
+                     * - The second argument is the object to which `$this` inside the Closure will refer.
+                     * - The third argument is the class scope for access control (usually the class name of the bound object).
+                     * 
+                     * The bound Closure can be stored and called later multiple times, maintaining the bound context.
+                     * 
+                     * ---
+                     * 
+                     * Difference from `Closure::call`:
+                     * 
+                     * - `Closure::call` immediately invokes the Closure with the given object bound to `$this`.
+                     * - It cannot be reused later since it calls the Closure right away.
+                     * - `Closure::call` does not accept a class scope parameter; it uses the scope of the Closure itself.
+                     * 
+                     * Use `Closure::bind` when you want to create a new Closure with bound context for later reuse,
+                     * and `Closure::call` for a one-time immediate invocation with a specific `$this` context.
+                     */
                     public function __construct($outer) {
                         $this->outer = $outer;
 
@@ -1272,7 +1772,19 @@ class TreeMap implements Map {
     }
 
     /**
-     * @return TreeMapView<V>
+     * Returns a view of the values contained in the tree map.
+     * 
+     * The returned object is an anonymous class implementing the TreeMapView interface,
+     * providing an iterable view over the values in the map in sorted key order.
+     * 
+     * This view supports:
+     * - Standard PHP iteration, allowing usage in `foreach` loops.
+     * - Java-like iteration syntax for users familiar with Java collections.
+     * 
+     * Note:
+     * The anonymous class captures the outer TreeMap instance to access the underlying data.
+     * 
+     * @return TreeMapView An iterable view over the map values.
      */
     public function values(): mixed {
         $outer = $this; // capture outer instance for anonymous classes
@@ -1332,6 +1844,30 @@ class TreeMap implements Map {
                     }
 
 
+                    /**
+                     * Closure::bind creates a new Closure (anonymous function) with a specific bound object and class scope.
+                     * 
+                     * This allows the Closure to access private or protected members of the bound object,
+                     * even if called from outside the original class scope.
+                     * 
+                     * Parameters:
+                     * - The first argument is the Closure to be bound.
+                     * - The second argument is the object to which `$this` inside the Closure will refer.
+                     * - The third argument is the class scope for access control (usually the class name of the bound object).
+                     * 
+                     * The bound Closure can be stored and called later multiple times, maintaining the bound context.
+                     * 
+                     * ---
+                     * 
+                     * Difference from `Closure::call`:
+                     * 
+                     * - `Closure::call` immediately invokes the Closure with the given object bound to `$this`.
+                     * - It cannot be reused later since it calls the Closure right away.
+                     * - `Closure::call` does not accept a class scope parameter; it uses the scope of the Closure itself.
+                     * 
+                     * Use `Closure::bind` when you want to create a new Closure with bound context for later reuse,
+                     * and `Closure::call` for a one-time immediate invocation with a specific `$this` context.
+                     */
                     public function __construct($outer) {
                         $this->outer = $outer;
 
@@ -1540,60 +2076,146 @@ class TreeMap implements Map {
         };
     }
 
-    private function preOrderDisplayHelper(TreeNode $root, callable $action): void {
-        if($root === $this->NULL_GUARD) {
+    /**
+     * Helper function to traverse the tree in pre-order and apply an action on each node's entry.
+     *
+     * This traversal processes the parent node before its child nodes,
+     * which is useful for operations like copying the tree or prefix expression evaluation.
+     *
+     * @param TreeNode $node The current node to process.
+     * @param callable $action A callback function to execute on each node's entry.
+     *                         The callable receives the node's entry as its parameter.
+     *
+     * @return void
+     */
+    private function preOrderTraverse(TreeNode $node, callable $action): void {
+        if($node === $this->NULL_GUARD) {
             return;
         }
 
-        $action($root->getEntry());
-        $this->preOrderDisplayHelper($root->getLeft(), $action);
-        $this->preOrderDisplayHelper($root->getRight(), $action);
+        $action($node->getEntry());
+        $this->preOrderTraverse($node->getLeft(), $action);
+        $this->preOrderTraverse($node->getRight(), $action);
     }
 
-    private function inOrderDisplayHelper(TreeNode $root, callable $action): void {
-        if($root === $this->NULL_GUARD) {
+    /**
+     * Helper function to traverse the tree in in-order and apply an action on each node's entry.
+     *
+     * This traversal visits nodes in sorted order according to the comparator
+     * or the natural ordering of the keys, making it suitable for displaying
+     * entries in their sorted sequence.
+     *
+     * @param TreeNode $node The current node to process.
+     * @param callable $action A callback function to execute on each node's entry.
+     *                         The callable receives the node's entry as its parameter.
+     *
+     * @return void
+     */
+    private function inOrderTraverse(TreeNode $node, callable $action): void {
+        if($node === $this->NULL_GUARD) {
             return;
         }
 
-        $this->inOrderDisplayHelper($root->getLeft(), $action);
-        $action($root->getEntry());
-        $this->inOrderDisplayHelper($root->getRight(), $action);
+        $this->inOrderTraverse($node->getLeft(), $action);
+        $action($node->getEntry());
+        $this->inOrderTraverse($node->getRight(), $action);
     }
 
-    private function postOrderDisplayHelper(TreeNode $root, callable $action): void {
-        if($root === $this->NULL_GUARD) {
+    /**
+     * Helper function to traverse the tree in post-order and apply an action on each node's entry.
+     *
+     * This traversal processes child nodes before their parent node,
+     * which is useful for operations that require processing
+     * children before their parent (e.g., deletion, freeing resources).
+     *
+     * @param TreeNode $node The current node to process.
+     * @param callable $action A callback function to execute on each node's entry.
+     *                         The callable receives the node's entry as its parameter.
+     *
+     * @return void
+     */
+    private function postOrderTraverse(TreeNode $node, callable $action): void {
+        if($node === $this->NULL_GUARD) {
             return;
         }
 
-        $this->postOrderDisplayHelper($root->getLeft(), $action);
-        $this->postOrderDisplayHelper($root->getRight(), $action);
-        $action($root->getEntry());
+        $this->postOrderTraverse($node->getLeft(), $action);
+        $this->postOrderTraverse($node->getRight(), $action);
+        $action($node->getEntry());
     }
 
-    public function preOrderDisplay(callable $action) {
-        if($action == null) {
-            throw new NullPointerException("Callable function should not be null");
+    /**
+     * Displays the entries in pre-order traversal.
+     *
+     * @param bool $newLine Whether to display each entry on a new line or separated by spaces.
+     * @return void
+     */
+    public function preOrderDisplay(bool $newLine) {
+        if($newLine) {
+            $this->preOrderTraverse($this->root, function(Entry $entry) {
+                echo "[{$entry}]<br>";
+            });
+        } else {
+            $this->preOrderTraverse($this->root, function(Entry $entry) {
+                echo "[{$entry}] ";
+            });
         }
-        $this->preOrderDisplayHelper($this->root, $action);
         echo "<br>";
     }
 
-    public function inOrderDisplay(callable $action) {
-        if($action == null) {
-            throw new NullPointerException("Callable function should not be null");
+    /**
+     * Displays the entries in in-order traversal.
+     *
+     * This method displays the entries in sorted order according to the comparator's
+     * or natural ordering.
+     *
+     * If `$newLine` is true, each entry is printed on its own line.
+     * If false, entries are printed on the same line separated by spaces.
+     *
+     * @param bool $newLine Whether to display each entry on a new line (true) or in one line separated by spaces (false).
+     * @return void
+     */
+    public function inOrderDisplay(bool $newLine) {
+        if($newLine) {
+            $this->inOrderTraverse($this->root, function(Entry $entry) {
+                echo "[{$entry}]<br>";
+            });
+        } else {
+            $this->inOrderTraverse($this->root, function(Entry $entry) {
+                echo "[{$entry}] ";
+            });
         }
-        $this->inOrderDisplayHelper($this->root, $action);
         echo "<br>";
     }
 
-    public function postOrderDisplay(callable $action) {
-        if($action == null) {
-            throw new NullPointerException("Callable function should not be null");
+    /**
+     * Displays the entries in post-order traversal.
+     *
+     * @param bool $newLine Whether to display each entry on a new line or separated by spaces.
+     * @return void
+     */
+    public function postOrderDisplay(bool $newLine) {
+        if($newLine) {
+            $this->postOrderTraverse($this->root, function(Entry $entry) {
+                echo "[{$entry}]<br>";
+            });
+        } else {
+            $this->postOrderTraverse($this->root, function(Entry $entry) {
+                echo "[{$entry}] ";
+            });
         }
-        $this->postOrderDisplayHelper($this->root, $action);
         echo "<br>";
     }
 
+    /**
+     * Returns a string representation of the tree.
+     *
+     * If the tree is empty, returns "{}".
+     * Otherwise, returns the entries enclosed in braces,
+     * separated by commas, e.g. "{entry1, entry2, entry3}".
+     *
+     * @return string The string representation of the tree.
+     */
     public function __tostring(): string {
         if($this->size == 0) {
             return "{}";
@@ -1608,21 +2230,42 @@ class TreeMap implements Map {
         return $str;
     }
 
-    // public function heightTree(): int {
-    //     return $this->root->getHeight();
-    // }
+    /**
+     * Gets the height of the tree.
+     *
+     * Returns the height of the root node, representing the overall height of the tree.
+     *
+     * @return int The height of the tree.
+     */
+    public function heightTree(): int {
+        return $this->root->getHeight();
+    }
 
-    // public function balanceFactorTree(): int {
-    //     return $this->balanceFactor($this->root);
-    // }
+    /**
+     * Calculates the balance factor of the entire tree.
+     *
+     * This method computes the balance factor starting from the root node,
+     * which is typically used in balanced tree algorithms like AVL trees.
+     *
+     * @return int The balance factor of the tree's root node.
+     */
+    public function balanceFactorTree(): int {
+        return $this->balanceFactor($this->root);
+    }
 
-    // /**
-    //  * Summary of getTreeRootElement
-    //  * @return TreeEntry<K,V>
-    //  */
-    // public function getTreeRootElement() : mixed {
-    //     return TreeEntry::copy($this->root->getEntry());
-    // }
+    /**
+     * Returns a copy of the root tree entry.
+     *
+     * This method retrieves the root element of the tree and returns a copy of its entry.
+     *
+     * @template K The type of keys maintained by this map.
+     * @template V The type of mapped values.
+     *
+     * @return TreeEntry<K,V> A copy of the root tree entry.
+     */
+    public function getTreeRootElement() : mixed {
+        return TreeEntry::copy($this->root->getEntry());
+    }
 }
 
 /* -----------------------------#TreeMap class - END#--------------------------------------------- */
