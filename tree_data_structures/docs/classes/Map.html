@@ -165,6 +165,14 @@
 <dd>Removes all mappings from this map.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Map.html#method_computeIfAbsent">computeIfAbsent()</a>
+    <span>
+                                &nbsp;: <abbr title="\V">V</abbr>    </span>
+</dt>
+<dd>If the key is not already associated with a value (or is mapped to null),
+attempts to compute its value using the given mapping function and enters it into the map.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Map.html#method_containsKey">containsKey()</a>
     <span>
                                 &nbsp;: bool    </span>
@@ -198,6 +206,14 @@
                                 &nbsp;: <abbr title="\V">V</abbr>    </span>
 </dt>
 <dd>Returns the value to which the specified key is mapped.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Map.html#method_getOrDefault">getOrDefault()</a>
+    <span>
+                                &nbsp;: <abbr title="\V">V</abbr>|null    </span>
+</dt>
+<dd>Returns the value to which the specified key is mapped,
+or the provided default value if this map contains no mapping for the key.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Map.html#method_isEmpty">isEmpty()</a>
@@ -310,7 +326,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">149</span>
+    <span class="phpdocumentor-element-found-in__line">174</span>
 
     </aside>
 
@@ -337,6 +353,71 @@
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_computeIfAbsent">
+        computeIfAbsent()
+        <a href="classes/Map.html#method_computeIfAbsent" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">89</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">If the key is not already associated with a value (or is mapped to null),
+attempts to compute its value using the given mapping function and enters it into the map.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">computeIfAbsent</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><abbr title="\K">K</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">callable(<abbr title="\K">K</abbr>): <abbr title="\V">V</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$mappingFunction</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\V">V</abbr></span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$key</span>
+                : <span class="phpdocumentor-signature__argument__return-type"><abbr title="\K">K</abbr></span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The key to check and compute if absent.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$mappingFunction</span>
+                : <span class="phpdocumentor-signature__argument__return-type">callable(<abbr title="\K">K</abbr>): <abbr title="\V">V</abbr></span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>A function that takes the key and returns a value.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+    
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\V">V</abbr></span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The current (existing or computed) value associated with the specified key.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_containsKey">
         containsKey()
         <a href="classes/Map.html#method_containsKey" class="headerlink"><i class="fas fa-link"></i></a>
@@ -345,7 +426,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">118</span>
+    <span class="phpdocumentor-element-found-in__line">143</span>
 
     </aside>
 
@@ -400,7 +481,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">126</span>
+    <span class="phpdocumentor-element-found-in__line">151</span>
 
     </aside>
 
@@ -455,7 +536,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">170</span>
+    <span class="phpdocumentor-element-found-in__line">195</span>
 
     </aside>
 
@@ -498,7 +579,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">89</span>
+    <span class="phpdocumentor-element-found-in__line">114</span>
 
     </aside>
 
@@ -588,6 +669,77 @@
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_getOrDefault">
+        getOrDefault()
+        <a href="classes/Map.html#method_getOrDefault" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">79</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns the value to which the specified key is mapped,
+or the provided default value if this map contains no mapping for the key.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">getOrDefault</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type"><abbr title="\K">K</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type"><abbr title="\V">V</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$defaultValue</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\V">V</abbr>|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Behaves exactly like Java's Map::getOrDefault:</p>
+<ul>
+<li>If the key exists, its associated value is returned (even if the value is null).</li>
+<li>If the key does NOT exist, the given default value is returned.</li>
+</ul>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$key</span>
+                : <span class="phpdocumentor-signature__argument__return-type"><abbr title="\K">K</abbr></span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The key whose associated value is to be returned.</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$defaultValue</span>
+                : <span class="phpdocumentor-signature__argument__return-type"><abbr title="\V">V</abbr></span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The value to return if the key is not present in the map.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+    
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\V">V</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The mapped value, or the default value if no mapping exists.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_isEmpty">
         isEmpty()
         <a href="classes/Map.html#method_isEmpty" class="headerlink"><i class="fas fa-link"></i></a>
@@ -596,7 +748,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">163</span>
+    <span class="phpdocumentor-element-found-in__line">188</span>
 
     </aside>
 
@@ -639,7 +791,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">177</span>
+    <span class="phpdocumentor-element-found-in__line">202</span>
 
     </aside>
 
@@ -682,7 +834,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">96</span>
+    <span class="phpdocumentor-element-found-in__line">121</span>
 
     </aside>
 
@@ -725,7 +877,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">142</span>
+    <span class="phpdocumentor-element-found-in__line">167</span>
 
     </aside>
 
@@ -780,7 +932,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">103</span>
+    <span class="phpdocumentor-element-found-in__line">128</span>
 
     </aside>
 
@@ -823,7 +975,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">110</span>
+    <span class="phpdocumentor-element-found-in__line">135</span>
 
     </aside>
 
@@ -866,7 +1018,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">134</span>
+    <span class="phpdocumentor-element-found-in__line">159</span>
 
     </aside>
 
@@ -987,7 +1139,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">73</span>
+    <span class="phpdocumentor-element-found-in__line">98</span>
 
     </aside>
 
@@ -1042,7 +1194,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">82</span>
+    <span class="phpdocumentor-element-found-in__line">107</span>
 
     </aside>
 
@@ -1106,7 +1258,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">156</span>
+    <span class="phpdocumentor-element-found-in__line">181</span>
 
     </aside>
 
@@ -1149,7 +1301,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Map.php"><a href="files/src-map.html"><abbr title="src/Map.php">Map.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">184</span>
+    <span class="phpdocumentor-element-found-in__line">209</span>
 
     </aside>
 
@@ -1293,11 +1445,13 @@
                 <li>
                     <ul class="phpdocumentor-list -clean">
                                                     <li class=""><a href="classes/Map.html#method_clear">clear()</a></li>
+                                                    <li class=""><a href="classes/Map.html#method_computeIfAbsent">computeIfAbsent()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_containsKey">containsKey()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_containsValue">containsValue()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_entrySet">entrySet()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_first">first()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_get">get()</a></li>
+                                                    <li class=""><a href="classes/Map.html#method_getOrDefault">getOrDefault()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_isEmpty">isEmpty()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_keySet">keySet()</a></li>
                                                     <li class=""><a href="classes/Map.html#method_last">last()</a></li>

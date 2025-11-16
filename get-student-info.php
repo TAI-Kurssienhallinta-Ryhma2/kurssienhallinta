@@ -5,7 +5,7 @@ require_once __DIR__ . '/tree_data_structures/TreeMap.php';
 
 // Get an array with all the students from the database:
 $all_students = get_all_students();
-/** @var TreeMap<int, array> */ $student_map = createTreeMap($all_students, "opiskelijanumero");
+/** @var TreeMap<int, ArrayObject> */ $student_map = createTreeMap($all_students, "opiskelijanumero");
 
 // If the GET parameter (?student-id=) appears in the address in the browser (after student's selection), then the following code is executed:
 if (isset($_GET['student-id'])) {

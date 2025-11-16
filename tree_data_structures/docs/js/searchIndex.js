@@ -126,6 +126,16 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020value\u0020to\u0020which\u0020the\u0020specified\u0020key\u0020is\u0020mapped.",
             "url": "classes/Map.html#method_get"
         },                {
+            "fqsen": "\\Map\u003A\u003AgetOrDefault\u0028\u0029",
+            "name": "getOrDefault",
+            "summary": "Returns\u0020the\u0020value\u0020to\u0020which\u0020the\u0020specified\u0020key\u0020is\u0020mapped,\nor\u0020the\u0020provided\u0020default\u0020value\u0020if\u0020this\u0020map\u0020contains\u0020no\u0020mapping\u0020for\u0020the\u0020key.",
+            "url": "classes/Map.html#method_getOrDefault"
+        },                {
+            "fqsen": "\\Map\u003A\u003AcomputeIfAbsent\u0028\u0029",
+            "name": "computeIfAbsent",
+            "summary": "If\u0020the\u0020key\u0020is\u0020not\u0020already\u0020associated\u0020with\u0020a\u0020value\u0020\u0028or\u0020is\u0020mapped\u0020to\u0020null\u0029,\nattempts\u0020to\u0020compute\u0020its\u0020value\u0020using\u0020the\u0020given\u0020mapping\u0020function\u0020and\u0020enters\u0020it\u0020into\u0020the\u0020map.",
+            "url": "classes/Map.html#method_computeIfAbsent"
+        },                {
             "fqsen": "\\Map\u003A\u003Aremove\u0028\u0029",
             "name": "remove",
             "summary": "Removes\u0020the\u0020mapping\u0020for\u0020a\u0020key\u0020from\u0020this\u0020map\u0020if\u0020present.",
@@ -515,6 +525,16 @@ Search.appendIndex(
             "name": "get",
             "summary": "Retrieves\u0020the\u0020value\u0020associated\u0020with\u0020the\u0020specified\u0020key.",
             "url": "classes/TreeMap.html#method_get"
+        },                {
+            "fqsen": "\\TreeMap\u003A\u003AgetOrDefault\u0028\u0029",
+            "name": "getOrDefault",
+            "summary": "Returns\u0020the\u0020value\u0020to\u0020which\u0020the\u0020specified\u0020key\u0020is\u0020mapped,\nor\u0020the\u0020provided\u0020default\u0020value\u0020if\u0020this\u0020map\u0020contains\u0020no\u0020mapping\u0020for\u0020the\u0020key.",
+            "url": "classes/TreeMap.html#method_getOrDefault"
+        },                {
+            "fqsen": "\\TreeMap\u003A\u003AcomputeIfAbsent\u0028\u0029",
+            "name": "computeIfAbsent",
+            "summary": "If\u0020the\u0020specified\u0020key\u0020is\u0020not\u0020already\u0020associated\u0020with\u0020a\u0020value\u0020\u0028or\u0020is\u0020mapped\u0020to\u0020null\u0029,\nattempts\u0020to\u0020compute\u0020its\u0020value\u0020using\u0020the\u0020given\u0020mapping\u0020function\u0020and\u0020enters\u0020it\u0020into\u0020the\u0020map.",
+            "url": "classes/TreeMap.html#method_computeIfAbsent"
         },                {
             "fqsen": "\\TreeMap\u003A\u003Aremove\u0028\u0029",
             "name": "remove",

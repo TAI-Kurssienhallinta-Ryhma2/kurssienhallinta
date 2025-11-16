@@ -939,6 +939,42 @@ class TreeMap implements Map {
     }
 
     /**
+     * Returns the value to which the specified key is mapped,
+     * or the provided default value if this map contains no mapping for the key.
+     *
+     * @param K $key The key whose associated value is to be returned.
+     * @param V $defaultValue The default mapping of the key.
+     * @return V The value associated with the key, or $defaultValue if none found.
+     */
+    public function getOrDefault($key, $defaultValue): mixed {
+        /** @var TreeNode */ $node = $this->searchNode($key);
+        if($node === $this->NULL_GUARD) {
+            return $defaultValue;
+        } else {
+            return $node->getEntry()->getValue();
+        }
+    }
+
+    /**
+     * If the specified key is not already associated with a value (or is mapped to null),
+     * attempts to compute its value using the given mapping function and enters it into the map.
+     *
+     * @param K $key The key to check and compute if absent.
+     * @param callable(K): V $mappingFunction A function that takes the key and returns a value.
+     * @return V The current (existing or computed) value associated with the specified key.
+     */
+    public function computeIfAbsent($key, callable $mappingFunction): mixed {
+        /** @var TreeNode */ $node = $this->searchNode($key);
+        if($node === $this->NULL_GUARD) {
+            $value = $mappingFunction($key);
+            $this->put($key, $value);
+            return $value;
+        } else {
+            return $node->getEntry()->getValue();
+        }
+    }
+
+    /**
      * Removes the mapping for the specified key from this map if present.
      *
      * @param K $key The key whose mapping is to be removed from the map.
