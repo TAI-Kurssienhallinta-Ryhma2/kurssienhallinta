@@ -65,11 +65,36 @@ interface Map {
     public function get($key): mixed;
 
     /**
+     * Returns the value to which the specified key is mapped, 
+     * or the provided default value if this map contains no mapping for the key.
+     *
+     * Behaves exactly like Java's Map::getOrDefault:
+     * - If the key exists, its associated value is returned (even if the value is null).
+     * - If the key does NOT exist, the given default value is returned.
+     *
+     * @param K     $key           The key whose associated value is to be returned.
+     * @param V     $defaultValue  The value to return if the key is not present in the map.
+     * @return V|null              The mapped value, or the default value if no mapping exists.
+     */
+    public function getOrDefault($key, $defaultValue): mixed;
+
+    /**
+     * If the key is not already associated with a value (or is mapped to null),
+     * attempts to compute its value using the given mapping function and enters it into the map.
+     *
+     * @param K $key The key to check and compute if absent.
+     * @param callable(K): V $mappingFunction A function that takes the key and returns a value.
+     * @return V The current (existing or computed) value associated with the specified key.
+     */
+    public function computeIfAbsent($key, callable $mappingFunction): mixed;
+
+    /**
      * Removes the mapping for a key from this map if present.
      *
      * @param K $key The key whose mapping is to be removed.
      * @return V The previous value associated with key, or null if there was no mapping.
      */
+    
     public function remove($key): mixed;
 
     /**
