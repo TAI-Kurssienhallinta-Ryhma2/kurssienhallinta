@@ -6,128 +6,205 @@ declare(strict_types=1);
 require_once "TreeMapView.php";
 
 /**
- * @template K
- * @template V
+ * Interface Entry
+ *
+ * Represents a key-value pair (map entry).
+ *
+ * @template K K - The type of keys maintained by this entry.
+ * @template V V - The type of mapped values.
  */
 interface Entry {
     /**
-     * @return K
+     * Returns the key corresponding to this entry.
+     *
+     * @return K The key of the entry.
      */
     public function getKey(): mixed;
 
     /**
-     * @return V
+     * Returns the value corresponding to this entry.
+     *
+     * @return V The value of the entry.
      */
    public function getValue(): mixed;
 
    /**
-    * @param V $value
-    * @return V
+    * Replaces the value corresponding to this entry with the specified value.
+    *
+    * @param V $value The new value to set.
+    * @return V The old value that was replaced.
     */
    public function setValue($value): mixed;
 }
 
 /**
- * @template K
- * @template V
+ * Interface Map
+ *
+ * A collection that maps keys to values. Each key can map to at most one value.
+ *
+ * @template K K - The type of keys maintained by this map.
+ * @template V V - The type of mapped values.
  */
 interface Map {
     /**
-     * @param K $key
-     * @param V $value
-     * @return V
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key, the old value is replaced.
+     *
+     * @param K $key The key with which the specified value is to be associated.
+     * @param V $value The value to be associated with the specified key.
+     * @return V The previous value associated with key, or null if there was no mapping.
      */
     public function put($key, $value): mixed;
 
     /**
-     * @param K $key
-     * @return V
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param K $key The key whose associated value is to be returned.
+     * @return V The value associated with the specified key, or null if none.
      */
     public function get($key): mixed;
+
     /**
-     * @param K $key
-     * @return V
+     * Returns the value to which the specified key is mapped, 
+     * or the provided default value if this map contains no mapping for the key.
+     *
+     * Behaves exactly like Java's Map::getOrDefault:
+     * - If the key exists, its associated value is returned (even if the value is null).
+     * - If the key does NOT exist, the given default value is returned.
+     *
+     * @param K     $key           The key whose associated value is to be returned.
+     * @param V     $defaultValue  The value to return if the key is not present in the map.
+     * @return V|null              The mapped value, or the default value if no mapping exists.
      */
+    public function getOrDefault($key, $defaultValue): mixed;
+
+    /**
+     * If the key is not already associated with a value (or is mapped to null),
+     * attempts to compute its value using the given mapping function and enters it into the map.
+     *
+     * @param K $key The key to check and compute if absent.
+     * @param callable(K): V $mappingFunction A function that takes the key and returns a value.
+     * @return V The current (existing or computed) value associated with the specified key.
+     */
+    public function computeIfAbsent($key, callable $mappingFunction): mixed;
+
+    /**
+     * Removes the mapping for a key from this map if present.
+     *
+     * @param K $key The key whose mapping is to be removed.
+     * @return V The previous value associated with key, or null if there was no mapping.
+     */
+    
     public function remove($key): mixed;
 
     /**
-     * @param K $key
-     * @param V $value
-     * @return bool
+     * Removes the entry for the specified key only if it is currently mapped to the specified value.
+     *
+     * @param K $key The key whose mapping is to be removed.
+     * @param V $value The value expected to be associated with the key.
+     * @return bool True if the entry was removed.
      */
     public function removeIfEquals($key, $value): bool;
 
     /**
-     * @return Entry<K,V>
+     * Returns the first (lowest) entry in the map.
+     *
+     * @return Entry<K,V>|null The first entry, or null if the map is empty.
      */
     public function first(): mixed;
 
     /**
-     * @return Entry<K,V>
+     * Returns the last (highest) entry in the map.
+     *
+     * @return Entry<K,V>|null The last entry, or null if the map is empty.
      */
     public function last(): mixed;
 
     /**
-     * @return Entry<K,V>
+     * Removes and returns the first (lowest) entry in the map.
+     *
+     * @return Entry<K,V>|null The removed first entry, or null if the map is empty.
      */
     public function popFirst(): mixed;
 
     /**
-     * @return Entry<K,V>
+     * Removes and returns the last (highest) entry in the map.
+     *
+     * @return Entry<K,V>|null The removed last entry, or null if the map is empty.
      */
     public function popLast(): mixed;
 
     /**
-     * @param K $key
-     * @return bool
+     * Returns true if this map contains a mapping for the specified key.
+     *
+     * @param K $key The key whose presence in this map is to be tested.
+     * @return bool True if this map contains a mapping for the specified key.
      */
     public function containsKey($key): bool;
 
     /**
-     * @param V $value
-     * @return bool
+     * Returns true if this map maps one or more keys to the specified value.
+     *
+     * @param V $value The value whose presence in this map is to be tested.
+     * @return bool True if this map maps one or more keys to the specified value.
      */
     public function containsValue($value): bool;
 
     /**
-     * @param K $key
-     * @return Entry<K,V>
+     * Returns the entry immediately preceding the entry for the specified key.
+     *
+     * @param K $key The key whose preceding entry is to be returned.
+     * @return Entry<K,V>|null The previous entry, or null if there is no such entry.
      */
     public function previous($key): mixed;
 
-    /**
-     * @param K $key
-     * @return Entry<K,V>
+     /**
+     * Returns the entry immediately following the entry for the specified key.
+     *
+     * @param K $key The key whose next entry is to be returned.
+     * @return Entry<K,V>|null The next entry, or null if there is no such entry.
      */
     public function next($key): mixed;
 
-    /**
+     /**
+     * Removes all mappings from this map.
+     *
      * @return void
      */
     public function clear(): void;
 
     /**
-     * @return int
+     * Returns the number of key-value mappings in this map.
+     *
+     * @return int The number of entries in this map.
      */
     public function size(): int;
 
     /**
-     * @return bool
+     * Returns true if this map contains no key-value mappings.
+     *
+     * @return bool True if this map contains no entries.
      */
     public function isEmpty(): bool;
 
     /**
-     * @return TreeMapView<Entry<K,V>>
+     * Returns a view of the entries contained in this map.
+     *
+     * @return TreeMapView A collection view of the map's entries.
      */
     public function entrySet(): mixed;
 
     /**
-     * @return TreeMapView<K>
+     * Returns a view of the keys contained in this map.
+     *
+     * @return TreeMapView A collection view of the map's keys.
      */
     public function keySet(): mixed;
 
     /**
-     * @return TreeMapView<V>
+     * Returns a view of the values contained in this map.
+     *
+     * @return TreeMapView A collection view of the map's values.
      */
     public function values(): mixed;
 }

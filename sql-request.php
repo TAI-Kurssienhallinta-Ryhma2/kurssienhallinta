@@ -307,3 +307,23 @@ function get_registrations($start_from, $limit = null, $filters = [])
 
     return $all_registrations;
 }
+
+function get_course_by_id($course_id)
+{
+    global $conn;
+
+    $stmt = $conn->prepare("SELECT kurssit.tunnus, kurssit.nimi, kurssit.kuvaus, 
+                            kurssit.alkupaiva, kurssit.loppupaiva, kurssit.tila, 
+                            kurssit.opettaja,
+                            opettajat.etunimi, opettajat.sukunimi, opettajat.aine
+                            FROM kurssit
+                            JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
+                            WHERE kurssit.tunnus = :course_id");
+    $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $course = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $course;
+}
+
