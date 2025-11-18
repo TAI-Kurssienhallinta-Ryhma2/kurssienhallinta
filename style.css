@@ -205,10 +205,20 @@ textarea:focus {
   color: #155724;
 }
 
+.warning-message {
+  background: #f2f053;
+  border: 1px solid #d1c68e;
+  color: #513a16;
+}
+
 .error-message {
   background: #f8d7da;
   border: 1px solid #f5c6cb;
   color: #721c24;
+}
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 /* === DESCRIPTION SECTION === */

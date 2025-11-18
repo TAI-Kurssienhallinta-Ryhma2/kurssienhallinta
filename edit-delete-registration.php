@@ -2,7 +2,7 @@
 include_once 'sql-request.php';
 
 // Set the maximum number of records to be shown in a single page:
-$limit = 3;
+$limit = 9;
 
 
 // Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
@@ -57,18 +57,15 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
 }
 
 
-$success_message = null;
+$info_message = null;
 $error_message = null;
 
 /* DELETE STUDENT LOGIC */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
     $ids = $_POST['delete'] ?? [];
-    echo "<pre>";
-    print_r($ids);
-    echo "</pre>";
 
     if (empty($ids)) {
-        header("Location: edit-delete-registration.php?success=error");
+        header("Location: edit-delete-registration.php?warning=error");
         exit();
     } else {
         global $conn;
@@ -98,10 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
 
 /* READ SUCCESS MESSAGES FROM URL */
 if (isset($_GET['success'])) {
-    if ($_GET['success'] === 'updated') $success_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
-    if ($_GET['success'] === 'deleted') $success_message = "Kurssikirjautuminen poistettu onnistuneesti!";
-    if ($_GET['success'] === 'error') $success_message = "Valitse vähintään yksi poistettava kohde.";
+    if ($_GET['success'] === 'updated') $info_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
+    if ($_GET['success'] === 'deleted') $info_message = "Kurssikirjautuminen poistettu onnistuneesti!";
+} elseif (isset($_GET['warning'])) {
+    if ($_GET['warning'] === 'error') $info_message = "Valitse vähintään yksi poistettava kohde.";
 }
+
 
 echo "<pre>";
 // print_r($registration_portion);
@@ -224,26 +223,32 @@ echo "</pre>";
     </div>
 
     <!-- Section with message -->
-    <?php if (isset($success_message) ?? isset($error_message)) {
+    <?php if (isset($info_message) ?? isset($error_message)) {
     ?>
-        <div class="form-wrapper">
-            <?php if ($success_message): ?>
-                <div class="message success-message"><?php echo htmlspecialchars($success_message); ?></div>
-            <?php endif; ?>
-            <?php if ($error_message): ?>
+        <div class="form-wrapper" id="form-wrapp-to-disappear">
+            <?php
+            if (isset($_GET['warning'])) {
+            ?>
+                <div class="message warning-message"><?php echo htmlspecialchars($info_message); ?></div>
+            <?php
+            } elseif (isset($_GET['success'])) {
+            ?>
+                <div class="message success-message"><?php echo htmlspecialchars($info_message); ?></div>
+            <?php
+            } else {
+            ?>
                 <div class="message error-message"><?php echo $error_message; ?></div>
-            <?php endif; ?>
+            <?php
+            }
+            ?>
         </div>
     <?php
     } ?>
-
 
     <!-- Section with data-table -->
     <form action="" method="POST">
         <div class="data-wrapper">
             <h2>Kurssikirjautumiset</h2>
-
-
 
             <?php
 
@@ -317,7 +322,7 @@ echo "</pre>";
                                         <option value="<?php echo $course["tunnus"]; ?>"
                                             <?php if ($course["tunnus"] == $registration['courseId']) {
                                             ?> selected <?php
-                                            } ?>>
+                                                    } ?>>
                                             <?php echo $course["nimi"]; ?>
                                         </option>
                                     <?php
@@ -530,6 +535,19 @@ echo "</pre>";
                 }
             });
 
+        }
+
+        //Script to hide/delete section with info message after n seconds:
+        const divToDisappear = document.getElementById("form-wrapp-to-disappear");
+        // console.log(divToDisappear);
+        if (divToDisappear) {
+            setTimeout(() => {
+                divToDisappear.classList.add("fade-out");
+                setTimeout(() => {
+                    divToDisappear.remove();
+                }, 300);
+
+            }, 3000);
         }
     </script>
 </body>
