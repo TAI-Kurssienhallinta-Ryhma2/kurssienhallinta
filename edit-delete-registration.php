@@ -2,7 +2,7 @@
 include_once 'sql-request.php';
 
 // Set the maximum number of records to be shown in a single page:
-$limit = 2;
+$limit = 50;
 
 
 // Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
     $idsToDelete = $_POST['delete'] ?? [];
 
     if (empty($idsToDelete)) {
-        header("Location: edit-delete-registration.php?warning=error");
+        header("Location: edit-delete-registration.php?warning=delete-error");
         exit();
     } else {
         global $conn;
@@ -92,28 +92,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
     }
 }
 
-/* EDIT REGISTRATION LOGIC */
-elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update-reg'])) {
+/* EDIT REGISTRATION LOGIC */ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update-reg'])) {
     $idsToEdit = $_POST['edit'] ?? [];
 
+    if (empty($idsToEdit)) {
+        header("Location: edit-delete-registration.php?warning=edit-error");
+        exit();
+    } else {
+        global $conn;
+        $conn->beginTransaction(); // Start transaction
+
+        try {
+            foreach ($idsToEdit as $id) {
+                $newStudent = $_POST['reg-student'][$id];
+                $newCourse = $_POST['courses'][$id];
+                $date = $_POST['reg-date'][$id];
+                // Form date in right format to insert in the DB:
+                $newDate = date("Y-m-d H:i:s", strtotime($date . " 09:00:00"));
+
+                if ($id === '' || !ctype_digit($id)) {
+                    throw new Exception("Virheellinen kurssikirjautuminen tunnus.");
+                }
+
+                // Edit registration:
+                $editReg = $conn->prepare("DELETE FROM kurssikirjautumiset WHERE tunnus = :id");
+                $editReg = $conn->prepare("UPDATE kurssikirjautumiset 
+                                            SET opiskelija = :opiskelija, kurssi = :kurssi, kirjautumispaiva = :paiva  
+                                            WHERE kurssikirjautumiset.tunnus = :id");
+                $editReg->bindParam(':id', $id, PDO::PARAM_INT);
+                $editReg->bindParam(':opiskelija', $newStudent, PDO::PARAM_INT);
+                $editReg->bindParam(':kurssi', $newCourse, PDO::PARAM_INT);
+                $editReg->bindParam(':paiva', $newDate);
+                $editReg->execute();
+            }
+            $conn->commit();
+            // After saving changes - go back without selected registration
+            header("Location: edit-delete-registration.php?success=updated");
+            exit();
+        } catch (Exception $e) {
+            if ($conn->inTransaction()) $conn->rollBack();
+            $error_message = "Muokkausvirhe: " . htmlspecialchars($e->getMessage());
+        }
+    }
 }
 
 
-
-/* READ SUCCESS MESSAGES FROM URL */
+/* READ INFO MESSAGES FROM URL */
 if (isset($_GET['success'])) {
-    if ($_GET['success'] === 'updated') $info_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
     if ($_GET['success'] === 'deleted') $info_message = "Kurssikirjautuminen poistettu onnistuneesti!";
+    if ($_GET['success'] === 'updated') $info_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
 } elseif (isset($_GET['warning'])) {
-    if ($_GET['warning'] === 'error') $info_message = "Valitse vähintään yksi poistettava kohde.";
+    if ($_GET['warning'] === 'delete-error') $info_message = "Valitse vähintään yksi poistettava kohde.";
+    if ($_GET['warning'] === 'edit-error') $info_message = "Valitse vähintään yksi muokattava kohde.";
 }
-
-
 echo "<pre>";
 // print_r($registration_portion);
 // print_r($total_records);
-print_r($idsToDelete);
-print_r($idsToEdit);
 echo "</pre>";
 
 ?>
@@ -231,7 +265,7 @@ echo "</pre>";
     </div>
 
     <!-- Section with message -->
-    <?php if (isset($info_message) ?? isset($error_message)) {
+    <?php if ($info_message || $error_message) {
     ?>
         <div class="form-wrapper" id="form-wrapp-to-disappear">
             <?php
@@ -283,11 +317,15 @@ echo "</pre>";
                         $teacher_fullname = $registration['teachersurname'] . " " . $registration['teachername'];
                         $auditory_name = $registration['auditoryname'];
                         $registration_date = $registration['kirjautumispaiva'];
+                        // form the date from DB (this field in DB of type "datetime") to the format Y-m-d:
+                        $dateFormatted = date("Y-m-d", strtotime($registration_date));
                         $student_fullname = $registration['studentsurname'] . " " . $registration['studentname'];
                         $student_grade = $registration['vuosikurssi'];
 
+                        // Check if the previous line has the same course id
                         if ($course_id !== $current_course_id) {
                     ?>
+                            <!-- if not, then form "grouped" line for this course: -->
                             <tr class="colspan-table-item" id="course-<?php echo $course_id; ?>">
                                 <td class="table-column" colspan="3">Kurssi <b>&laquo<?php echo $course_name; ?>&raquo</b> (opettaja <b><?php echo $teacher_fullname; ?></b>, tila <b><?php echo $auditory_name; ?></b>)</td>
                                 <td class="table-column-center">
@@ -300,10 +338,13 @@ echo "</pre>";
                         }
                         ?>
                         <tr class="table-item" id="registration-<?php echo $registration["registrationId"]; ?>">
-                            <td><input disabled type="datetime" name="reg-date[]" id="reg-date-<?php echo $registration["registrationId"]; ?>" value="<?php echo $registration_date; ?>" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>"></td>
-                            <!-- <td class="table-column"><php echo $registration_date; ?></td> -->
+                            <!-- Field with registration date: -->
+                            <!-- From the beginning the field is disabled (can't edit it), it will be able to edit it only when click on edit checkbox: -->
+                            <td><input disabled type="date" name="reg-date[<?php echo $registration["registrationId"]; ?>]" id="reg-date-<?php echo $registration["registrationId"]; ?>" value="<?php echo $dateFormatted; ?>" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>"></td>
+                            <!-- Field with student's name and surname: -->
+                            <!-- From the beginning the field is disabled (can't edit it), it will be able to edit it (select from the list) only when click on edit checkbox: -->
                             <td>
-                                <select disabled id="student-<?php echo $registration['studentId']; ?>" name="reg-student[]" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>">
+                                <select disabled id="student-<?php echo $registration['studentId']; ?>" name="reg-student[<?php echo $registration["registrationId"]; ?>]" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>">
                                     <?php
                                     foreach ($all_students as $student) {
                                     ?>
@@ -319,11 +360,10 @@ echo "</pre>";
                                 </select>
                             </td>
 
-                            <!-- <td><input disabled type="text" name="reg-student[]" id="reg-st-<php echo $registration["studentId"]; ?>" value="<php echo $student_fullname; ?>" class="input-data" data-registration="<php echo $registration["registrationId"]; ?>"></td> -->
-                            <!-- <td class="table-column" id="student-<php echo $registration['studentId']; ?>"><php echo $student_fullname; ?> (<php echo $student_grade; ?>)</td> -->
-                            <!-- <td class="table-column" id="course-<php echo $registration['courseId']; ?>"><php echo $course_name; ?></td> -->
+                            <!-- Field with course name: -->
+                            <!-- From the beginning the field is disabled (can't edit it), it will be able to edit it (select from the list) only when click on edit checkbox: -->
                             <td>
-                                <select disabled id="courses-<?php echo $registration['courseId']; ?>" name="courses[]" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>">
+                                <select disabled id="courses-<?php echo $registration['courseId']; ?>" name="courses[<?php echo $registration["registrationId"]; ?>]" class="input-data" data-registration="<?php echo $registration["registrationId"]; ?>">
                                     <?php
                                     foreach ($all_courses as $course) {
                                     ?>
@@ -338,10 +378,11 @@ echo "</pre>";
                                     ?>
                                 </select>
                             </td>
-
+                            <!-- Field with checkbox Delete: -->
                             <td class="table-column-center">
                                 <input type="checkbox" id="del-registration-<?php echo $registration["registrationId"]; ?>" name="delete[]" value="<?php echo $registration["registrationId"]; ?>" data-course="<?php echo $course_id; ?>" data-regid="<?php echo $registration["registrationId"]; ?>">
                             </td>
+                            <!-- Field with checkbox Edit: -->
                             <td class="table-column-center">
                                 <input type="checkbox" id="edit-registration-<?php echo $registration["registrationId"]; ?>" name="edit[]" value="<?php echo $registration["registrationId"]; ?>">
                             </td>
@@ -443,14 +484,9 @@ echo "</pre>";
             selectElement.addEventListener('change', formAddressPath);
         });
 
-        // console.log(selectElements);
-
         // Function to form address path using id of selected course:
         function formAddressPath() {
             const itemId = this.value;
-            // console.log("this is", this);
-            // console.log("this.id is", this.id);
-            // console.log("itemId is", itemId);
             switch (this.id) {
                 case "courses":
                     window.location.href = `edit-delete-registration.php?course-id=${itemId}`;
@@ -473,7 +509,6 @@ echo "</pre>";
         // add eventListener to the checkbox "delete record"
         const checkboxElements = document.querySelectorAll("input[type='checkbox']");
         checkboxElements.forEach(checkboxElement => {
-            // console.log(checkboxElement);
             checkboxElement.addEventListener("click", handleCheckedMark);
         });
 
@@ -512,7 +547,7 @@ echo "</pre>";
                 let isGrouped = this.hasAttribute('data-group');
                 if (isGrouped == true) {
                     let course_id = this.getAttribute('data-course');
-                    console.log("Click on grouped line for course ", course_id);
+                    // console.log("Click on grouped line for course ", course_id);
                     let all_courses_registration = document.getElementsByName('delete[]');
                     all_courses_registration.forEach(registration => {
                         if (registration.getAttribute('data-course') == course_id) {
@@ -521,7 +556,7 @@ echo "</pre>";
                     });
                 }
             } else {
-                console.log("Click on edit checkbox:", typeOfSelectedCheckbox);
+                // console.log("Click on edit checkbox:", typeOfSelectedCheckbox);
                 handleInputField(this.value, this.checked);
             }
         }
@@ -529,16 +564,13 @@ echo "</pre>";
         //Function to handle input fields Kirjautumispäivä, Opiskelija and Kurssi
         // after click on checkbox "edit":
         function handleInputField(elId, isChecked) {
-            // console.log("The id of the registration to edit:", elId);
-            // console.log("IsChecked for element is:", isChecked);
             // const editInputElements = document.querySelectorAll("input[type='datetime']");
             const editInputElements = document.querySelectorAll(".input-data");
             editInputElements.forEach(element => {
                 if (element.getAttribute('data-registration') == elId) {
                     if (isChecked == false) {
-                        // const studentId = element.id;
-                        // console.log(studentId);
-                        // console.log(`The value of the element before is ${studentId} and after uncheck is ${element.value}`);
+                        const studentId = element.id;
+                        // console.log(`The value of the element ${elId} before is ${studentId} and after uncheck is ${element.value}`);
                         element.setAttribute("disabled", "true");
                         element.classList.remove("input-data-available");
                     } else {
@@ -552,7 +584,6 @@ echo "</pre>";
 
         //Script to hide/delete section with info message after n seconds:
         const divToDisappear = document.getElementById("form-wrapp-to-disappear");
-        // console.log(divToDisappear);
         if (divToDisappear) {
             setTimeout(() => {
                 divToDisappear.classList.add("fade-out");

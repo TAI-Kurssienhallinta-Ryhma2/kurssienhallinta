@@ -576,7 +576,8 @@ select#auditories.filter-select {
 
 .input-data,
 select.input-data,
-.input-data option {
+.input-data option,
+input[type="date"].input-data {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--brand);
   border: 1px solid transparent;
@@ -589,6 +590,7 @@ select.input-data,
 
 .input-data-available,
 select.input-data-available,
-.input-data-available option  {
+.input-data-available option,
+input[type="date"].input-data-available  {
   border-color: var(--accent-hover);
 }
