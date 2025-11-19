@@ -2,7 +2,7 @@
 include_once 'sql-request.php';
 
 // Set the maximum number of records to be shown in a single page:
-$limit = 9;
+$limit = 2;
 
 
 // Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
@@ -56,15 +56,14 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
     $registration_portion = get_registrations($start_from, $limit);
 }
 
-
 $info_message = null;
 $error_message = null;
 
-/* DELETE STUDENT LOGIC */
+/* DELETE REGISTRATION LOGIC */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
-    $ids = $_POST['delete'] ?? [];
+    $idsToDelete = $_POST['delete'] ?? [];
 
-    if (empty($ids)) {
+    if (empty($idsToDelete)) {
         header("Location: edit-delete-registration.php?warning=error");
         exit();
     } else {
@@ -72,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
         $conn->beginTransaction(); // Start transaction (delete registrations)
 
         try {
-            foreach ($ids as $id) {
+            foreach ($idsToDelete as $id) {
                 if ($id === '' || !ctype_digit($id)) {
                     throw new Exception("Virheellinen kurssikirjautuminen tunnus.");
                 }
@@ -93,6 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete-reg'])) {
     }
 }
 
+/* EDIT REGISTRATION LOGIC */
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update-reg'])) {
+    $idsToEdit = $_POST['edit'] ?? [];
+
+}
+
+
+
 /* READ SUCCESS MESSAGES FROM URL */
 if (isset($_GET['success'])) {
     if ($_GET['success'] === 'updated') $info_message = "Kurssikirjautumisen tiedot päivitetty onnistuneesti!";
@@ -105,7 +112,8 @@ if (isset($_GET['success'])) {
 echo "<pre>";
 // print_r($registration_portion);
 // print_r($total_records);
-// print_r($total_pages);
+print_r($idsToDelete);
+print_r($idsToEdit);
 echo "</pre>";
 
 ?>
@@ -411,11 +419,16 @@ echo "</pre>";
     <!-- Section with button -->
     <div <?php if (empty($registration_portion)) { ?>hidden <?php } ?> class="button-wrapp">
         <div class="inner-wrapper">
-            <button type="submit" name="update-reg" class="submit-btn">Tallenna muutokset</button>
+
+            <button type="submit" name="update-reg" class="submit-btn"
+                onclick="return confirm('Haluatko varmasti tallentaa muutokset?');">
+                Tallenna muutokset</button>
+
             <button type="submit" name="delete-reg" class="submit-btn"
                 onclick="return confirm('Haluatko varmasti poistaa tämän kurssikirjautumisen?');">
                 Poista kurssinkirjautuminen
             </button>
+
         </div>
 
     </div>
