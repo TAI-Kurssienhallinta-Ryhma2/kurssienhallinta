@@ -1,16 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include_once 'sql-request.php';
 
+// Hae kaikki opiskelijat ja kurssit pudotusvalikoita varten
+$all_students = get_all_students();
+$all_courses = get_all_courses();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration'])) {
+    $student = isset($_POST['student']) ? $_POST['student'] : '';
+    $course = isset($_POST['course']) ? $_POST['course'] : '';
+
+    if ($student != 'empty' && $course != 'empty') {
+        // Lisätään tietokantaan
+        include_once 'sql-request.php';
+
+        try {
+            global $conn;
+            $stmt = $conn->prepare("INSERT INTO kurssikirjautumiset (opiskelija, kurssi) VALUES (:opiskelija, :kurssi)");
+            $stmt->bindParam(':opiskelija', $student, PDO::PARAM_INT);
+            $stmt->bindParam(':kurssi', $course, PDO::PARAM_INT);
+            $stmt->execute();
+
+            echo "Rekisteröinti lisätty onnistuneesti!";
+        } catch (PDOException $e) {
+            echo "Virhe rekisteröinnissä: " . $e->getMessage();
+        }
+    } else {
+        echo "Täytä kaikki vaaditut kentät.";
+    }
+}   
+?>
+
+<!DOCTYPE html>
+<html lang="fi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lisää kurssikirjautuminen</title>
+    <title>Ilmoittaudu kurssille</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
-    <h1>Lisää kurssikirjautuminen</h1>
+    <h1>Ilmoittaudu kurssille</h1>
+    
+    <div class="form-wrapper">        
+        <form method="POST" action="">
+            <div class="form-group">
+                <label for="student">Opiskelija: <span style="color: red;">*</span></label>
+                <select id="student" name="student">
+                    <option value="empty">----valitse opiskelija----</option>
+                    <?php
+                    foreach ($all_students as $student) {
+                        $value = $student['opiskelijanumero'];
+                        $label = $student['sukunimi'] . ' ' . $student['etunimi'] . ', ' . $student['vuosikurssi']. ', ' . $student['syntymapaiva'];
+                        $selected = (isset($_POST['student']) && $_POST['student'] == $value) ? 'selected' : '';
+                        echo "<option value='{$value}' {$selected}>";
+                        echo htmlspecialchars($label);
+                        echo "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="course">Kurssi: <span style="color: red;">*</span></label>
+                <select id="course" name="course">
+                    <option value="empty">----valitse kurssi----</option>
+                    <?php
+                    foreach ($all_courses as $course) {
+                        $value = $course['tunnus'];
+                        $label = $course['nimi'];
+                        $selected = (isset($_POST['course']) && $_POST['course'] == $value) ? 'selected' : '';
+                        echo "<option value='{$value}' {$selected}>";
+                        echo htmlspecialchars($label);
+                        echo "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <!-- <div class="form-group">
+                <label for="start-date">Ilmoittautumispäivä: <span style="color: red;">*</span></label>
+                <input 
+                    type="date" 
+                    id="start-date" 
+                    name="start-date"
+                    value=""
+                >
+            </div> -->
+            
+            <div class="button-wrapper">
+                <button type="submit" name="course-registration" class="submit-btn">Ilmoittaudu</button>
+            </div>
+        </form>
+    </div>
 </body>
 
 </html>
