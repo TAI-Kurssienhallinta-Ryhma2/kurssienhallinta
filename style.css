@@ -205,10 +205,20 @@ textarea:focus {
   color: #155724;
 }
 
+.warning-message {
+  background: #f2f053;
+  border: 1px solid #d1c68e;
+  color: #513a16;
+}
+
 .error-message {
   background: #f8d7da;
   border: 1px solid #f5c6cb;
   color: #721c24;
+}
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 /* === DESCRIPTION SECTION === */
@@ -283,7 +293,7 @@ tr:hover {
   cursor: pointer;
 }
 
-.icon-wrap i{
+.icon-wrap i {
   position: relative;
   z-index: 1;
 }
@@ -294,7 +304,9 @@ tr:hover {
   margin-left: 0.15rem;
 }
 
-table, tr, td {
+table,
+tr,
+td {
   overflow: visible !important;
 }
 
@@ -303,7 +315,7 @@ table, tr, td {
   display: none;
   background-color: white;
   color: red;
-  width: 335px;
+  max-width: 335px;
   border: 1px solid black;
   border-radius: 1rem;
   padding: 0.5rem 0.8rem;
@@ -465,4 +477,120 @@ select#auditories {
   .submit-btn {
     padding: 0.75rem 1rem;
   }
+}
+
+.filters {
+  margin: 0 auto;
+  display: flex;
+  gap: 2rem;
+  /* flex-direction: row;
+  flex-wrap: wrap; */
+  width: 90%;
+}
+
+.colspan-table-item {
+  background-color: var(--line) !important;
+}
+
+.data-wrapper,
+.pagination-wrapper {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+
+.filters-wrapper h2,
+.filters-wrapper label {
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  /* margin: 0; */
+}
+
+.table-column-center,
+.table-header-center {
+  text-align: center;
+}
+
+.pagination-list {
+  display: flex;
+  justify-content: center;
+}
+
+.pagination-list-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 34px;
+  height: 34px;
+  color: #155724;
+  transition: background-color 1s ease;
+}
+
+.pagination-list-item:hover {
+  background-color: #19672b;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination-list-item-marginal .pagination-list-item-link {
+  font-size: 33px;
+  line-height: 25px;
+  height: 33px;
+  padding: 0;
+}
+
+.pagination-list-item-marginal:hover {
+  background-color: #19672b;
+  border-radius: 50%;
+}
+.active-page {
+  background-color: #155724;
+  color: white;
+}
+.pagination-list-item-link {
+  padding: 0.3rem 0.3rem;
+}
+
+select#students.filter-select,
+select#teachers.filter-select,
+select#courses.filter-select,
+select#auditories.filter-select {
+  margin: 0;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
+}
+.button-wrapp {
+  /* display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap; */
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+.inner-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.input-data,
+select.input-data,
+.input-data option,
+input[type="date"].input-data {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--brand);
+  border: 1px solid transparent;
+  background-color: inherit;
+  font-size: 0.9rem;
+  border-radius: 0.3rem;
+  padding: 0.1rem 0.2rem;
+  /* box-sizing: content-box; */
+}
+
+.input-data-available,
+select.input-data-available,
+.input-data-available option,
+input[type="date"].input-data-available  {
+  border-color: var(--accent-hover);
 }

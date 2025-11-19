@@ -235,6 +235,79 @@ function add_teacher($firstname, $lastname, $subject)
     }
 }
 
+function count_regestrations($all_registrations)
+{
+    // $all_registrations = get_registrations(0);
+    $total_records = count($all_registrations);
+    return $total_records;
+}
+
+// Function for retrieve data from table 'kurssikirjautumiset' with different filters:
+function get_registrations($start_from, $limit = null, $filters = [])
+{
+    global $conn;
+
+    //Forming SQL statements:
+    $sql = "SELECT kurssikirjautumiset.tunnus AS registrationId, kurssikirjautumiset.kirjautumispaiva, 
+                                   opiskelijat.opiskelijanumero AS studentId, opiskelijat.etunimi AS studentname, 
+                                   opiskelijat.sukunimi AS studentsurname, opiskelijat.vuosikurssi,
+                                   kurssit.nimi AS coursename, kurssit.tunnus AS courseId,
+                                   opettajat.sukunimi AS teachersurname, opettajat.etunimi AS teachername, 
+                                   opettajat.tunnusnumero AS teacherId,
+                                   tilat.nimi AS auditoryname, tilat.tunnus AS auditoryId
+                            FROM  kurssikirjautumiset, opiskelijat, kurssit, opettajat, tilat
+                            WHERE kurssikirjautumiset.opiskelija = opiskelijat.opiskelijanumero
+                            AND   kurssikirjautumiset.kurssi = kurssit.tunnus
+                            AND kurssit.opettaja = opettajat.tunnusnumero
+                            AND kurssit.tila = tilat.tunnus";
+                        
+    //Depending on the selected filters, continue to form SQL statement:
+                            if (isset($filters['selected_student_id'])) {
+                                $sql .= " AND opiskelijat.opiskelijanumero = :student_id";
+                            }
+                            if (isset($filters['selected_teacher_id'])) {
+                                $sql .= " AND opettajat.tunnusnumero = :teacher_id";
+                            }
+                            if (isset($filters['selected_course_id'])) {
+                                $sql .= " AND kurssit.tunnus = :course_id";
+                            }
+                            if (isset($filters['selected_auditory_id'])) {
+                                $sql .= " AND tilat.tunnus = :auditory_id";
+                            }
+    //Continue to form SQL statement:
+                            $sql .= " ORDER BY courseId, opiskelijat.vuosikurssi, opiskelijat.sukunimi";
+
+    //Depending on the start position and limits, continue to form SQL statement:
+                            if ($limit !== null) {
+                                $sql .= " LIMIT :start_from, :limit";
+                            }
+
+    $stmt = $conn->prepare($sql);
+
+    if ($limit !== null) {
+        $stmt->bindValue(':start_from', (int)$start_from, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    }
+    if (isset($filters['selected_student_id'])) {
+        $stmt->bindValue(':student_id', (int)$filters['selected_student_id'], PDO::PARAM_INT);
+    }
+    if (isset($filters['selected_teacher_id'])) {
+        $stmt->bindValue(':teacher_id', (int)$filters['selected_teacher_id'], PDO::PARAM_INT);
+    }
+    if (isset($filters['selected_course_id'])) {
+        $stmt->bindValue(':course_id', (int)$filters['selected_course_id'], PDO::PARAM_INT);
+    }
+    if (isset($filters['selected_auditory_id'])) {
+        $stmt->bindValue(':auditory_id', (int)$filters['selected_auditory_id'], PDO::PARAM_INT);
+    }
+
+    $stmt->execute();
+
+    $all_registrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $all_registrations;
+}
+
 function get_course_by_id($course_id)
 {
     global $conn;

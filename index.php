@@ -57,9 +57,6 @@
             <li class="review-list-item">
                 <a href="./get-course-info.php" class="review-list-link">Tarkastele kurssin tietoja</a>
             </li>
-            <li class="review-list-item">
-                <a href="./get-course-registration-info.php" class="review-list-link">Tarkastele kurssikirjautumisen tietoja</a>
-            </li>
         </ul>
     </div>
 
