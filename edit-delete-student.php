@@ -1,11 +1,8 @@
 <?php
 include_once 'sql-request.php';
-require_once __DIR__ . '/utilities/utilities.php';
-require_once __DIR__ . '/tree_data_structures/TreeMap.php';
 
 // Fetch all students for dropdown list
 $all_students = get_all_students();
-$student_map = createTreeMap($all_students, "opiskelijanumero");
 
 
 $success_message = null;
@@ -94,12 +91,15 @@ if (isset($_GET['success'])) {
 $selected_student = null;
 if (isset($_GET['student-id']) && ctype_digit($_GET['student-id'])) {
     $sid = $_GET['student-id'];
-    $selected_student = $student_map->get((int)$sid);
-    $_SESSION["student_id"] = $sid;
+    foreach ($all_students as $st) {
+        if ((string)$st['opiskelijanumero'] === (string)$sid) {
+            $selected_student = $st;
+            $_SESSION["student_id"] = $sid;
+            break;
+        }
+    }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fi">
 <head>
