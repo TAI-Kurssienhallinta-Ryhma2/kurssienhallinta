@@ -217,6 +217,22 @@ function calculate_registered_students_for_course($reserved_courses)
     return $all_registered_students;
 }
 
+function add_aikataulu($courseID, $date, $startTime, $endTime){
+    global $conn;
+
+    try {
+        $stmt = $conn->prepare('INSERT INTO aikataulu (kurssi_id, paivamaara, aloitusaika, lopetusaika) VALUES (:course_id, :class_date, :aloitus, :lopetus)');
+        $stmt->bindParam(':course_id', $courseID, PDO::PARAM_INT);
+        $stmt->bindParam(':class_date', $date, PDO::PARAM_STR);
+        $stmt->bindParam(':aloitus', $startTime, PDO::PARAM_INT);
+        $stmt->bindParam(':lopetus', $endTime, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
 function add_teacher($firstname, $lastname, $subject)
 {
     global $conn;
