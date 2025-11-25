@@ -499,8 +499,13 @@ select#auditories {
   margin-top: 2rem;
 }
 
+.week-filter-wrapper{
+  margin-top: 2rem;
+}
 .filters-wrapper h2,
-.filters-wrapper label {
+.filters-wrapper label,
+.week-filter-wrapper h2,
+.week-filter-wrapper label {
   font-size: clamp(0.7rem, 1.5vw, 0.9rem);
   /* margin: 0; */
 }
@@ -593,4 +598,16 @@ select.input-data-available,
 .input-data-available option,
 input[type="date"].input-data-available  {
   border-color: var(--accent-hover);
+}
+
+.choose-week-btn{
+  width: min(250px, 92%);
+  margin: 0;
+  text-align: center;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
