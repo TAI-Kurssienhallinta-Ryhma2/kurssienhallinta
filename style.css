@@ -510,6 +510,14 @@ select#auditories {
   /* margin: 0; */
 }
 
+.week-filter-wrapper .filters{
+  gap: 0.5rem;
+}
+
+.week-filter-wrapper label{
+  align-content: center;
+}
+
 .table-column-center,
 .table-header-center {
   text-align: center;

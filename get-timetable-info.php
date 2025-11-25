@@ -8,21 +8,24 @@ $all_courses = get_all_courses();
 $all_auditories = get_all_auditories();
 
 // Store in session id from GET:
-if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
+if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESSION["auditory_id"])) {
     $_SESSION["auditory_id"] = $_GET['auditory-id'];
-} elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null) {
+} elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null || isset($_SESSION["student_id"])) {
     $_SESSION["student_id"] = $_GET['student-id'];
-} elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null) {
+} elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null || isset($_SESSION["teacher_id"])) {
     $_SESSION["teacher_id"] = $_GET['teacher-id'];
-} elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null) {
+} elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null || isset($_SESSION["course_id"])) {
     $_SESSION["course_id"] = $_GET['course-id'];
 }
 
-//Get today data:
+//Get current year and "current" week:
 date_default_timezone_set("Europe/Helsinki");
-$today_date = date("Y.m.d");
 $current_week = date("W");
 $current_year = date("Y");
+if (isset($_GET["week"])) {
+    $current_week = DateTime::createFromFormat('d.m.Y', $_GET['week'])->format('W');
+}
+
 $d = new DateTime();
 $d->setISODate($current_year, $current_week);
 $current_start_of_week = $d->format("d.m.y");
@@ -30,8 +33,8 @@ $d->modify('+6 days');
 $current_end_of_week = $d->format("d.m.y");
 
 echo "<pre>";
-//  print_r($current_week);
-//  print_r($current_year);
+//  print_r($_SESSION["auditory_id"]);
+//  print_r($_SESSION["student_id"]);
 echo "</pre>";
 ?>
 
@@ -52,7 +55,6 @@ echo "</pre>";
     <div class="filters-wrapper">
         <h2>Suodattimet</h2>
         <div class="filters">
-            <!-- <label for="courses">Valitse kurssi:</label> -->
             <!-- Create list of all courses from the DB table "kurssit": -->
             <select id="courses" name="courses" class="filter-select">
                 <!-- The first line: -->
@@ -64,7 +66,6 @@ echo "</pre>";
                     <!-- The value of option element is course's ID: -->
                     <!-- Put attribute 'selected' to the option with selected course - only for the updated page with GET parameter '?course-id=': -->
                     <option value="<?php echo $course["tunnus"]; ?>"
-
                         <?php if (isset($_SESSION["course_id"]) && $course["tunnus"] == $_SESSION["course_id"]) {
                         ?> selected <?php
                                 } ?>>
@@ -75,7 +76,6 @@ echo "</pre>";
                 ?>
             </select>
 
-            <!-- <label for="students">Valitse opiskelija:</label> -->
             <!-- Create list of all students from the DB table "opiskelijat": -->
             <select id="students" name="students" class="filter-select">
                 <!-- The first line: -->
@@ -87,7 +87,6 @@ echo "</pre>";
                     <!-- The value of option element is student's ID: -->
                     <!-- Put attribute 'selected' to the option with selected student - only for the updated page with GET parameter '?student-id=': -->
                     <option value="<?php echo $student["opiskelijanumero"]; ?>"
-
                         <?php if (isset($_SESSION["student_id"]) && $student["opiskelijanumero"] == $_SESSION["student_id"]) {
                         ?> selected <?php
                                 } ?>>
@@ -98,7 +97,6 @@ echo "</pre>";
                 ?>
             </select>
 
-            <!-- <label for="teachers">Valitse opettaja:</label> -->
             <!-- Create list of all teachers from the DB table "opettajat": -->
             <select id="teachers" name="teachers" class="filter-select">
                 <!-- The first line: -->
@@ -110,7 +108,6 @@ echo "</pre>";
                     <!-- The value of option element is teacher's ID: -->
                     <!-- Put attribute 'selected' to the option with selected teacher - only for the updated page with GET parameter '?teacher-id=': -->
                     <option value="<?php echo $teacher["tunnusnumero"]; ?>"
-
                         <?php if (isset($_SESSION["teacher_id"]) && $teacher["tunnusnumero"] == $_SESSION["teacher_id"]) {
                         ?> selected <?php
                                 } ?>>
@@ -121,7 +118,6 @@ echo "</pre>";
                 ?>
             </select>
 
-            <!-- <label for="auditories">Valitse tila:</label> -->
             <!-- Create list of all auditories from the DB table "tilat": -->
             <select id="auditories" name="auditories" class="filter-select">
                 <!-- The first line: -->
@@ -133,7 +129,6 @@ echo "</pre>";
                     <!-- The value of option element is auditory's ID: -->
                     <!-- Put attribute 'selected' to the option with selected auditory - only for the updated page with GET parameter '?auditory-id=': -->
                     <option value="<?php echo $auditory["tunnus"]; ?>"
-
                         <?php if (isset($_SESSION["auditory_id"]) && $auditory["tunnus"] == $_SESSION["auditory_id"]) {
                         ?> selected <?php
                                 } ?>>
@@ -150,7 +145,7 @@ echo "</pre>";
         <div class="filters">
             <label for="choose-week-btn">Valitse jakso:</label>
             <!-- Form the dropdown menu for week selection: -->
-            <select name="choose-week-btn" id="choose-week-btn" class="choose-week-btn">
+            <select name="week" id="week" class="choose-week-btn">
                 <!-- Form 4 records before "current" week: -->
                 <?php
                 $week_before = $current_week - 5;
@@ -162,12 +157,12 @@ echo "</pre>";
                     $db->modify('+6 days');
                     $end_of_week = $db->format("d.m.y");
                 ?>
-                    <option id="week-<?php echo $week_before; ?>-year-<?php echo $current_year; ?>" value="<?php echo $week_before . "/" . $current_year; ?>"><?php echo $week_before . "/" . $current_year . " (" . $start_of_week . " - " . $end_of_week . ")"; ?></option>
+                    <option id="week-<?php echo $week_before; ?>-year-<?php echo $current_year; ?>" value="<?php echo $start_of_week ?>"><?php echo $week_before . "/" . $current_year . " (" . $start_of_week . " - " . $end_of_week . ")"; ?></option>
                 <?php
                 }
                 ?>
                 <!-- "Current" week: -->
-                <option selected id="week-<?php echo $current_week; ?>-year-<?php echo $current_year; ?>" value="<?php echo $current_week . "/" . $current_year; ?>"><?php echo $current_week . "/" . $current_year. " (" . $current_start_of_week . " - " . $current_end_of_week . ")"; ?></option>
+                <option selected id="week-<?php echo $current_week; ?>-year-<?php echo $current_year; ?>" value="<?php echo $current_start_of_week ?>"><?php echo $current_week . "/" . $current_year . " (" . $current_start_of_week . " - " . $current_end_of_week . ")"; ?></option>
 
                 <!-- Form 4 records after "current" week: -->
                 <?php
@@ -180,7 +175,7 @@ echo "</pre>";
                     $da->modify('+6 days');
                     $end_of_week = $da->format("d.m.y");
                 ?>
-                    <option id="week-<?php echo $week_after; ?>-year-<?php echo $current_year; ?>" value="<?php echo $week_after . "/" . $current_year; ?>"><?php echo $week_after . "/" . $current_year . " (" . $start_of_week . " - " . $end_of_week . ")"; ?></option>
+                    <option id="week-<?php echo $week_after; ?>-year-<?php echo $current_year; ?>" value="<?php echo $start_of_week ?>"><?php echo $week_after . "/" . $current_year . " (" . $start_of_week . " - " . $end_of_week . ")"; ?></option>
                 <?php
                 }
                 ?>
@@ -189,7 +184,6 @@ echo "</pre>";
         </div>
 
     </div>
-
 
 
     <script>
@@ -205,7 +199,6 @@ echo "</pre>";
             switch (this.id) {
                 case "courses":
                     window.location.href = `get-timetable-info.php?course-id=${itemId}`;
-
                     break;
                 case "students":
                     window.location.href = `get-timetable-info.php?student-id=${itemId}`;
@@ -215,6 +208,23 @@ echo "</pre>";
                     break;
                 case "auditories":
                     window.location.href = `get-timetable-info.php?auditory-id=${itemId}`;
+                    break;
+                case "week":
+                    if (window.location.href.includes("?course") || window.location.href.includes("?student") || window.location.href.includes("?teacher") || window.location.href.includes("?auditory")) {
+                        if (window.location.href.includes("&week")) {
+                            const newUrl = window.location.href.split("&week")[0];
+                            window.location.href = `${newUrl}&week=${itemId}`;
+                        } else {
+                            window.location.href = `${window.location.href}&week=${itemId}`;
+                        }
+                    } else {
+                        if (window.location.href.includes("?week")) {
+                            const newUrl = window.location.href.split("?week")[0];
+                            window.location.href = `${newUrl}?week=${itemId}`;
+                        } else {
+                            window.location.href = `${window.location.href}?week=${itemId}`;
+                        }
+                    }
                     break;
                 default:
                     break;
