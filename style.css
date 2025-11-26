@@ -745,3 +745,6 @@ body:not(.home-page) .site-header {
 }
 
 /* === MOBILE ADAPTATION === */
+.tbl-header-today{
+  color:#f66bc8;
+}
