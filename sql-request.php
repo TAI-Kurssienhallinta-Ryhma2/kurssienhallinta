@@ -235,7 +235,7 @@ function add_teacher($firstname, $lastname, $subject)
     }
 }
 
-function count_regestrations($all_registrations)
+function count_registrations($all_registrations)
 {
     // $all_registrations = get_registrations(0);
     $total_records = count($all_registrations);

@@ -7,7 +7,7 @@ $limit = 50;
 
 // Define the total amount of records (registrations) in the table 'kurssikirjautumiset':
 // We will use this info to define the amount of pages for pagination:
-$total_records = count_regestrations(get_registrations(0, null));
+$total_records = count_registrations(get_registrations(0, null));
 // Define the amount of pages for pagination:
 $total_pages = ceil($total_records / $limit);
 
@@ -33,22 +33,22 @@ $all_auditories = get_all_auditories();
 if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null) {
     $_SESSION["auditory_id"] = $_GET['auditory-id'];
     $registration_portion = get_registrations(0, null, ['selected_auditory_id' => (int)$_GET['auditory-id']]);
-    $total_records = count_regestrations($registration_portion);
+    $total_records = count_registrations($registration_portion);
     $total_pages = ceil($total_records / $limit);
 } elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null) {
     $_SESSION["student_id"] = $_GET['student-id'];
     $registration_portion = get_registrations(0, null, ['selected_student_id' => (int)$_GET['student-id']]);
-    $total_records = count_regestrations($registration_portion);
+    $total_records = count_registrations($registration_portion);
     $total_pages = ceil($total_records / $limit);
 } elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null) {
     $_SESSION["teacher_id"] = $_GET['teacher-id'];
     $registration_portion = get_registrations(0, null, ['selected_teacher_id' => (int)$_GET['teacher-id']]);
-    $total_records = count_regestrations($registration_portion);
+    $total_records = count_registrations($registration_portion);
     $total_pages = ceil($total_records / $limit);
 } elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null) {
     $_SESSION["course_id"] = $_GET['course-id'];
     $registration_portion = get_registrations(0, null, ['selected_course_id' => (int)$_GET['course-id']]);
-    $total_records = count_regestrations($registration_portion);
+    $total_records = count_registrations($registration_portion);
     $total_pages = ceil($total_records / $limit);
 } else {
     //Get an array from the DB from table 'kurssikirjautumiset' starting from index $start_from and limiting up to $limit records 
