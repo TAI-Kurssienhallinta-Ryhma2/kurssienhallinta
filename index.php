@@ -44,6 +44,7 @@
                 <a href="./edit-delete-registration.php" class="action-list-link">Poista/muokkaa kurssikirjautuminen</a>
             </li>
         </ul>
+
         <ul class="review-list">
             <li class="review-list-item">
                 <a href="./get-student-info.php" class="review-list-link">Tarkastele opiskelijan tietoja</a>
@@ -56,6 +57,9 @@
             </li>
             <li class="review-list-item">
                 <a href="./get-course-info.php" class="review-list-link">Tarkastele kurssin tietoja</a>
+            </li>
+            <li class="review-list-item">
+                <a href="./get-timetable-info.php" class="review-list-link">Tarkastele aikataulua</a>
             </li>
         </ul>
     </div>
