@@ -27,14 +27,17 @@ if (isset($_GET["week"])) {
 }
 
 $d = new DateTime();
+//set the date based on ISO-8601 calendar using year and week number:
 $d->setISODate($current_year, $current_week);
+//Define the date of the Monday of the current week:
 $current_start_of_week = $d->format("d.m.y");
+//Add 6 days to the Monday of the current week:
 $d->modify('+6 days');
+//Define the date of the Sunday of the current week:
 $current_end_of_week = $d->format("d.m.y");
 
 echo "<pre>";
 //  print_r($_SESSION["auditory_id"]);
-//  print_r($_SESSION["student_id"]);
 echo "</pre>";
 ?>
 
@@ -143,7 +146,10 @@ echo "</pre>";
 
     <div class="week-filter-wrapper">
         <div class="filters">
-            <label for="choose-week-btn">Valitse jakso:</label>
+            <label for="week">Valitse jakso:</label>
+            <a href="http://">
+                <i></i>
+            </a>
             <!-- Form the dropdown menu for week selection: -->
             <select name="week" id="week" class="choose-week-btn">
                 <!-- Form 4 records before "current" week: -->
@@ -185,6 +191,180 @@ echo "</pre>";
 
     </div>
 
+    <section class="timetable-wrapper">
+        <table class="timetable">
+            <!-- The header of the table -->
+            <thead>
+                <tr>
+                    <th class="tbl-header tbl-timedata"></th>
+                    <th class="tbl-header">Ma <?php echo $current_start_of_week; ?></th>
+                    <th class="tbl-header">Ti
+                        <?php
+                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                        $d->modify('+1 day');
+                        echo $d->format('d.m');
+                        ?>
+                    </th>
+                    <th class="tbl-header">Ke 
+                    <?php
+                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                        $d->modify('+2 day');
+                        echo $d->format('d.m');
+                        ?>
+                    </th>
+                    <th class="tbl-header">To 
+                    <?php
+                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                        $d->modify('+3 day');
+                        echo $d->format('d.m');
+                        ?>
+                    </th>
+                    <th class="tbl-header">Pe 
+                    <?php
+                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                        $d->modify('+4 day');
+                        echo $d->format('d.m');
+                        ?>
+                    </th>
+                </tr>
+            </thead>
+            <!-- Body content in a table -->
+            <tbody>
+                <tr class="tbl-row">
+                    <td class="tbl-content tbl-timedata">08:00</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">09:00</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">10:00</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">11:00</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">12:30</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">13:30</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">14:30</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+                <tr class="tbl-row">
+                    <td class="tbl-timedata">15:30</td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                    <td class="tbl-content"></td>
+                </tr>
+
+            </tbody>
+
+
+        </table>
+
+    </section>
 
     <script>
         // script to observe the option selection event for courses:
