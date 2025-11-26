@@ -38,10 +38,10 @@
                 <a href="./edit-delete-auditory.php" class="action-list-link">Poista/muokkaa tila</a>
             </li>
             <li class="action-list-item">
-                <a href="./course-registration.php" class="action-list-link">Lisää kurssikirjautuminen</a>
+                <a href="./course-registration.php" class="action-list-link">Kurssi-ilmoittautuminen</a>
             </li>
             <li class="action-list-item">
-                <a href="./edit-delete-registration.php" class="action-list-link">Poista/muokkaa kurssikirjautuminen</a>
+                <a href="./edit-delete-registration.php" class="action-list-link">Poista/muokkaa kurssi-ilmoittautuminen</a>
             </li>
         </ul>
 
