@@ -5,6 +5,9 @@ include_once 'sql-request.php';
 $all_students = get_all_students();
 $all_courses = get_all_courses();
 
+$success_message = "";
+$error_message = "";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration'])) {
     $student = isset($_POST['student']) ? $_POST['student'] : '';
     $course = isset($_POST['course']) ? $_POST['course'] : '';
@@ -20,12 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
             $stmt->bindParam(':kurssi', $course, PDO::PARAM_INT);
             $stmt->execute();
 
-            echo "Rekisteröinti lisätty onnistuneesti!";
+        // Onnistumisviesti
+            $success_message = "Ilmoittautuminen lisätty onnistuneesti!";
         } catch (PDOException $e) {
-            echo "Virhe rekisteröinnissä: " . $e->getMessage();
+            // Virheilmoitus
+            $error_message = "Virhe ilmoittaudutumisessa: " . $e->getMessage();
         }
     } else {
-        echo "Täytä kaikki vaaditut kentät.";
+        $error_message = "Täytä kaikki vaaditut kentät.";
     }
 }   
 ?>
@@ -43,7 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
     <h1>Ilmoittaudu kurssille</h1>
     
-    <div class="form-wrapper">        
+    <div class="form-wrapper">
+        <!-- Viestien näyttö -->
+        <?php
+        if (!empty($success_message)) {
+            echo "<div class='message success-message'>" . htmlspecialchars($success_message) . "</div>";
+        }
+        if (!empty($error_message)) {
+            echo "<div class='message error-message'>" . htmlspecialchars($error_message) . "</div>";
+        }
+        ?>        
         <form method="POST" action="">
             <div class="form-group">
                 <label for="student">Opiskelija: <span style="color: red;">*</span></label>
