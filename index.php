@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="fi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,63 +7,35 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <h1>Tervetuloa Kurssienhallintaan</h1>
-    <h2>Valitse toiminto</h2>
-    <div class="lists-wrapper">
-        <ul class="action-list">
-            <li class="action-list-item">
-                <a href="./add-student.php" class="action-list-link">Lisää opiskelija</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./edit-delete-student.php" class="action-list-link">Poista/muokkaa opiskelija</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./add-teacher.php" class="action-list-link">Lisää opettaja</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./edit-delete-teacher.php" class="action-list-link">Poista/muokkaa opettaja</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./add-course.php" class="action-list-link">Lisää kurssi</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./edit-delete-course.php" class="action-list-link">Poista/muokkaa kurssi</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./add-auditory.php" class="action-list-link">Lisää tila</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./edit-delete-auditory.php" class="action-list-link">Poista/muokkaa tila</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./course-registration.php" class="action-list-link">Lisää kurssikirjautuminen</a>
-            </li>
-            <li class="action-list-item">
-                <a href="./edit-delete-registration.php" class="action-list-link">Poista/muokkaa kurssikirjautuminen</a>
-            </li>
-        </ul>
+<body class="home-page">
+<?php include 'header.php'; ?>
 
-        <ul class="review-list">
-            <li class="review-list-item">
-                <a href="./get-student-info.php" class="review-list-link">Tarkastele opiskelijan tietoja</a>
-            </li>
-            <li class="review-list-item">
-                <a href="./get-teacher-info.php" class="review-list-link">Tarkastele opettajan tietoja</a>
-            </li>
-            <li class="review-list-item">
-                <a href="./get-auditory-info.php" class="review-list-link">Tarkastele tilan tietoja</a>
-            </li>
-            <li class="review-list-item">
-                <a href="./get-course-info.php" class="review-list-link">Tarkastele kurssin tietoja</a>
-            </li>
-            <li class="review-list-item">
-                <a href="./get-timetable-info.php" class="review-list-link">Tarkastele aikataulua</a>
-            </li>
-        </ul>
-    </div>
+<main class="home-main">
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
 
+        <div class="hero-inner shell">
+            <p class="hero-kicker">Tervetuloa Kurssienhallintaan</p>
+            <h1 class="hero-title">
+                Hallinnoi kursseja, opiskelijoita ja opettajia yhdestä paikasta
+            </h1>
+            <p class="hero-text">
+                Lisää uusia kurssikirjautumisia tai hallinnoi olemassa olevia helposti.
+            </p>
 
+            <div class="hero-actions">
+                <a href="course-registration.php" class="hero-btn hero-btn-primary">
+                    Lisää kurssikirjautuminen
+                </a>
+                <a href="edit-delete-registration.php" class="hero-btn hero-btn-secondary">
+                    Poista / muokkaa kurssikirjautuminen
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<?php include 'footer.php'; ?>
 </body>
-
 </html>

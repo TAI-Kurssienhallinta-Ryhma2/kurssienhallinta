@@ -37,7 +37,7 @@ if (isset($_GET['teacher-id'])) {
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Tarkastele opettajan tietoja</h1>
     <label for="teachers">Valitse opettaja:</label>
     <!-- Create list of all teachers from the DB table "opettajat": -->
@@ -128,6 +128,7 @@ if (isset($_GET['teacher-id'])) {
             }
         }
     </script>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>

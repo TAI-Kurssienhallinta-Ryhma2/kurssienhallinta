@@ -90,7 +90,7 @@ $success_message = "Kurssi lisätty onnistuneesti!";
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+    <?php include 'header.php'; ?>
     <h1>Lisää uusi kurssi</h1>
     
     <div class="form-wrapper">
@@ -183,6 +183,7 @@ $success_message = "Kurssi lisätty onnistuneesti!";
             </div>
         </form>
     </div>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>

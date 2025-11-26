@@ -327,3 +327,230 @@ function get_course_by_id($course_id)
     return $course;
 }
 
+/**
+ * Fetches the timetable for a specific teacher.
+ *
+ * This function returns an array with two elements:
+ * 1. Teacher's full name (concatenation of first and last name).
+ * 2. An array of timetable entries for the teacher, including course name,
+ *    room name, date, start time, and end time.
+ *
+ * The optional $date parameter filters the timetable by a specific date.
+ * The date must be provided as a string in the format 'dd.mm.yyyy' (e.g., '02.02.2024').
+ *
+ * @param int         $teacher_id The unique ID of the teacher.
+ * @param string|null $date       Optional. The date to filter timetable entries, format 'dd.mm.yyyy'.
+ *
+ * @return array An array containing:
+ *               - [0]: associative array with key 'opettajan_nimi' (teacher's full name)
+ *               - [1]: array of timetable entries for the teacher, possibly filtered by date
+ */
+function get_timetable_teacher($teacher_id, $date = null) {
+    global $conn;
+    $data = [];
+
+    //---------------------First query----------------------
+
+    $query = "SELECT CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) AS opettajan_nimi
+            FROM opettajat 
+            WHERE opettajat.tunnusnumero = :teacher_id";
+
+    $statement = $conn->prepare($query);
+
+    $statement->execute([
+        ":teacher_id" => $teacher_id
+    ]);
+
+    //Append it into the $data array
+    $data[] = $statement->fetch(PDO::FETCH_ASSOC);
+
+    //----------------------Second Query-----------------------
+
+    $query = "SELECT 
+                kurssit.nimi as kurssin_nimi,
+                tilat.nimi as tilan_nimi,
+                DATE_FORMAT(aikataulu.paivamaara, '%d.%m.%Y') as paivamaara,
+                aikataulu.aloitusaika,
+                aikataulu.lopetusaika
+            FROM kurssit
+            INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
+            INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
+            INNER JOIN tilat ON kurssit.tila = tilat.tunnus
+            WHERE opettajat.tunnusnumero = :teacher_id";
+
+    if($date !== null) {
+        $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
+    }
+
+    $statement = $conn->prepare($query);
+
+    if($date !== null) {
+        $statement->execute([
+            ":teacher_id" => $teacher_id,
+            ":date" => $date
+        ]);
+    } else {
+        $statement->execute([
+            ":teacher_id" => $teacher_id
+        ]);
+    }
+
+    //Append it into the $data array
+    $data[] = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    //----------------------------------------------------------------------
+
+    return $data;
+}
+
+/**
+ * Fetches the timetable for a specific student.
+ *
+ * This function returns an array with two elements:
+ * 1. Student's full name (concatenation of first and last name).
+ * 2. An array of timetable entries for the student, including course name,
+ *    date, start time, end time, teacher's full name, and room name.
+ *
+ * The optional $date parameter filters the timetable by a specific date.
+ * The date must be provided as a string in the format 'dd.mm.yyyy' (e.g., '02.02.2024').
+ *
+ * @param int         $student_id The unique ID of the student.
+ * @param string|null $date       Optional. The date to filter timetable entries, format 'dd.mm.yyyy'.
+ *
+ * @return array An array containing:
+ *               - [0]: associative array with key 'opiskelijan_nimi' (student's full name)
+ *               - [1]: array of timetable entries for the student, possibly filtered by date
+ */
+function get_timetable_student($student_id, $date = null) {
+    global $conn;
+    $data = [];
+
+    //---------------------First query----------------------
+
+    $query = "SELECT CONCAT(opiskelijat.etunimi, ' ', opiskelijat.sukunimi) AS opiskelijan_nimi 
+            FROM opiskelijat 
+            WHERE opiskelijat.opiskelijanumero = :student_id";
+
+    $statement = $conn->prepare($query);
+
+    $statement->execute([
+        ":student_id" => $student_id
+    ]);
+
+    //Append it into the $data array
+    $data[] = $statement->fetch(PDO::FETCH_ASSOC);
+
+    //----------------------Second Query-----------------------
+
+    $query = "SELECT
+                kurssit.nimi as kurssin_nimi,
+                DATE_FORMAT(aikataulu.paivamaara, '%d.%m.%Y') as paivamaara,
+                aikataulu.aloitusaika,
+                aikataulu.lopetusaika,
+                CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) as opettajan_nimi,
+                tilat.nimi as tilan_nimi
+            FROM kurssikirjautumiset
+            INNER JOIN opiskelijat ON kurssikirjautumiset.opiskelija = opiskelijat.opiskelijanumero
+            INNER JOIN kurssit ON kurssikirjautumiset.kurssi = kurssit.tunnus
+            INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
+            INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
+            INNER JOIN tilat ON kurssit.tila = tilat.tunnus
+            WHERE opiskelijat.opiskelijanumero = :student_id";
+
+    if($date !== null) {
+        $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
+    }
+
+    $statement = $conn->prepare($query);
+
+    if($date !== null) {
+        $statement->execute([
+            ":student_id" => $student_id,
+            ":date" => $date
+        ]);
+    } else {
+        $statement->execute([
+            ":student_id" => $student_id
+        ]);
+    }
+
+    //Append it into the $data array
+    $data[] = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    //----------------------------------------------------------------------
+
+    return $data;
+}
+
+/**
+ * Fetches timetable information for a specific room (auditory).
+ *
+ * Returns an array with two elements:
+ * 1. Room information with its name.
+ * 2. An array of distinct courses scheduled in that room, optionally filtered by date.
+ *
+ * The optional $date parameter filters the courses by a specific date.
+ * The date must be provided as a string in the format 'dd.mm.yyyy' (e.g., '02.02.2024').
+ *
+ * @param int         $auditory_id The unique ID of the room.
+ * @param string|null $date        Optional. The date to filter courses, format 'dd.mm.yyyy'.
+ *
+ * @return array An array containing:
+ *               - [0]: associative array with key 'tilan_nimi' (room name)
+ *               - [1]: array of distinct courses in the room, possibly filtered by date
+ */
+function get_timetable_auditory($auditory_id, $date = null) {
+    global $conn;
+    $data = [];
+
+    //---------------------First query----------------------
+
+    $query = "SELECT tilat.nimi as tilan_nimi
+            FROM tilat 
+            WHERE tilat.tunnus = :auditory_id";
+
+    $statement = $conn->prepare($query);
+
+    $statement->execute([
+        ":auditory_id" => $auditory_id
+    ]);
+
+    //Append it into the $data array
+    $data[] = $statement->fetch(PDO::FETCH_ASSOC);
+
+    //----------------------Second Query-----------------------
+
+    $query = "SELECT DISTINCT 
+                kurssit.nimi as kurssin_nimi,
+                kurssit.kuvaus,
+                DATE_FORMAT(kurssit.alkupaiva, '%d.%m.%Y') as alkupaiva,
+                DATE_FORMAT(kurssit.loppupaiva, '%d.%m.%Y') as loppupaiva
+            FROM kurssit
+            INNER JOIN tilat ON kurssit.tila = tilat.tunnus
+            INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
+            WHERE tilat.tunnus = :auditory_id";
+
+    if($date !== null) {
+        $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
+    }
+
+    $statement = $conn->prepare($query);
+
+    if($date !== null) {
+        $statement->execute([
+            ":auditory_id" => $auditory_id,
+            ":date" => $date
+        ]);
+    } else {
+        $statement->execute([
+            ":auditory_id" => $auditory_id
+        ]);
+    }
+
+    //Append it into the $data array
+    $data[] = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    //----------------------------------------------------------------------
+
+    return $data;
+}

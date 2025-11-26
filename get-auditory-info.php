@@ -45,7 +45,7 @@ if (isset($_GET['auditory-id'])) {
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Tarkastele tilan tietoja</h1>
     <label for="auditories">Valitse tila:</label>
     <!-- Create list of all auditories from the DB table "tilat": -->
@@ -202,6 +202,7 @@ if (isset($_GET['auditory-id'])) {
         });
 
     </script>
+    <?php include 'footer.php'; ?>
 
 </body>
 

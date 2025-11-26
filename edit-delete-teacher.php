@@ -145,7 +145,7 @@ if (isset($_GET['teacher-id']) && ctype_digit($_GET['teacher-id'])) {
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
   <h1>Poista / muokkaa opettaja</h1>
 
   <label for="teachers">Valitse opettaja:</label>
@@ -213,5 +213,6 @@ if (isset($_GET['teacher-id']) && ctype_digit($_GET['teacher-id'])) {
       }
     });
   </script>
+  <?php include 'footer.php'; ?>
 </body>
 </html>
