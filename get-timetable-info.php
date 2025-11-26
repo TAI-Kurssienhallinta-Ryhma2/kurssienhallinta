@@ -52,7 +52,7 @@ echo "</pre>";
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Tarkastele aikataulua</h1>
 
     <div class="filters-wrapper">
@@ -414,6 +414,7 @@ echo "</pre>";
             }
         }
     </script>
+    <?php include 'footer.php'; ?>
 
 </body>
 

@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Ilmoittaudu kurssille</h1>
     
     <div class="form-wrapper">
@@ -103,5 +103,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
             </div>
         </form>
     </div>
+    <?php include 'footer.php'; ?>
 </body>
 </html>

@@ -163,7 +163,7 @@ echo "</pre>";
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Poista/muokkaa kurssikirjautuminen</h1>
 
     <!-- Section with filters -->
@@ -594,6 +594,7 @@ echo "</pre>";
             }, 3000);
         }
     </script>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>
