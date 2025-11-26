@@ -20,24 +20,22 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
 
 //Get current year and "current" week:
 date_default_timezone_set("Europe/Helsinki");
+$today = new DateTime();
 $current_week = date("W");
-$current_year = date("Y");
+$current_year = date("o");
+// Redefine the current week and year based on the date from GET parameter:
 if (isset($_GET["week"])) {
-    $current_week = DateTime::createFromFormat('d.m.Y', $_GET['week'])->format('W');
+    $current_dt = DateTime::createFromFormat('d.m.Y', $_GET['week']);
+    $current_week = $current_dt->format('W');
+    $current_year = $current_dt->format('o');
 }
 
-$d = new DateTime();
+$current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
-$d->setISODate($current_year, $current_week);
-//Define the date of the Monday of the current week:
-$current_start_of_week = $d->format("d.m.y");
-//Add 6 days to the Monday of the current week:
-$d->modify('+6 days');
-//Define the date of the Sunday of the current week:
-$current_end_of_week = $d->format("d.m.y");
+$current_date->setISODate($current_year, $current_week);
 
 echo "<pre>";
-//  print_r($_SESSION["auditory_id"]);
+//  print_r($today);
 echo "</pre>";
 ?>
 
@@ -154,34 +152,58 @@ echo "</pre>";
             <select name="week" id="week" class="choose-week-btn">
                 <!-- Form 4 records before "current" week: -->
                 <?php
-                $week_before = $current_week - 5;
+                $db = clone $current_date;
+                $db->modify('-4 weeks');
+
                 for ($i = 0; $i < 4; $i++) {
-                    $week_before = $week_before + 1;
-                    $db = new DateTime();
-                    $db->setISODate($current_year, $week_before);
-                    $start_of_week = $db->format("d.m.y");
-                    $db->modify('+6 days');
-                    $end_of_week = $db->format("d.m.y");
+                    $week_before = $db->format('W');
+                    $year = $db->format('o');
+                    $start_of_week = $db->format('d.m.y');
+
+                    $end_of_week = clone $db;
+                    $end_of_week->modify('+6 days');
+
                 ?>
-                    <option id="week-<?php echo $week_before; ?>-year-<?php echo $current_year; ?>" value="<?php echo $start_of_week ?>"><?php echo $week_before . "/" . $current_year . " (" . $start_of_week . " - " . $end_of_week . ")"; ?></option>
+                    <option id="week-<?php echo $week_before; ?>-year-<?php echo $year; ?>"
+                        value="<?php echo $start_of_week ?>">
+                        <?php echo $week_before . "/" . $year . " (" . $start_of_week . " - " . $end_of_week->format("d.m.y") . ")"; ?>
+                    </option>
                 <?php
+                    $db->modify('+1 week');
                 }
                 ?>
                 <!-- "Current" week: -->
-                <option selected id="week-<?php echo $current_week; ?>-year-<?php echo $current_year; ?>" value="<?php echo $current_start_of_week ?>"><?php echo $current_week . "/" . $current_year . " (" . $current_start_of_week . " - " . $current_end_of_week . ")"; ?></option>
+                <option selected
+                    id="week-<?php echo $current_week; ?>-year-<?php echo $current_year; ?>"
+                    value="
+                <?php
+                $current_start_of_week = $current_date->format('d.m.y');
+                $current_end_of_week = (clone $current_date)->modify('+6 days')->format('d.m.y');
+                echo $current_start_of_week;
+                ?>">
+                    <?php
+                    echo $current_week . "/" . $current_year . " (" . $current_start_of_week . " - " . $current_end_of_week . ")";
+                    ?>
+                </option>
 
                 <!-- Form 4 records after "current" week: -->
                 <?php
-                $week_after = $current_week;
+                $da = clone $current_date;
                 for ($i = 0; $i < 4; $i++) {
-                    $week_after = $week_after + 1;
-                    $da = new DateTime();
-                    $da->setISODate($current_year, $week_after);
+                    $da->modify('+1 week');
+
+                    $week_after = $da->format('W');
+                    $year = $da->format('o');
                     $start_of_week = $da->format("d.m.y");
-                    $da->modify('+6 days');
-                    $end_of_week = $da->format("d.m.y");
+
+                    $end_of_week = clone $da;
+                    $end_of_week->modify('+6 days');
+
                 ?>
-                    <option id="week-<?php echo $week_after; ?>-year-<?php echo $current_year; ?>" value="<?php echo $start_of_week ?>"><?php echo $week_after . "/" . $current_year . " (" . $start_of_week . " - " . $end_of_week . ")"; ?></option>
+                    <option id="week-<?php echo $week_after; ?>-year-<?php echo $year; ?>"
+                        value="<?php echo $start_of_week ?>">
+                        <?php echo $week_after . "/" . $year . " (" . $start_of_week . " - " . $end_of_week->format("d.m.y") . ")"; ?>
+                    </option>
                 <?php
                 }
                 ?>
@@ -197,38 +219,51 @@ echo "</pre>";
             <thead>
                 <tr>
                     <th class="tbl-header tbl-timedata"></th>
-                    <th class="tbl-header">Ma 
-                        <?php 
-                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
-                        echo $d->format('d.m');?></th>
-                    <th class="tbl-header">Ti
+                    <th class="tbl-header<?php
+                                            $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                                            if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
+                                            ?> tbl-header-today<?php
+                                            }
+                                        ?>">Ma
                         <?php
-                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
-                        $d->modify('+1 day');
-                        echo $d->format('d.m');
-                        ?>
-                    </th>
-                    <th class="tbl-header">Ke 
-                    <?php
-                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
-                        $d->modify('+2 day');
-                        echo $d->format('d.m');
-                        ?>
-                    </th>
-                    <th class="tbl-header">To 
-                    <?php
-                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
-                        $d->modify('+3 day');
-                        echo $d->format('d.m');
-                        ?>
-                    </th>
-                    <th class="tbl-header">Pe 
-                    <?php
-                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
-                        $d->modify('+4 day');
-                        echo $d->format('d.m');
-                        ?>
-                    </th>
+                        echo $d->format('d.m'); ?></th>
+
+                    <th class="tbl-header<?php
+                                            $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                                            $d->modify('+1 day');
+                                            if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
+                                            ?> tbl-header-today<?php
+                                            }
+                                                ?>">Ti
+                        <?php
+                        echo $d->format('d.m'); ?></th>
+                    <th class="tbl-header<?php
+                                            $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                                            $d->modify('+2 day');
+                                            if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
+                                            ?> tbl-header-today<?php
+                                            }
+                                                ?>">Ke
+                        <?php
+                        echo $d->format('d.m'); ?></th>
+                    <th class="tbl-header<?php
+                                            $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                                            $d->modify('+3 day');
+                                            if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
+                                            ?> tbl-header-today<?php
+                                            }
+                                                ?>">To
+                        <?php
+                        echo $d->format('d.m'); ?></th>
+                    <th class="tbl-header<?php
+                                            $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                                            $d->modify('+4 day');
+                                            if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
+                                            ?> tbl-header-today<?php
+                                            }
+                                                ?>">Pe
+                        <?php
+                        echo $d->format('d.m'); ?></th>
                 </tr>
             </thead>
             <!-- Body content in a table -->
