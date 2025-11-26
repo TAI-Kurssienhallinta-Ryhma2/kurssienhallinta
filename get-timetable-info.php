@@ -197,7 +197,10 @@ echo "</pre>";
             <thead>
                 <tr>
                     <th class="tbl-header tbl-timedata"></th>
-                    <th class="tbl-header">Ma <?php echo $current_start_of_week; ?></th>
+                    <th class="tbl-header">Ma 
+                        <?php 
+                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+                        echo $d->format('d.m');?></th>
                     <th class="tbl-header">Ti
                         <?php
                         $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
