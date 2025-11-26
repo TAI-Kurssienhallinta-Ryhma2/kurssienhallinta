@@ -89,7 +89,7 @@ if(isset($_GET["success"])) {
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Poista/muokkaa tila</h1>
 
     <label for = "auditories">Valitse tilaa: </label>
@@ -157,6 +157,7 @@ if(isset($_GET["success"])) {
             }
         });
     </script>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>
