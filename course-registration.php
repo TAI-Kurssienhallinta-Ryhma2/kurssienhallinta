@@ -8,42 +8,47 @@ $all_courses = get_all_courses();
 $success_message = "";
 $error_message = "";
 
+// Lomaketiedot - alustetaan tyhjiksi
+$selected_student = "";
+$selected_course = "";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration'])) {
-    $student = isset($_POST['student']) ? $_POST['student'] : '';
-    $course = isset($_POST['course']) ? $_POST['course'] : '';
+    // Tallennetaan lomaketiedot, jotta pysyy täytettynä virheviestissä
+    $selected_student = $_POST['student'] ?? '';
+    $selected_course = $_POST['course'] ?? '';
 
-    if ($student != 'empty' && $course != 'empty') {
+    if ($selected_student != 'empty' && $selected_course != 'empty') {
         // Lisätään tietokantaan
-        include_once 'sql-request.php';
-
         try {
             global $conn;
             $stmt = $conn->prepare("INSERT INTO kurssikirjautumiset (opiskelija, kurssi) VALUES (:opiskelija, :kurssi)");
-            $stmt->bindParam(':opiskelija', $student, PDO::PARAM_INT);
-            $stmt->bindParam(':kurssi', $course, PDO::PARAM_INT);
+            $stmt->bindParam(':opiskelija', $selected_student, PDO::PARAM_INT);
+            $stmt->bindParam(':kurssi', $selected_course, PDO::PARAM_INT);
             $stmt->execute();
 
-        // Onnistumisviesti
+            // Onnistumisviesti
             $success_message = "Ilmoittautuminen lisätty onnistuneesti!";
+            // Tyhjennä lomaketiedot onnistuneen lähetyksen jälkeen
+            $selected_student = "";
+            $selected_course = "";
         } catch (PDOException $e) {
-            // Virheilmoitus
+            // Virheilmoitus pysyy, lomake pysyy täytettynä
             $error_message = "Virhe ilmoittaudutumisessa: " . $e->getMessage();
         }
     } else {
         $error_message = "Täytä kaikki vaaditut kentät.";
     }
-}   
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Ilmoittaudu kurssille</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
     <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
     <h1>Ilmoittaudu kurssille</h1>
@@ -67,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
                     foreach ($all_students as $student) {
                         $value = $student['opiskelijanumero'];
                         $label = $student['sukunimi'] . ' ' . $student['etunimi'] . ', ' . $student['vuosikurssi']. ', ' . $student['syntymapaiva'];
-                        $selected = (isset($_POST['student']) && $_POST['student'] == $value) ? 'selected' : '';
+                        $selected = ($selected_student == $value) ? 'selected' : '';
                         echo "<option value='{$value}' {$selected}>";
                         echo htmlspecialchars($label);
                         echo "</option>";
@@ -84,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
                     foreach ($all_courses as $course) {
                         $value = $course['tunnus'];
                         $label = $course['nimi'];
-                        $selected = (isset($_POST['course']) && $_POST['course'] == $value) ? 'selected' : '';
+                        $selected = ($selected_course == $value) ? 'selected' : '';
                         echo "<option value='{$value}' {$selected}>";
                         echo htmlspecialchars($label);
                         echo "</option>";
@@ -92,22 +97,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['course-registration']
                     ?>
                 </select>
             </div>
-
-            <!-- <div class="form-group">
-                <label for="start-date">Ilmoittautumispäivä: <span style="color: red;">*</span></label>
-                <input 
-                    type="date" 
-                    id="start-date" 
-                    name="start-date"
-                    value=""
-                >
-            </div> -->
-            
+                        
             <div class="button-wrapper">
                 <button type="submit" name="course-registration" class="submit-btn">Ilmoittaudu</button>
             </div>
         </form>
     </div>
 </body>
-
 </html>
