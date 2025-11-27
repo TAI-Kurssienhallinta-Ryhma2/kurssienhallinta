@@ -17,7 +17,13 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
         }
     }
 } elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null || isset($_SESSION["student_id"])) {
+
     $_SESSION["student_id"] = $_GET['student-id'];
+
+    // Get all records dor this student from the table aikataulu:
+    $student_timetable = get_timetable_student($_SESSION["student_id"]);
+
+    // Store name and surname of selected student:
     foreach ($all_students as $s) {
         if ($s['opiskelijanumero'] == $_GET["student-id"]) {
             $elementName = "Opiskelija: " . $s['sukunimi'] . " " . $s['etunimi'];
@@ -56,7 +62,7 @@ $current_date = new DateTime();
 $current_date->setISODate($current_year, $current_week);
 
 echo "<pre>";
-//  print_r($elementName);
+// print_r($student_timetable);
 echo "</pre>";
 ?>
 
@@ -299,33 +305,52 @@ echo "</pre>";
             <!-- Body content in a table -->
             <tbody>
                 <?php
+
+                foreach ($student_timetable[1] as $record) {
+                    $start = new DateTime($record['aloitusaika']);
+                    $start_time = (int) $start->format("H");
+                    $end = new DateTime($record['lopetusaika']);
+                    $end_time = (int) $end->format("H");
+                    $diff = $start->diff($end);
+                    $record['diff'] = $diff->h;
+                }
+
                 // Define the start hour for all courses:
-                    $startHour = 8;
-                // Create 14 rows in the table:
-                for ($row = 1; $row <= 16; $row++) {
+                $startHour = 8;
+                // Create 17 rows in the table:
+                for ($row = 1; $row <= 17; $row++) {
                     // Calculate start time for each odd row:
-                        if ($row % 2 != 0) {
-                            $rowStartHour = sprintf("%02d:00", $startHour);
-                            $startHour = $startHour + 1;
-                        }
+                    if ($row % 2 != 0) {
+                        $rowStartHour = sprintf("%02d:00", $startHour);
+                    } else {
+                        $rowStartHour = sprintf("%02d:30", $startHour);
+                        $startHour = $startHour + 1;
+                    }
                 ?>
                     <tr class="tbl-row">
                         <!-- Create 6 columns in the row: -->
                         <?php
+                        $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
                         for ($column = 1; $column <= 6; $column++) {
                             $className = '';
                             $elementInnerText = '';
+                            $elementInnerData = '';
+
                             if ($column == 1) {
                                 $className = "tbl-content tbl-aline-left";
-                                if ($row % 2 != 0) {
-                                    $elementInnerText = $rowStartHour;
-                                }
+                                $elementInnerText = $rowStartHour;
                             } else {
                                 $className = "tbl-content";
+                                // Define date for each cell in the row:
+                                //It will be used to fill data-day attribute to the element td:
+                                $elementInnerData = $d->format("d.m.y");
+                                $d = DateTime::createFromFormat('d.m.y', $elementInnerData);
+                                $d->modify('+1 day');
                             }
                         ?>
-                            <td class="<?php echo $className; ?>"><?php echo $elementInnerText; ?></td>
+                            <td class="<?php echo $className; ?>" data-day="<?php echo $elementInnerData; ?>" data-time="<?php echo $rowStartHour; ?>"><?php echo $elementInnerText; ?></td>
                         <?php
+
                         }
                         ?>
                     </tr>
@@ -395,6 +420,7 @@ echo "</pre>";
             }
         }
     </script>
+    
     <?php include 'footer.php'; ?>
 
 </body>
