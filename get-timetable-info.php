@@ -8,14 +8,35 @@ $all_courses = get_all_courses();
 $all_auditories = get_all_auditories();
 
 // Store in session id from GET:
+$elementName = "";
 if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESSION["auditory_id"])) {
     $_SESSION["auditory_id"] = $_GET['auditory-id'];
+    foreach ($all_auditories as $a) {
+        if ($a['tunnus'] == $_GET["auditory-id"]) {
+            $elementName = "Tila: " . $a['nimi'];
+        }
+    }
 } elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null || isset($_SESSION["student_id"])) {
     $_SESSION["student_id"] = $_GET['student-id'];
+    foreach ($all_students as $s) {
+        if ($s['opiskelijanumero'] == $_GET["student-id"]) {
+            $elementName = "Opiskelija: " . $s['sukunimi'] . " " . $s['etunimi'];
+        }
+    }
 } elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null || isset($_SESSION["teacher_id"])) {
     $_SESSION["teacher_id"] = $_GET['teacher-id'];
+    foreach ($all_teachers as $t) {
+        if ($t['tunnusnumero'] == $_GET["teacher-id"]) {
+            $elementName = "Opettaja: " . $t['sukunimi'] . " " . $t['etunimi'];
+        }
+    }
 } elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null || isset($_SESSION["course_id"])) {
     $_SESSION["course_id"] = $_GET['course-id'];
+    foreach ($all_courses as $c) {
+        if ($c['tunnus'] == $_GET["course-id"]) {
+            $elementName = "Kurssi: " . $c['nimi'];
+        }
+    }
 }
 
 //Get current year and "current" week:
@@ -35,7 +56,7 @@ $current_date = new DateTime();
 $current_date->setISODate($current_year, $current_week);
 
 echo "<pre>";
-//  print_r($today);
+//  print_r($elementName);
 echo "</pre>";
 ?>
 
@@ -144,7 +165,7 @@ echo "</pre>";
 
     <div class="week-filter-wrapper">
         <div class="filters">
-            <label for="week">Valitse jakso:</label>
+            <label for="week" class="lable-style">Valitse jakso:</label>
             <a href="http://">
                 <i></i>
             </a>
@@ -214,11 +235,17 @@ echo "</pre>";
     </div>
 
     <section class="timetable-wrapper" id="timetable" hidden>
+        <div class="first-header-line">
+            <span class="info-text">Vk <?php echo $current_week; ?></span>
+            <span class="info-text">
+                <?php echo $elementName; ?>
+            </span>
+            </div>
         <table class="timetable">
             <!-- The header of the table -->
             <thead>
                 <tr>
-                    <th class="tbl-header tbl-timedata"></th>
+                    <th class="tbl-header tbl-aline-left"></th>
                     <th class="tbl-header<?php
                                             $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
                                             if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
@@ -269,7 +296,7 @@ echo "</pre>";
             <!-- Body content in a table -->
             <tbody>
                 <tr class="tbl-row">
-                    <td class="tbl-content tbl-timedata">08:00</td>
+                    <td class="tbl-content tbl-aline-left">08:00</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -277,7 +304,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -285,7 +312,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">09:00</td>
+                    <td class="tbl-aline-left">09:00</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -293,7 +320,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -301,7 +328,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">10:00</td>
+                    <td class="tbl-aline-left">10:00</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -309,7 +336,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -317,7 +344,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">11:00</td>
+                    <td class="tbl-aline-left">11:00</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -325,7 +352,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -333,7 +360,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -341,7 +368,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">12:30</td>
+                    <td class="tbl-aline-left">12:30</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -349,7 +376,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -357,7 +384,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">13:30</td>
+                    <td class="tbl-aline-left">13:30</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -365,7 +392,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -373,7 +400,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">14:30</td>
+                    <td class="tbl-aline-left">14:30</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -381,7 +408,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata"></td>
+                    <td class="tbl-aline-left"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
@@ -389,7 +416,7 @@ echo "</pre>";
                     <td class="tbl-content"></td>
                 </tr>
                 <tr class="tbl-row">
-                    <td class="tbl-timedata">15:30</td>
+                    <td class="tbl-aline-left">15:30</td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
                     <td class="tbl-content"></td>
