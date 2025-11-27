@@ -235,16 +235,19 @@ echo "</pre>";
     </div>
 
     <section class="timetable-wrapper" id="timetable" hidden>
+
+        <!-- Section with information about week and the name of selected option (student's name or teacher's name or auditory or course): -->
         <div class="first-header-line">
             <span class="info-text">Vk <?php echo $current_week; ?></span>
             <span class="info-text">
                 <?php echo $elementName; ?>
             </span>
-            </div>
+        </div>
+
         <table class="timetable">
             <!-- The header of the table -->
             <thead>
-                <tr>
+                <tr class="tbl-header-wrap">
                     <th class="tbl-header tbl-aline-left"></th>
                     <th class="tbl-header<?php
                                             $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
@@ -295,137 +298,41 @@ echo "</pre>";
             </thead>
             <!-- Body content in a table -->
             <tbody>
-                <tr class="tbl-row">
-                    <td class="tbl-content tbl-aline-left">08:00</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">09:00</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">10:00</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">11:00</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">12:30</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">13:30</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">14:30</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-                <tr class="tbl-row">
-                    <td class="tbl-aline-left">15:30</td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                    <td class="tbl-content"></td>
-                </tr>
-
+                <?php
+                // Define the start hour for all courses:
+                    $startHour = 8;
+                // Create 14 rows in the table:
+                for ($row = 1; $row <= 16; $row++) {
+                    // Calculate start time for each odd row:
+                        if ($row % 2 != 0) {
+                            $rowStartHour = sprintf("%02d:00", $startHour);
+                            $startHour = $startHour + 1;
+                        }
+                ?>
+                    <tr class="tbl-row">
+                        <!-- Create 6 columns in the row: -->
+                        <?php
+                        for ($column = 1; $column <= 6; $column++) {
+                            $className = '';
+                            $elementInnerText = '';
+                            if ($column == 1) {
+                                $className = "tbl-content tbl-aline-left";
+                                if ($row % 2 != 0) {
+                                    $elementInnerText = $rowStartHour;
+                                }
+                            } else {
+                                $className = "tbl-content";
+                            }
+                        ?>
+                            <td class="<?php echo $className; ?>"><?php echo $elementInnerText; ?></td>
+                        <?php
+                        }
+                        ?>
+                    </tr>
+                <?php
+                }
+                ?>
             </tbody>
-
 
         </table>
 

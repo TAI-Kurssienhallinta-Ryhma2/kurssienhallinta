@@ -470,6 +470,14 @@ input[type="date"].input-data-available {
   font-weight: 800;
 }
 
+/* .tbl-header-wrap{
+  background: #f3f4f6;
+} */
+.tbl-header-today {
+  background-color: var(--accent);
+  /* border-radius: 20px; */
+}
+
 /* ========== INDEX PAGE =========== */
 
 .shell {
@@ -765,6 +773,4 @@ body:not(.home-page) .site-header {
 }
 
 /* === MOBILE ADAPTATION === */
-.tbl-header-today {
-  color: #f66bc8;
-}
+
