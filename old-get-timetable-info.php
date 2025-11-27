@@ -50,11 +50,11 @@ echo "</pre>";
 </head>
 
 <body>
-    <?php include 'header.php'; ?>
+<?php include 'header.php'; ?>
     <h1>Tarkastele aikataulua</h1>
 
     <div class="filters-wrapper">
-        <h2>Valitse ensin opettaja, opiskelija, kurssi tai tila:</h2>
+        <h2>Suodattimet</h2>
         <div class="filters">
             <!-- Create list of all courses from the DB table "kurssit": -->
             <select id="courses" name="courses" class="filter-select">
@@ -149,7 +149,7 @@ echo "</pre>";
                 <i></i>
             </a>
             <!-- Form the dropdown menu for week selection: -->
-            <select name="week" id="week" class="choose-week-btn" disabled>
+            <select name="week" id="week" class="choose-week-btn">
                 <!-- Form 4 records before "current" week: -->
                 <?php
                 $db = clone $current_date;
@@ -213,7 +213,7 @@ echo "</pre>";
 
     </div>
 
-    <section class="timetable-wrapper" id="timetable" hidden>
+    <section class="timetable-wrapper">
         <table class="timetable">
             <!-- The header of the table -->
             <thead>
@@ -223,8 +223,8 @@ echo "</pre>";
                                             $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
                                             if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
                                             ?> tbl-header-today<?php
-                                                            }
-                                                                ?>">Ma
+                                            }
+                                        ?>">Ma
                         <?php
                         echo $d->format('d.m'); ?></th>
 
@@ -233,8 +233,8 @@ echo "</pre>";
                                             $d->modify('+1 day');
                                             if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
                                             ?> tbl-header-today<?php
-                                                            }
-                                                                ?>">Ti
+                                            }
+                                                ?>">Ti
                         <?php
                         echo $d->format('d.m'); ?></th>
                     <th class="tbl-header<?php
@@ -242,8 +242,8 @@ echo "</pre>";
                                             $d->modify('+2 day');
                                             if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
                                             ?> tbl-header-today<?php
-                                                            }
-                                                                ?>">Ke
+                                            }
+                                                ?>">Ke
                         <?php
                         echo $d->format('d.m'); ?></th>
                     <th class="tbl-header<?php
@@ -251,8 +251,8 @@ echo "</pre>";
                                             $d->modify('+3 day');
                                             if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
                                             ?> tbl-header-today<?php
-                                                            }
-                                                                ?>">To
+                                            }
+                                                ?>">To
                         <?php
                         echo $d->format('d.m'); ?></th>
                     <th class="tbl-header<?php
@@ -260,8 +260,8 @@ echo "</pre>";
                                             $d->modify('+4 day');
                                             if ($d->format('Y-m-d') == $today->format('Y-m-d')) {
                                             ?> tbl-header-today<?php
-                                                            }
-                                                                ?>">Pe
+                                            }
+                                                ?>">Pe
                         <?php
                         echo $d->format('d.m'); ?></th>
                 </tr>
@@ -446,18 +446,6 @@ echo "</pre>";
                     break;
                 default:
                     break;
-            }
-        }
-
-        // Function to show timetable and make week selection available:
-        window.addEventListener("DOMContentLoaded", showTimetable);
-
-        function showTimetable() {
-            if (window.location.href.includes("?course") || window.location.href.includes("?student") || window.location.href.includes("?teacher") || window.location.href.includes("?auditory")) {
-                const weekSelectionElement = document.getElementById("week");
-                const timetableElement = document.getElementById("timetable");
-                weekSelectionElement.removeAttribute("disabled");
-                timetableElement.removeAttribute("hidden");
             }
         }
     </script>
