@@ -445,9 +445,37 @@ input[type="date"].input-data-available {
   width: calc((100% / 16) * 3);
   text-align: center;
 }
-.tbl-timedata {
+.tbl-aline-left {
   width: calc(100% / 16);
   text-align: left;
+}
+
+.first-header-line {
+  padding-left: 1rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  font-size: 0.85rem;
+  color: var(--brand);
+  letter-spacing: 0.5px;
+  font-weight: 800;
+  text-align: left;
+}
+.lable-style{
+  padding-left: 1rem;
+  font-size: 0.85rem;
+  color: var(--brand);
+  letter-spacing: 0.5px;
+  font-weight: 800;
+}
+
+/* .tbl-header-wrap{
+  background: #f3f4f6;
+} */
+.tbl-header-today {
+  background-color: var(--accent);
+  /* border-radius: 20px; */
 }
 
 /* ========== INDEX PAGE =========== */
@@ -745,6 +773,4 @@ body:not(.home-page) .site-header {
 }
 
 /* === MOBILE ADAPTATION === */
-.tbl-header-today{
-  color:#f66bc8;
-}
+
