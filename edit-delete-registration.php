@@ -2,7 +2,7 @@
 include_once 'sql-request.php';
 
 // Set the maximum number of records to be shown in a single page:
-$limit = 50;
+$limit = 10;
 
 
 // Define the total amount of records (registrations) in the table 'kurssikirjautumiset':

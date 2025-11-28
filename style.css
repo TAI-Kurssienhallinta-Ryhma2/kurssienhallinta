@@ -479,6 +479,10 @@ input[type="date"].input-data-available {
   /* border-radius: 20px; */
 }
 
+.booked{
+  background-color: #f9facc;
+}
+
 /* ========== INDEX PAGE =========== */
 
 .shell {

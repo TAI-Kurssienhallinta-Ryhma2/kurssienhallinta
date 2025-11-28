@@ -20,7 +20,7 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
 
     $_SESSION["student_id"] = $_GET['student-id'];
 
-    // Get all records dor this student from the table aikataulu:
+    // Get all records for this student from the table aikataulu:
     $student_timetable = get_timetable_student($_SESSION["student_id"]);
 
     // Store name and surname of selected student:
@@ -306,15 +306,6 @@ echo "</pre>";
             <tbody>
                 <?php
 
-                foreach ($student_timetable[1] as $record) {
-                    $start = new DateTime($record['aloitusaika']);
-                    $start_time = (int) $start->format("H");
-                    $end = new DateTime($record['lopetusaika']);
-                    $end_time = (int) $end->format("H");
-                    $diff = $start->diff($end);
-                    $record['diff'] = $diff->h;
-                }
-
                 // Define the start hour for all courses:
                 $startHour = 8;
                 // Create 17 rows in the table:
@@ -331,24 +322,69 @@ echo "</pre>";
                         <!-- Create 6 columns in the row: -->
                         <?php
                         $d = DateTime::createFromFormat('d.m.y', $current_start_of_week);
+
                         for ($column = 1; $column <= 6; $column++) {
+                            $isHidden = false;
                             $className = '';
                             $elementInnerText = '';
                             $elementInnerData = '';
+                            $rowSpan = 1;
 
                             if ($column == 1) {
                                 $className = "tbl-content tbl-aline-left";
                                 $elementInnerText = $rowStartHour;
+
                             } else {
                                 $className = "tbl-content";
+
                                 // Define date for each cell in the row:
                                 //It will be used to fill data-day attribute to the element td:
                                 $elementInnerData = $d->format("d.m.y");
                                 $d = DateTime::createFromFormat('d.m.y', $elementInnerData);
                                 $d->modify('+1 day');
+
+                                // Run throw the array with timetable for the selected student:
+                                foreach ($student_timetable[1] as $record) {
+                                    
+                                    $recordDate = DateTime::createFromFormat("d.m.Y", $record['paivamaara']);
+                                    $cellDate = DateTime::createFromFormat("d.m.y", $elementInnerData);
+                                    // Check if the date of the column is the same, as date in the timetable of the student:
+                                    if ($recordDate->format("Y-m-d") == $cellDate->format("Y-m-d")) {
+                                        // Define the start time of the course 
+                                        $start_time = DateTime::createFromFormat("H:i:s", $record['aloitusaika'])->format("H:i");
+                                        $end_time = DateTime::createFromFormat("H:i:s", $record['lopetusaika'])->format("H:i");
+
+                                        if ($rowStartHour <= $start_time || $rowStartHour >= $end_time) {
+                                            $className = $className . " booked";
+ 
+                                            if ($start_time == $rowStartHour) {
+                                                $start = new DateTime($record['aloitusaika']);
+                                                $end = new DateTime($record['lopetusaika']);
+                                                $end_time = (int) $end->format("H");
+                                                $diff = $start->diff($end);
+                                                $rowSpan = ($diff->h) * 2;
+                                                $elementInnerText = $record['kurssin_nimi'] . "</br>" . $record['opettajan_nimi'] . "</br>" . $record['tilan_nimi'];
+                                            } else {
+                                                $rowSpan = 1;
+                                                $className = "tbl-content";
+                                            }
+                                        } else {
+                                            $isHidden = true;
+                                        }
+                                    }
+                                }
                             }
                         ?>
-                            <td class="<?php echo $className; ?>" data-day="<?php echo $elementInnerData; ?>" data-time="<?php echo $rowStartHour; ?>"><?php echo $elementInnerText; ?></td>
+                            <td
+                                class="<?php echo $className; ?>"
+                                rowspan="<?php echo $rowSpan; ?>"
+                                <?php 
+                                if ($isHidden == true) {
+                                    ?> hidden<?php
+                                }
+                                ?>>
+                                <?php echo $elementInnerText; ?>
+                            </td>
                         <?php
 
                         }
@@ -420,7 +456,7 @@ echo "</pre>";
             }
         }
     </script>
-    
+
     <?php include 'footer.php'; ?>
 
 </body>
