@@ -43,7 +43,7 @@ if (isset($_GET['course-id'])) {
 </head>
 
 <body>
-    <a href="./index.php" class="go-back-btn">Palaa pääsivulle</a>
+<?php include 'header.php'; ?>
     <h1>Tarkastele kurssin tietoja</h1>
     <label for="courses">Valitse kurssi:</label>
     <!-- Create list of all courses from the DB table "kurssit": -->
@@ -132,6 +132,7 @@ if (isset($_GET['course-id'])) {
             }
         }
     </script>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>
