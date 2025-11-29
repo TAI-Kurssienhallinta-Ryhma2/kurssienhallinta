@@ -343,3 +343,19 @@ function get_course_by_id($course_id)
     return $course;
 }
 
+function get_all_groups()
+{
+    global $conn;
+
+    try {
+        $stmt = $conn->prepare("SELECT ryhma_id, nimi, aloituspaiva, lopetuspaiva 
+                                FROM ryhmat
+                                ORDER BY nimi;");
+        $stmt->execute();
+
+        $all_groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $all_groups;
+    } catch (PDOException $e) {
+        return [];
+    }
+}
