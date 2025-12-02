@@ -116,7 +116,7 @@ if(isset($_POST["add-session"])) {
         // Hae kurssin nykyiset tiedot
         $current_course = get_course_by_id($course_id);
         
-        // Päivitä kurssin opettaja ja tila jos ne ovat muuttuneet
+        /* Päivitä kurssin opettaja ja tila jos ne ovat muuttuneet
         if($current_course["opettaja"] != $teacher_id || $current_course["tila"] != $auditory_id) {
             $update_query = "UPDATE kurssit 
                            SET opettaja = :teacher_id, tila = :auditory_id 
@@ -127,7 +127,7 @@ if(isset($_POST["add-session"])) {
                 ":auditory_id" => $auditory_id,
                 ":course_id" => $course_id
             ]);
-        }
+        }*/
 
         // Lisää sessio aikataulu-tauluun
         $insert_query = "INSERT INTO aikataulu (kurssi_id, paivamaara, aloitusaika, lopetusaika) 
@@ -188,6 +188,25 @@ echo "</pre>";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarkastele aikataulua</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .multiple-sessions {
+            padding: 0 !important;
+        }
+        .session-container {
+            display: flex;
+            gap: 2px;
+            height: 100%;
+            width: 100%;
+        }
+        .session-item {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+            padding: 0.25rem;
+            box-sizing: border-box;
+            overflow: hidden;
+            font-size: 0.85em;
+        }
+    </style>
 </head>
 
 <body>
@@ -564,40 +583,31 @@ echo "</pre>";
                                     $elementInnerText = implode("</br>", $contentParts);
                                     
                                 } elseif ($session_count >= 2) {
-                                    // Päällekkäiset sessiot - jaetaan kahtia
-                                    // Tässä luodaan kaksi td-elementtiä vierekkäin
-                                    // HUOM: Tämä vaatii erityiskäsittelyn
-                                    // Renderöidään ensimmäinen sessio puolella leveydellä
-                                    $session = $sessions_at_this_time[0];
-                                    $className = $className . " booked";
-                                    $rowSpan = $session['rowSpan'];
-                                    $cellStyle = 'width: 50%; display: inline-block; vertical-align: top; box-sizing: border-box;';
+                                    // Päällekkäiset sessiot - näytetään vierekkäin
+                                    $className = $className . " booked multiple-sessions";
+                                    $rowSpan = max(array_column($sessions_at_this_time, 'rowSpan'));
                                     
-                                    $contentParts = [];
-                                    if (isset($session['record']['kurssin_nimi'])) {
-                                        $contentParts[] = $session['record']['kurssin_nimi'];
-                                    }
-                                    if (isset($session['record']['opettajan_nimi'])) {
-                                        $contentParts[] = $session['record']['opettajan_nimi'];
-                                    }
-                                    if (isset($session['record']['tilan_nimi'])) {
-                                        $contentParts[] = $session['record']['tilan_nimi'];
-                                    }
-                                    $elementInnerText = '<div style="' . $cellStyle . '">' . implode("</br>", $contentParts) . '</div>';
+                                    $elementInnerText = '<div class="session-container">';
                                     
-                                    // Lisää toinen sessio samaan soluun
-                                    $session2 = $sessions_at_this_time[1];
-                                    $contentParts2 = [];
-                                    if (isset($session2['record']['kurssin_nimi'])) {
-                                        $contentParts2[] = $session2['record']['kurssin_nimi'];
+                                    foreach ($sessions_at_this_time as $session) {
+                                        $contentParts = [];
+                                        if (isset($session['record']['kurssin_nimi'])) {
+                                            $contentParts[] = $session['record']['kurssin_nimi'];
+                                        }
+                                        if (isset($session['record']['opettajan_nimi'])) {
+                                            $contentParts[] = $session['record']['opettajan_nimi'];
+                                        }
+                                        if (isset($session['record']['tilan_nimi'])) {
+                                            $contentParts[] = $session['record']['tilan_nimi'];
+                                        }
+                                        
+                                        $width = (100 / $session_count) . '%';
+                                        $elementInnerText .= '<div class="session-item" style="width: ' . $width . ';">';
+                                        $elementInnerText .= implode("</br>", $contentParts);
+                                        $elementInnerText .= '</div>';
                                     }
-                                    if (isset($session2['record']['opettajan_nimi'])) {
-                                        $contentParts2[] = $session2['record']['opettajan_nimi'];
-                                    }
-                                    if (isset($session2['record']['tilan_nimi'])) {
-                                        $contentParts2[] = $session2['record']['tilan_nimi'];
-                                    }
-                                    $elementInnerText .= '<div style="' . $cellStyle . '">' . implode("</br>", $contentParts2) . '</div>';
+                                    
+                                    $elementInnerText .= '</div>';
                                 }
                             }
                         ?>
