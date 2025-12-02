@@ -139,7 +139,7 @@ if(isset($_POST["add-session"])) {
         // Hae kurssin nykyiset tiedot
         $current_course = get_course_by_id($course_id);
         
-        /* Päivitä kurssin opettaja ja tila jos ne ovat muuttuneet
+        // Päivitä kurssin opettaja ja tila jos ne ovat muuttuneet
         if($current_course["opettaja"] != $teacher_id || $current_course["tila"] != $auditory_id) {
             $update_query = "UPDATE kurssit 
                            SET opettaja = :teacher_id, tila = :auditory_id 
@@ -150,7 +150,7 @@ if(isset($_POST["add-session"])) {
                 ":auditory_id" => $auditory_id,
                 ":course_id" => $course_id
             ]);
-        }*/
+        }
 
         // Lisää sessio aikataulu-tauluun
         $insert_query = "INSERT INTO aikataulu (kurssi_id, paivamaara, aloitusaika, lopetusaika) 
