@@ -93,24 +93,47 @@ if(isset($_POST["add-session"])) {
         }
         $formatted_date = $date_obj->format('Y-m-d');
 
-        // TARKISTA PÄÄLLEKKÄISYYDET SAMALLE KURSSILLE
-        $overlap_check = "SELECT COUNT(*) as count FROM aikataulu 
-                         WHERE kurssi_id = :course_id 
-                         AND paivamaara = :session_date
-                         AND (
-                             (aloitusaika < :end_time AND lopetusaika > :start_time)
-                         )";
-        $overlap_stmt = $conn->prepare($overlap_check);
-        $overlap_stmt->execute([
-            ":course_id" => $course_id,
+// TARKISTA PÄÄLLEKKÄISYYDET OPETTAJALLE JA TILALLE
+        // Tarkista opettajan päällekkäisyydet
+        $teacher_overlap_check = "SELECT COUNT(*) as count FROM aikataulu a
+                                 JOIN kurssit k ON a.kurssi_id = k.tunnus
+                                 WHERE k.opettaja = :teacher_id 
+                                 AND a.paivamaara = :session_date
+                                 AND (
+                                     (a.aloitusaika < :end_time AND a.lopetusaika > :start_time)
+                                 )";
+        $teacher_overlap_stmt = $conn->prepare($teacher_overlap_check);
+        $teacher_overlap_stmt->execute([
+            ":teacher_id" => $teacher_id,
             ":session_date" => $formatted_date,
             ":start_time" => $start_time,
             ":end_time" => $end_time
         ]);
-        $overlap_result = $overlap_stmt->fetch(PDO::FETCH_ASSOC);
+        $teacher_overlap_result = $teacher_overlap_stmt->fetch(PDO::FETCH_ASSOC);
         
-        if($overlap_result['count'] > 0) {
-            throw new Exception("Kurssilla on jo sessio tähän aikaan!");
+        if($teacher_overlap_result['count'] > 0) {
+            throw new Exception("Opettajalla on jo sessio tähän aikaan!");
+        }
+
+        // Tarkista tilan päällekkäisyydet
+        $auditory_overlap_check = "SELECT COUNT(*) as count FROM aikataulu a
+                                   JOIN kurssit k ON a.kurssi_id = k.tunnus
+                                   WHERE k.tila = :auditory_id 
+                                   AND a.paivamaara = :session_date
+                                   AND (
+                                       (a.aloitusaika < :end_time AND a.lopetusaika > :start_time)
+                                   )";
+        $auditory_overlap_stmt = $conn->prepare($auditory_overlap_check);
+        $auditory_overlap_stmt->execute([
+            ":auditory_id" => $auditory_id,
+            ":session_date" => $formatted_date,
+            ":start_time" => $start_time,
+            ":end_time" => $end_time
+        ]);
+        $auditory_overlap_result = $auditory_overlap_stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if($auditory_overlap_result['count'] > 0) {
+            throw new Exception("Tila on jo varattu tähän aikaan!");
         }
 
         // Hae kurssin nykyiset tiedot
