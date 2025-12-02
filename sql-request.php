@@ -217,6 +217,22 @@ function calculate_registered_students_for_course($reserved_courses)
     return $all_registered_students;
 }
 
+function add_aikataulu($courseID, $date, $startTime, $endTime){
+    global $conn;
+
+    try {
+        $stmt = $conn->prepare('INSERT INTO aikataulu (kurssi_id, paivamaara, aloitusaika, lopetusaika) VALUES (:course_id, :class_date, :aloitus, :lopetus)');
+        $stmt->bindParam(':course_id', $courseID, PDO::PARAM_INT);
+        $stmt->bindParam(':class_date', $date, PDO::PARAM_STR);
+        $stmt->bindParam(':aloitus', $startTime, PDO::PARAM_INT);
+        $stmt->bindParam(':lopetus', $endTime, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
 function add_teacher($firstname, $lastname, $subject)
 {
     global $conn;
@@ -544,6 +560,82 @@ function get_timetable_auditory($auditory_id, $date = null) {
     } else {
         $statement->execute([
             ":auditory_id" => $auditory_id
+        ]);
+    }
+
+    //Append it into the $data array
+    $data[] = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    //----------------------------------------------------------------------
+
+    return $data;
+}
+
+/**
+ * Fetches the timetable for a specific course.
+ *
+ * This function returns an array with two elements:
+ * 1. Course name.
+ * 2. An array of timetable entries for the course, including date,
+ *    start time, end time, teacher's full name, and room name.
+ *
+ * The optional $date parameter filters the timetable by a specific date.
+ * The date must be provided as a string in the format 'dd.mm.yyyy' (e.g., '02.02.2024').
+ *
+ * @param int         $course_id The unique ID of the course.
+ * @param string|null $date      Optional. The date to filter timetable entries, format 'dd.mm.yyyy'.
+ *
+ * @return array An array containing:
+ *               - [0]: associative array with key 'kurssin_nimi' (course name)
+ *               - [1]: array of timetable entries for the course, possibly filtered by date
+ */
+function get_timetable_course($course_id, $date = null) {
+    global $conn;
+    $data = [];
+
+    //---------------------First query----------------------
+
+    $query = "SELECT kurssit.nimi as kurssin_nimi
+            FROM kurssit 
+            WHERE kurssit.tunnus = :course_id";
+
+    $statement = $conn->prepare($query);
+
+    $statement->execute([
+        ":course_id" => $course_id
+    ]);
+
+    //Append it into the $data array
+    $data[] = $statement->fetch(PDO::FETCH_ASSOC);
+
+    //----------------------Second Query-----------------------
+
+    $query = "SELECT
+                DATE_FORMAT(aikataulu.paivamaara, '%d.%m.%Y') as paivamaara,
+                aikataulu.aloitusaika,
+                aikataulu.lopetusaika,
+                CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) as opettajan_nimi,
+                tilat.nimi as tilan_nimi
+            FROM aikataulu
+            INNER JOIN kurssit ON aikataulu.kurssi_id = kurssit.tunnus
+            INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
+            INNER JOIN tilat ON kurssit.tila = tilat.tunnus
+            WHERE kurssit.tunnus = :course_id";
+
+    if($date !== null) {
+        $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
+    }
+
+    $statement = $conn->prepare($query);
+
+    if($date !== null) {
+        $statement->execute([
+            ":course_id" => $course_id,
+            ":date" => $date
+        ]);
+    } else {
+        $statement->execute([
+            ":course_id" => $course_id
         ]);
     }
 
