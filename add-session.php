@@ -113,6 +113,49 @@ if(isset($_POST["add-session"])) {
             throw new Exception("Kurssilla on jo sessio tähän aikaan!");
         }
 
+        // TARKISTA PÄÄLLEKKÄISYYDET OPETTAJALLE JA TILALLE
+        // Tarkista opettajan päällekkäisyydet
+        $teacher_overlap_check = "SELECT COUNT(*) as count FROM aikataulu a
+                                 JOIN kurssit k ON a.kurssi_id = k.tunnus
+                                 WHERE k.opettaja = :teacher_id 
+                                 AND a.paivamaara = :session_date
+                                 AND (
+                                     (a.aloitusaika < :end_time AND a.lopetusaika > :start_time)
+                                 )";
+        $teacher_overlap_stmt = $conn->prepare($teacher_overlap_check);
+        $teacher_overlap_stmt->execute([
+            ":teacher_id" => $teacher_id,
+            ":session_date" => $formatted_date,
+            ":start_time" => $start_time,
+            ":end_time" => $end_time
+        ]);
+        $teacher_overlap_result = $teacher_overlap_stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if($teacher_overlap_result['count'] > 0) {
+            throw new Exception("Opettajalla on jo sessio tähän aikaan!");
+        }
+
+        // Tarkista tilan päällekkäisyydet
+        $auditory_overlap_check = "SELECT COUNT(*) as count FROM aikataulu a
+                                   JOIN kurssit k ON a.kurssi_id = k.tunnus
+                                   WHERE k.tila = :auditory_id 
+                                   AND a.paivamaara = :session_date
+                                   AND (
+                                       (a.aloitusaika < :end_time AND a.lopetusaika > :start_time)
+                                   )";
+        $auditory_overlap_stmt = $conn->prepare($auditory_overlap_check);
+        $auditory_overlap_stmt->execute([
+            ":auditory_id" => $auditory_id,
+            ":session_date" => $formatted_date,
+            ":start_time" => $start_time,
+            ":end_time" => $end_time
+        ]);
+        $auditory_overlap_result = $auditory_overlap_stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if($auditory_overlap_result['count'] > 0) {
+            throw new Exception("Tila on jo varattu tähän aikaan!");
+        }
+
         // Hae kurssin nykyiset tiedot
         $current_course = get_course_by_id($course_id);
         
