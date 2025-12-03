@@ -217,7 +217,8 @@ function calculate_registered_students_for_course($reserved_courses)
     return $all_registered_students;
 }
 
-function add_aikataulu($courseID, $date, $startTime, $endTime){
+function add_aikataulu($courseID, $date, $startTime, $endTime)
+{
     global $conn;
 
     try {
@@ -276,27 +277,27 @@ function get_registrations($start_from, $limit = null, $filters = [])
                             AND   kurssikirjautumiset.kurssi = kurssit.tunnus
                             AND kurssit.opettaja = opettajat.tunnusnumero
                             AND kurssit.tila = tilat.tunnus";
-                        
+
     //Depending on the selected filters, continue to form SQL statement:
-                            if (isset($filters['selected_student_id'])) {
-                                $sql .= " AND opiskelijat.opiskelijanumero = :student_id";
-                            }
-                            if (isset($filters['selected_teacher_id'])) {
-                                $sql .= " AND opettajat.tunnusnumero = :teacher_id";
-                            }
-                            if (isset($filters['selected_course_id'])) {
-                                $sql .= " AND kurssit.tunnus = :course_id";
-                            }
-                            if (isset($filters['selected_auditory_id'])) {
-                                $sql .= " AND tilat.tunnus = :auditory_id";
-                            }
+    if (isset($filters['selected_student_id'])) {
+        $sql .= " AND opiskelijat.opiskelijanumero = :student_id";
+    }
+    if (isset($filters['selected_teacher_id'])) {
+        $sql .= " AND opettajat.tunnusnumero = :teacher_id";
+    }
+    if (isset($filters['selected_course_id'])) {
+        $sql .= " AND kurssit.tunnus = :course_id";
+    }
+    if (isset($filters['selected_auditory_id'])) {
+        $sql .= " AND tilat.tunnus = :auditory_id";
+    }
     //Continue to form SQL statement:
-                            $sql .= " ORDER BY courseId, opiskelijat.vuosikurssi, opiskelijat.sukunimi";
+    $sql .= " ORDER BY courseId, opiskelijat.vuosikurssi, opiskelijat.sukunimi";
 
     //Depending on the start position and limits, continue to form SQL statement:
-                            if ($limit !== null) {
-                                $sql .= " LIMIT :start_from, :limit";
-                            }
+    if ($limit !== null) {
+        $sql .= " LIMIT :start_from, :limit";
+    }
 
     $stmt = $conn->prepare($sql);
 
@@ -361,7 +362,8 @@ function get_course_by_id($course_id)
  *               - [0]: associative array with key 'opettajan_nimi' (teacher's full name)
  *               - [1]: array of timetable entries for the teacher, possibly filtered by date
  */
-function get_timetable_teacher($teacher_id, $date = null) {
+function get_timetable_teacher($teacher_id, $date = null)
+{
     global $conn;
     $data = [];
 
@@ -397,13 +399,13 @@ function get_timetable_teacher($teacher_id, $date = null) {
             WHERE opettajat.tunnusnumero = :teacher_id
             ORDER BY paivamaara, aikataulu.aloitusaika";
 
-    if($date !== null) {
+    if ($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
     }
 
     $statement = $conn->prepare($query);
 
-    if($date !== null) {
+    if ($date !== null) {
         $statement->execute([
             ":teacher_id" => $teacher_id,
             ":date" => $date
@@ -440,7 +442,8 @@ function get_timetable_teacher($teacher_id, $date = null) {
  *               - [0]: associative array with key 'opiskelijan_nimi' (student's full name)
  *               - [1]: array of timetable entries for the student, possibly filtered by date
  */
-function get_timetable_student($student_id, $date = null) {
+function get_timetable_student($student_id, $date = null)
+{
     global $conn;
     $data = [];
 
@@ -479,13 +482,13 @@ function get_timetable_student($student_id, $date = null) {
             WHERE opiskelijat.opiskelijanumero = :student_id
             ORDER BY paivamaara, aikataulu.aloitusaika";
 
-    if($date !== null) {
+    if ($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
     }
 
     $statement = $conn->prepare($query);
 
-    if($date !== null) {
+    if ($date !== null) {
         $statement->execute([
             ":student_id" => $student_id,
             ":date" => $date
@@ -521,7 +524,8 @@ function get_timetable_student($student_id, $date = null) {
  *               - [0]: associative array with key 'tilan_nimi' (room name)
  *               - [1]: array of distinct courses in the room, possibly filtered by date
  */
-function get_timetable_auditory($auditory_id, $date = null) {
+function get_timetable_auditory($auditory_id, $date = null)
+{
     global $conn;
     $data = [];
 
@@ -546,21 +550,27 @@ function get_timetable_auditory($auditory_id, $date = null) {
                 kurssit.nimi as kurssin_nimi,
                 kurssit.tunnus as kurssin_id,
                 kurssit.kuvaus,
+                DATE_FORMAT(aikataulu.paivamaara, '%d.%m.%Y') as paivamaara,
+                aikataulu.aloitusaika,
+                aikataulu.lopetusaika,
+                CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) as opettajan_nimi,
+                opettajat.tunnusnumero as opettajan_id,
                 DATE_FORMAT(kurssit.alkupaiva, '%d.%m.%Y') as alkupaiva,
                 DATE_FORMAT(kurssit.loppupaiva, '%d.%m.%Y') as loppupaiva
             FROM kurssit
             INNER JOIN tilat ON kurssit.tila = tilat.tunnus
             INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
+            INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
             WHERE tilat.tunnus = :auditory_id
             ORDER BY paivamaara, aikataulu.aloitusaika";
 
-    if($date !== null) {
+    if ($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
     }
 
     $statement = $conn->prepare($query);
 
-    if($date !== null) {
+    if ($date !== null) {
         $statement->execute([
             ":auditory_id" => $auditory_id,
             ":date" => $date
@@ -597,7 +607,8 @@ function get_timetable_auditory($auditory_id, $date = null) {
  *               - [0]: associative array with key 'kurssin_nimi' (course name)
  *               - [1]: array of timetable entries for the course, possibly filtered by date
  */
-function get_timetable_course($course_id, $date = null) {
+function get_timetable_course($course_id, $date = null)
+{
     global $conn;
     $data = [];
 
@@ -633,13 +644,13 @@ function get_timetable_course($course_id, $date = null) {
             WHERE kurssit.tunnus = :course_id
             ORDER BY paivamaara, aikataulu.aloitusaika";
 
-    if($date !== null) {
+    if ($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
     }
 
     $statement = $conn->prepare($query);
 
-    if($date !== null) {
+    if ($date !== null) {
         $statement->execute([
             ":course_id" => $course_id,
             ":date" => $date

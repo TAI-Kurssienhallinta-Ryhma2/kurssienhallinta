@@ -95,9 +95,9 @@ $current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
 $current_date->setISODate($current_year, $current_week);
 
-echo "<pre>";
-print_r($timetable_sample);
-echo "</pre>";
+// echo "<pre>";
+// print_r($timetable_sample);
+// echo "</pre>";
 ?>
 
 <!DOCTYPE html>
