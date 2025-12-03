@@ -7,8 +7,14 @@ $all_teachers = get_all_teachers();
 $all_courses = get_all_courses();
 $all_auditories = get_all_auditories();
 
-// Store in session id from GET:
+//Set variables by default:
 $elementName = "";
+$longStudentLink = "";
+$longTeacherLink = "";
+$longCourseLink = "";
+$longAuditoryLink = "";
+
+// Store in session id from GET:
 if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESSION["auditory_id"])) {
     $_SESSION["auditory_id"] = $_GET['auditory-id'];
 
@@ -16,8 +22,8 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $timetable_sample = get_timetable_auditory($_SESSION["auditory_id"]);
 
     //Form variables for adding them to the link in the span with class="info-text":
-        $infoHref = "./get-auditory-info.php?auditory-id=" . $_SESSION["auditory_id"];
-        $infoTitle = "Tarkastele tilan tietoja";
+    $infoHref = "./get-auditory-info.php?auditory-id=" . $_SESSION["auditory_id"];
+    $infoTitle = "Tarkastele tilan tietoja";
 
     foreach ($all_auditories as $a) {
         if ($a['tunnus'] == $_GET["auditory-id"]) {
@@ -30,10 +36,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
 
     // Get all records for this student from the table aikataulu:
     $timetable_sample = get_timetable_student($_SESSION["student_id"]);
-    
+
     //Form variables for adding them to the link in the span with class="info-text":
-        $infoHref = "./get-student-info.php?student-id=" . $_SESSION["student_id"];
-        $infoTitle = "Tarkastele opiskelijan tietoja";
+    $infoHref = "./get-student-info.php?student-id=" . $_SESSION["student_id"];
+    $infoTitle = "Tarkastele opiskelijan tietoja";
 
     // Store name and surname of selected student:
     foreach ($all_students as $s) {
@@ -48,8 +54,8 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $timetable_sample = get_timetable_teacher($_SESSION["teacher_id"]);
 
     //Form variables for adding them to the link in the span with class="info-text":
-        $infoHref = "./get-teacher-info.php?teacher-id=" . $_SESSION["teacher_id"];
-        $infoTitle = "Tarkastele opettajan tietoja";
+    $infoHref = "./get-teacher-info.php?teacher-id=" . $_SESSION["teacher_id"];
+    $infoTitle = "Tarkastele opettajan tietoja";
 
     foreach ($all_teachers as $t) {
         if ($t['tunnusnumero'] == $_GET["teacher-id"]) {
@@ -61,10 +67,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
 
     // Get all records for this course from the table aikataulu:
     $timetable_sample = get_timetable_course($_SESSION["course_id"]);
-    
+
     //Form variables for adding them to the link in the span with class="info-text":
-        $infoHref = "./get-course-info.php?course-id=" . $_SESSION["course_id"];
-        $infoTitle = "Tarkastele kurssin tietoja";
+    $infoHref = "./get-course-info.php?course-id=" . $_SESSION["course_id"];
+    $infoTitle = "Tarkastele kurssin tietoja";
 
     foreach ($all_courses as $c) {
         if ($c['tunnus'] == $_GET["course-id"]) {
@@ -89,9 +95,9 @@ $current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
 $current_date->setISODate($current_year, $current_week);
 
-// echo "<pre>";
-// print_r($timetable_sample);
-// echo "</pre>";
+echo "<pre>";
+print_r($timetable_sample);
+echo "</pre>";
 ?>
 
 <!DOCTYPE html>
@@ -393,6 +399,25 @@ $current_date->setISODate($current_year, $current_week);
                                     $start_time = DateTime::createFromFormat("H:i:s", $record['aloitusaika'])->format("H:i");
                                     $end_time = DateTime::createFromFormat("H:i:s", $record['lopetusaika'])->format("H:i");
 
+                                    if (isset($record['tilan_id'])) {
+                                        $longAuditoryLink = "<div class='description-auditory'> <a class='underline-link' title='Tarkastele tilan tietoja' target='_blank' rel='noopener' href='./get-auditory-info.php?auditory-id=" .
+                                        $record['tilan_id'] . "'>" . $record['tilan_nimi'] . "</a></div>";
+                                        
+                                    } 
+                                    if (isset($_SESSION["student_id"])) {
+                                    
+                                        
+                                    } 
+                                    if (isset($record['opettajan_id'])) {
+                                        $longTeacherLink = "<div class='description-teacher'> <a class='underline-link' title='Tarkastele opettajan tietoja' target='_blank' rel='noopener' href='./get-teacher-info.php?teacher-id=" .
+                                        $record['opettajan_id'] . "'>" . $record['opettajan_nimi'] . "</a></div>";
+                                        
+                                    } 
+                                    if (isset($record['kurssin_id'])) {
+                                        $longCourseLink = "<div class='description-course'> <a class='underline-link' title='Tarkastele kurssin tietoja' target='_blank' rel='noopener' href='./get-course-info.php?course-id=" .
+                                        $record['kurssin_id'] . "'>" . $record['kurssin_nimi'] . "</a></div>";
+                                    }
+
                                     // Check if the date of the column is the same, as date in the timetable of the student:
                                     if ($start_time == $rowStartHour) {
                                         $className .= " booked";
@@ -402,18 +427,7 @@ $current_date->setISODate($current_year, $current_week);
                                         $end_time = (int) $end->format("H");
                                         $diff = $start->diff($end);
                                         $rowSpan = ($diff->h) * 2;
-                                        $cellInnerText = "<div class='cell-description'>" .
-                                            "<div class='description-course'>" .
-                                            "<a class='underline-link' title='Tarkastele kurssin tietoja' target='_blank' rel='noopener' href='./get-course-info.php?course-id=" .
-                                            $record['kurssin_id'] . "'>" .
-                                            $record['kurssin_nimi'] .
-                                            "</a></div>" .
-                                            "<div class='description-auditory'>" .
-                                            "<a class='underline-link' title='Tarkastele tilan tietoja' target='_blank' rel='noopener' href='./get-auditory-info.php?auditory-id=" .
-                                            $record['tilan_id'] . "'>" .
-                                            $record['tilan_nimi'] .
-                                            "</a></div>" .
-                                            "</div>";
+                                        $cellInnerText = "<div class='cell-description'>" . $longCourseLink . $longTeacherLink . $longAuditoryLink . "</div>";
 
                                         break;
                                     }
