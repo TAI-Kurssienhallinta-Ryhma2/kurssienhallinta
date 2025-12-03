@@ -802,5 +802,43 @@ body:not(.home-page) .site-header {
   color: var(--muted);
 }
 
+/* Clear button - new addition*/
+
+#clearButton {
+  display: inline-flex;            /* Align icon and text horizontally */
+  align-items: center;             /* Vertically center icon and text */
+  padding: 8px 12px;               /* Comfortable padding */
+  font-size: 14px;                 /* Readable font size */
+  background-color: #299641;       /* Blue button background */
+  color: white;                   /* White text */
+  border: none;                   /* No border */
+  border-radius: 100px;             /* Rounded corners */
+  cursor: pointer;                /* Pointer on hover */
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+  user-select: none;              /* Prevent text selection on click */
+}
+
+#clearButton img {
+  margin-right: 8px;              /* Space between icon and text */
+  width: 16px;                   /* Consistent icon size */
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;        /* Align icon with text */
+}
+
+#clearButton:hover {
+  background-color: #0056b3;     /* Darker blue on hover */
+}
+
+#clearButton:active {
+  background-color: #004085;     /* Even darker on click */
+}
+
+#clearButton:focus {
+  outline: 2px solid #80bdff;    /* Focus outline for accessibility */
+  outline-offset: 2px;
+}
+
+
 /* === MOBILE ADAPTATION === */
 
