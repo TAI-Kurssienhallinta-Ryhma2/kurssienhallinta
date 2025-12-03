@@ -369,7 +369,7 @@ function get_timetable_teacher($teacher_id, $date = null)
 
     //---------------------First query----------------------
 
-    $query = "SELECT CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) AS opettajan_nimi
+    $query = "SELECT CONCAT(opettajat.sukunimi, ' ', opettajat.etunimi) AS opettajan_nimi
             FROM opettajat 
             WHERE opettajat.tunnusnumero = :teacher_id";
 
@@ -449,7 +449,7 @@ function get_timetable_student($student_id, $date = null)
 
     //---------------------First query----------------------
 
-    $query = "SELECT CONCAT(opiskelijat.etunimi, ' ', opiskelijat.sukunimi) AS opiskelijan_nimi 
+    $query = "SELECT CONCAT(opiskelijat.sukunimi, ' ', opiskelijat.etunimi) AS opiskelijan_nimi 
             FROM opiskelijat 
             WHERE opiskelijat.opiskelijanumero = :student_id";
 
