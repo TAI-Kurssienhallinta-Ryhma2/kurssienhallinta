@@ -444,6 +444,8 @@ input[type="date"].input-data-available {
 .tbl-header {
   width: calc((100% / 16) * 3);
   text-align: center;
+  border-right: 1px solid var(--line);
+
 }
 .tbl-aline-left {
   width: calc(100% / 16);
@@ -457,7 +459,7 @@ input[type="date"].input-data-available {
   display: flex;
   flex-direction: row;
   gap: 2rem;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   color: var(--brand);
   letter-spacing: 0.5px;
   font-weight: 800;
@@ -478,11 +480,34 @@ input[type="date"].input-data-available {
   background-color: var(--accent);
   /* border-radius: 20px; */
 }
-
+.tbl-row{
+  height: 2rem;
+}
 .booked{
+  padding: 0.2rem;
+  box-sizing: content-box;
   background-color: #f9facc;
+  border: 1px solid #d8d9b0;
+  /* border-radius: 25px; */
 }
 
+.cell-description{
+  width: 100%;
+  /* height: 100%; */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+
+}
+
+.description-course{
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.underline-link{
+  text-decoration: underline;
+}
 /* ========== INDEX PAGE =========== */
 
 .shell {

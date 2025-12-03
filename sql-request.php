@@ -460,18 +460,21 @@ function get_timetable_student($student_id, $date = null) {
 
     $query = "SELECT
                 kurssit.nimi as kurssin_nimi,
+                kurssit.tunnus as kurssin_id,
                 DATE_FORMAT(aikataulu.paivamaara, '%d.%m.%Y') as paivamaara,
                 aikataulu.aloitusaika,
                 aikataulu.lopetusaika,
                 CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) as opettajan_nimi,
-                tilat.nimi as tilan_nimi
+                tilat.nimi as tilan_nimi,
+                tilat.tunnus as tilan_id
             FROM kurssikirjautumiset
             INNER JOIN opiskelijat ON kurssikirjautumiset.opiskelija = opiskelijat.opiskelijanumero
             INNER JOIN kurssit ON kurssikirjautumiset.kurssi = kurssit.tunnus
             INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
             INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
             INNER JOIN tilat ON kurssit.tila = tilat.tunnus
-            WHERE opiskelijat.opiskelijanumero = :student_id";
+            WHERE opiskelijat.opiskelijanumero = :student_id
+            ORDER BY paivamaara, aikataulu.aloitusaika";
 
     if($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
