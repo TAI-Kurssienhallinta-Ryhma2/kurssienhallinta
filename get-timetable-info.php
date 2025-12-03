@@ -25,11 +25,12 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $infoHref = "./get-auditory-info.php?auditory-id=" . $_SESSION["auditory_id"];
     $infoTitle = "Tarkastele tilan tietoja";
 
-    foreach ($all_auditories as $a) {
-        if ($a['tunnus'] == $_GET["auditory-id"]) {
-            $elementName = "Tila: " . $a['nimi'];
-        }
-    }
+    // foreach ($all_auditories as $a) {
+    //     if ($a['tunnus'] == $_GET["auditory-id"]) {
+    //         $elementName = "Tila: " . $a['nimi'];
+    //     }
+    // }
+    $elementName = "Tila: {$timetable_sample[0]['tilan_nimi']}";
 } elseif (isset($_GET["student-id"]) && $_GET["student-id"] !== null || isset($_SESSION["student_id"])) {
 
     $_SESSION["student_id"] = $_GET['student-id'];
@@ -42,11 +43,12 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $infoTitle = "Tarkastele opiskelijan tietoja";
 
     // Store name and surname of selected student:
-    foreach ($all_students as $s) {
-        if ($s['opiskelijanumero'] == $_GET["student-id"]) {
-            $elementName = "Opiskelija: " . $s['sukunimi'] . " " . $s['etunimi'];
-        }
-    }
+    // foreach ($all_students as $s) {
+    //     if ($s['opiskelijanumero'] == $_GET["student-id"]) {
+    //         $elementName = "Opiskelija: " . $s['sukunimi'] . " " . $s['etunimi'];
+    //     }
+    // }
+    $elementName = "Opiskelija: {$timetable_sample[0]['opiskelijan_nimi']}";
 } elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null || isset($_SESSION["teacher_id"])) {
     $_SESSION["teacher_id"] = $_GET['teacher-id'];
 
@@ -57,11 +59,12 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $infoHref = "./get-teacher-info.php?teacher-id=" . $_SESSION["teacher_id"];
     $infoTitle = "Tarkastele opettajan tietoja";
 
-    foreach ($all_teachers as $t) {
-        if ($t['tunnusnumero'] == $_GET["teacher-id"]) {
-            $elementName = "Opettaja: " . $t['sukunimi'] . " " . $t['etunimi'];
-        }
-    }
+    // foreach ($all_teachers as $t) {
+    //     if ($t['tunnusnumero'] == $_GET["teacher-id"]) {
+    //         $elementName = "Opettaja: " . $t['sukunimi'] . " " . $t['etunimi'];
+    //     }
+    // }
+    $elementName = "Opettaja: {$timetable_sample[0]['opettajan_nimi']}";
 } elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null || isset($_SESSION["course_id"])) {
     $_SESSION["course_id"] = $_GET['course-id'];
 
@@ -72,11 +75,12 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $infoHref = "./get-course-info.php?course-id=" . $_SESSION["course_id"];
     $infoTitle = "Tarkastele kurssin tietoja";
 
-    foreach ($all_courses as $c) {
-        if ($c['tunnus'] == $_GET["course-id"]) {
-            $elementName = "Kurssi: " . $c['nimi'];
-        }
-    }
+    // foreach ($all_courses as $c) {
+    //     if ($c['tunnus'] == $_GET["course-id"]) {
+    //         $elementName = "Kurssi: " . $c['nimi'];
+    //     }
+    // }
+    $elementName = "Kurssi: {$timetable_sample[0]['kurssin_nimi']}";
 }
 
 //Get current year and "current" week:
