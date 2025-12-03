@@ -95,9 +95,53 @@ $current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
 $current_date->setISODate($current_year, $current_week);
 
+// // echo "<pre>";
+// // print_r($timetable_sample);
+// // echo "</pre>";
+
 // echo "<pre>";
-// print_r($timetable_sample);
+// print_r($student_timetable);
 // echo "</pre>";
+
+/**
+ * Get the full current URL of the page.
+ *
+ * This function builds the full URL including the protocol (http or https),
+ * host, path, and query string.
+ *
+ * @return string The full URL of the current page.
+ */
+function getURL() {  // new addition
+    $link = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http")
+    . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    return $link;
+}
+
+/**
+ * Creates an HTML button element with given text and id.
+ *
+ * @param string $message The text content inside the button.
+ * @param string $idName The id attribute value for the button.
+ *
+ * @return string The HTML string of the button element.
+ */
+function createButtonElement($message, $idName, $iconPath = null) { //new addition
+    $document = new DOMDocument();
+    $button = $document->createElement("button");
+    $button->setAttribute("id", $idName);
+
+    if($iconPath !== null) {
+        $icon = $document->createElement("img");
+        $icon->setAttribute("src", $iconPath);
+        $icon->setAttribute("width", "11");
+        $icon->setAttribute("height", "11");
+        $button->appendChild($icon);
+    }
+
+    $button->appendChild($document->createTextNode("$message"));
+    $document->appendChild($button);
+    return $document->saveHTML();
+}
 ?>
 
 <!DOCTYPE html>
@@ -270,6 +314,13 @@ $current_date->setISODate($current_year, $current_week);
                 ?>
 
             </select>
+            <?php
+                // new addition
+                $parts = parse_url(getURL());
+                if(isset($parts["query"]) && $parts["query"] !== "") {
+                    echo createButtonElement("Tyhjennä Suodattimet", "clearButton", "cancel-icon.jpg");
+                }
+            ?>
         </div>
 
     </div>
@@ -522,6 +573,28 @@ $current_date->setISODate($current_year, $current_week);
                 timetableElement.removeAttribute("hidden");
             }
         }
+
+        /**
+         * Get current URL without parameters or hash.
+         * 
+         * @returns {string} URL without query or hash
+         */
+        function getCleanURL() { // new addition
+            return window.location.origin + window.location.pathname;
+        }
+
+        /**
+         * When the DOM is fully loaded, attaches a click event listener to the button with ID "clearButton".
+         * When clicked, the page reloads without any URL parameters or hash.
+         */
+        document.addEventListener("DOMContentLoaded", () => { // new addition
+            const clearButton = document.getElementById("clearButton");
+            if(clearButton) { //if the button exists
+                clearButton.addEventListener("click", () => {
+                    window.location.href = getCleanURL();
+                })
+            }
+        });
     </script>
 
     <?php include 'footer.php'; ?>
