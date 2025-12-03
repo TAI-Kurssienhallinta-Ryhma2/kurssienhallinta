@@ -11,6 +11,10 @@ $all_auditories = get_all_auditories();
 $elementName = "";
 if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESSION["auditory_id"])) {
     $_SESSION["auditory_id"] = $_GET['auditory-id'];
+
+    // Get all records for this auditory from the table aikataulu:
+    $timetable_sample = get_timetable_auditory($_SESSION["auditory_id"]);
+
     foreach ($all_auditories as $a) {
         if ($a['tunnus'] == $_GET["auditory-id"]) {
             $elementName = "Tila: " . $a['nimi'];
@@ -21,7 +25,7 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     $_SESSION["student_id"] = $_GET['student-id'];
 
     // Get all records for this student from the table aikataulu:
-    $student_timetable = get_timetable_student($_SESSION["student_id"]);
+    $timetable_sample = get_timetable_student($_SESSION["student_id"]);
 
     // Store name and surname of selected student:
     foreach ($all_students as $s) {
@@ -31,6 +35,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     }
 } elseif (isset($_GET["teacher-id"]) && $_GET["teacher-id"] !== null || isset($_SESSION["teacher_id"])) {
     $_SESSION["teacher_id"] = $_GET['teacher-id'];
+
+    // Get all records for this teacher from the table aikataulu:
+    $timetable_sample = get_timetable_teacher($_SESSION["teacher_id"]);
+
     foreach ($all_teachers as $t) {
         if ($t['tunnusnumero'] == $_GET["teacher-id"]) {
             $elementName = "Opettaja: " . $t['sukunimi'] . " " . $t['etunimi'];
@@ -38,6 +46,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     }
 } elseif (isset($_GET["course-id"]) && $_GET["course-id"] !== null || isset($_SESSION["course_id"])) {
     $_SESSION["course_id"] = $_GET['course-id'];
+
+    // Get all records for this course from the table aikataulu:
+    $timetable_sample = get_timetable_course($_SESSION["course_id"]);
+
     foreach ($all_courses as $c) {
         if ($c['tunnus'] == $_GET["course-id"]) {
             $elementName = "Kurssi: " . $c['nimi'];
@@ -61,9 +73,9 @@ $current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
 $current_date->setISODate($current_year, $current_week);
 
-// echo "<pre>";
-// print_r($student_timetable);
-// echo "</pre>";
+echo "<pre>";
+print_r($timetable_sample);
+echo "</pre>";
 ?>
 
 <!DOCTYPE html>
@@ -246,8 +258,8 @@ $current_date->setISODate($current_year, $current_week);
         <div class="first-header-line">
             <span class="info-text">Vk <?php echo $current_week; ?></span>
             <span class="info-text">
-                <a target='_blank' rel='noopener' href="./get-student-info.php?student-id=<?php echo $_SESSION["student_id"];?>" title="Tarkastele opiskelijan tietoja" class="underline-link"><?php echo $elementName; ?></a>
-                
+                <a target='_blank' rel='noopener' href="./get-student-info.php?student-id=<?php echo $_SESSION["student_id"]; ?>" title="Tarkastele opiskelijan tietoja" class="underline-link"><?php echo $elementName; ?></a>
+
             </span>
         </div>
 
@@ -352,7 +364,7 @@ $current_date->setISODate($current_year, $current_week);
                                 $d->modify('+1 day');
 
                                 // Run throw the array with timetable for the selected student:
-                                foreach ($student_timetable[1] as $record) {
+                                foreach ($timetable_sample[1] as $record) {
 
                                     $recordDate = DateTime::createFromFormat("d.m.Y", $record['paivamaara']);
                                     $cellDate = DateTime::createFromFormat("d.m.y", $elementInnerData);
@@ -366,35 +378,35 @@ $current_date->setISODate($current_year, $current_week);
                                     $end_time = DateTime::createFromFormat("H:i:s", $record['lopetusaika'])->format("H:i");
 
                                     // Check if the date of the column is the same, as date in the timetable of the student:
-                                        if ($start_time == $rowStartHour) {
-                                            $className .= " booked";
-                                            $isHidden = false;
-                                            $start = new DateTime($record['aloitusaika']);
-                                            $end = new DateTime($record['lopetusaika']);
-                                            $end_time = (int) $end->format("H");
-                                            $diff = $start->diff($end);
-                                            $rowSpan = ($diff->h) * 2;
-                                            $cellInnerText = "<div class='cell-description'>" .
-                                                "<div class='description-course'>" .
-                                                "<a class='underline-link' title='Tarkastele kurssin tietoja' target='_blank' rel='noopener' href='./get-course-info.php?course-id=" .
-                                                $record['kurssin_id'] . "'>" .
-                                                $record['kurssin_nimi'] .
-                                                "</a></div>" .
-                                                "<div class='description-auditory'>" .
-                                                "<a class='underline-link' title='Tarkastele tilan tietoja' target='_blank' rel='noopener' href='./get-auditory-info.php?auditory-id=" .
-                                                $record['tilan_id'] . "'>" .
-                                                $record['tilan_nimi'] .
-                                                "</a></div>" .
-                                                "</div>";
+                                    if ($start_time == $rowStartHour) {
+                                        $className .= " booked";
+                                        $isHidden = false;
+                                        $start = new DateTime($record['aloitusaika']);
+                                        $end = new DateTime($record['lopetusaika']);
+                                        $end_time = (int) $end->format("H");
+                                        $diff = $start->diff($end);
+                                        $rowSpan = ($diff->h) * 2;
+                                        $cellInnerText = "<div class='cell-description'>" .
+                                            "<div class='description-course'>" .
+                                            "<a class='underline-link' title='Tarkastele kurssin tietoja' target='_blank' rel='noopener' href='./get-course-info.php?course-id=" .
+                                            $record['kurssin_id'] . "'>" .
+                                            $record['kurssin_nimi'] .
+                                            "</a></div>" .
+                                            "<div class='description-auditory'>" .
+                                            "<a class='underline-link' title='Tarkastele tilan tietoja' target='_blank' rel='noopener' href='./get-auditory-info.php?auditory-id=" .
+                                            $record['tilan_id'] . "'>" .
+                                            $record['tilan_nimi'] .
+                                            "</a></div>" .
+                                            "</div>";
 
-                                                break;
-                                        }
-                                        
-                                        if ($rowStartHour > $start_time && $rowStartHour < $end_time) {
-                                            $isHidden = true;
+                                        break;
+                                    }
 
-                                            break;
-                                        } 
+                                    if ($rowStartHour > $start_time && $rowStartHour < $end_time) {
+                                        $isHidden = true;
+
+                                        break;
+                                    }
                                 }
                             }
                         ?>
