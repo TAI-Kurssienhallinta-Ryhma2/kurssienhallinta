@@ -384,7 +384,9 @@ function get_timetable_teacher($teacher_id, $date = null) {
 
     $query = "SELECT 
                 kurssit.nimi as kurssin_nimi,
+                kurssit.tunnus as kurssin_id,
                 tilat.nimi as tilan_nimi,
+                tilat.tunnus as tilan_id,
                 DATE_FORMAT(aikataulu.paivamaara, '%d.%m.%Y') as paivamaara,
                 aikataulu.aloitusaika,
                 aikataulu.lopetusaika
@@ -392,7 +394,8 @@ function get_timetable_teacher($teacher_id, $date = null) {
             INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
             INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
             INNER JOIN tilat ON kurssit.tila = tilat.tunnus
-            WHERE opettajat.tunnusnumero = :teacher_id";
+            WHERE opettajat.tunnusnumero = :teacher_id
+            ORDER BY paivamaara, aikataulu.aloitusaika";
 
     if($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
@@ -541,13 +544,15 @@ function get_timetable_auditory($auditory_id, $date = null) {
 
     $query = "SELECT DISTINCT 
                 kurssit.nimi as kurssin_nimi,
+                kurssit.tunnus as kurssin_id,
                 kurssit.kuvaus,
                 DATE_FORMAT(kurssit.alkupaiva, '%d.%m.%Y') as alkupaiva,
                 DATE_FORMAT(kurssit.loppupaiva, '%d.%m.%Y') as loppupaiva
             FROM kurssit
             INNER JOIN tilat ON kurssit.tila = tilat.tunnus
             INNER JOIN aikataulu ON kurssit.tunnus = aikataulu.kurssi_id
-            WHERE tilat.tunnus = :auditory_id";
+            WHERE tilat.tunnus = :auditory_id
+            ORDER BY paivamaara, aikataulu.aloitusaika";
 
     if($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
@@ -618,12 +623,15 @@ function get_timetable_course($course_id, $date = null) {
                 aikataulu.aloitusaika,
                 aikataulu.lopetusaika,
                 CONCAT(opettajat.etunimi, ' ', opettajat.sukunimi) as opettajan_nimi,
-                tilat.nimi as tilan_nimi
+                opettajat.tunnusnumero as opettajan_id,
+                tilat.nimi as tilan_nimi,
+                tilat.tunnus as tilan_id
             FROM aikataulu
             INNER JOIN kurssit ON aikataulu.kurssi_id = kurssit.tunnus
             INNER JOIN opettajat ON kurssit.opettaja = opettajat.tunnusnumero
             INNER JOIN tilat ON kurssit.tila = tilat.tunnus
-            WHERE kurssit.tunnus = :course_id";
+            WHERE kurssit.tunnus = :course_id
+            ORDER BY paivamaara, aikataulu.aloitusaika";
 
     if($date !== null) {
         $query .= " AND aikataulu.paivamaara = STR_TO_DATE(:date, '%d.%m.%Y')";
