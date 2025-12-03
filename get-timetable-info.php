@@ -15,6 +15,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     // Get all records for this auditory from the table aikataulu:
     $timetable_sample = get_timetable_auditory($_SESSION["auditory_id"]);
 
+    //Form variables for adding them to the link in the span with class="info-text":
+        $infoHref = "./get-auditory-info.php?auditory-id=" . $_SESSION["auditory_id"];
+        $infoTitle = "Tarkastele tilan tietoja";
+
     foreach ($all_auditories as $a) {
         if ($a['tunnus'] == $_GET["auditory-id"]) {
             $elementName = "Tila: " . $a['nimi'];
@@ -26,6 +30,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
 
     // Get all records for this student from the table aikataulu:
     $timetable_sample = get_timetable_student($_SESSION["student_id"]);
+    
+    //Form variables for adding them to the link in the span with class="info-text":
+        $infoHref = "./get-student-info.php?student-id=" . $_SESSION["student_id"];
+        $infoTitle = "Tarkastele opiskelijan tietoja";
 
     // Store name and surname of selected student:
     foreach ($all_students as $s) {
@@ -39,6 +47,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
     // Get all records for this teacher from the table aikataulu:
     $timetable_sample = get_timetable_teacher($_SESSION["teacher_id"]);
 
+    //Form variables for adding them to the link in the span with class="info-text":
+        $infoHref = "./get-teacher-info.php?teacher-id=" . $_SESSION["teacher_id"];
+        $infoTitle = "Tarkastele opettajan tietoja";
+
     foreach ($all_teachers as $t) {
         if ($t['tunnusnumero'] == $_GET["teacher-id"]) {
             $elementName = "Opettaja: " . $t['sukunimi'] . " " . $t['etunimi'];
@@ -49,6 +61,10 @@ if (isset($_GET["auditory-id"]) && $_GET["auditory-id"] !== null || isset($_SESS
 
     // Get all records for this course from the table aikataulu:
     $timetable_sample = get_timetable_course($_SESSION["course_id"]);
+    
+    //Form variables for adding them to the link in the span with class="info-text":
+        $infoHref = "./get-course-info.php?course-id=" . $_SESSION["course_id"];
+        $infoTitle = "Tarkastele kurssin tietoja";
 
     foreach ($all_courses as $c) {
         if ($c['tunnus'] == $_GET["course-id"]) {
@@ -73,9 +89,9 @@ $current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
 $current_date->setISODate($current_year, $current_week);
 
-echo "<pre>";
-print_r($timetable_sample);
-echo "</pre>";
+// echo "<pre>";
+// print_r($timetable_sample);
+// echo "</pre>";
 ?>
 
 <!DOCTYPE html>
@@ -258,7 +274,7 @@ echo "</pre>";
         <div class="first-header-line">
             <span class="info-text">Vk <?php echo $current_week; ?></span>
             <span class="info-text">
-                <a target='_blank' rel='noopener' href="./get-student-info.php?student-id=<?php echo $_SESSION["student_id"]; ?>" title="Tarkastele opiskelijan tietoja" class="underline-link"><?php echo $elementName; ?></a>
+                <a target='_blank' rel='noopener' href="<?php echo $infoHref; ?>" title="<?php echo $infoTitle; ?>" class="underline-link"><?php echo $elementName; ?></a>
 
             </span>
         </div>
