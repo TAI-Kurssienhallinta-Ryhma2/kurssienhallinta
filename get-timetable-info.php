@@ -61,9 +61,9 @@ $current_date = new DateTime();
 //set the date based on ISO-8601 calendar using year and week number:
 $current_date->setISODate($current_year, $current_week);
 
-echo "<pre>";
-print_r($student_timetable);
-echo "</pre>";
+// echo "<pre>";
+// print_r($student_timetable);
+// echo "</pre>";
 ?>
 
 <!DOCTYPE html>
@@ -246,7 +246,8 @@ echo "</pre>";
         <div class="first-header-line">
             <span class="info-text">Vk <?php echo $current_week; ?></span>
             <span class="info-text">
-                <?php echo $elementName; ?>
+                <a target='_blank' rel='noopener' href="./get-student-info.php?student-id=<?php echo $_SESSION["student_id"];?>" title="Tarkastele opiskelijan tietoja" class="underline-link"><?php echo $elementName; ?></a>
+                
             </span>
         </div>
 
@@ -346,7 +347,6 @@ echo "</pre>";
                             } else {
                                 // Define date for each cell in the row:
                                 //It will be used to fill data-day attribute to the element td:
-                                // $elementInnerData = $d->format("d.m.y");
                                 $d = DateTime::createFromFormat('d.m.y', $elementInnerData);
                                 //Increase  the date by one day for next cell:
                                 $d->modify('+1 day');
@@ -356,47 +356,45 @@ echo "</pre>";
 
                                     $recordDate = DateTime::createFromFormat("d.m.Y", $record['paivamaara']);
                                     $cellDate = DateTime::createFromFormat("d.m.y", $elementInnerData);
-                                    // Check if the date of the column is the same, as date in the timetable of the student:
-                                    if ($recordDate->format("Y-m-d") == $cellDate->format("Y-m-d")) {
-                                        // Define the start time of the course 
 
-                                        $start_time = DateTime::createFromFormat("H:i:s", $record['aloitusaika'])->format("H:i");
-                                        $end_time = DateTime::createFromFormat("H:i:s", $record['lopetusaika'])->format("H:i");
-
-                                        if ($rowStartHour <= $start_time || $rowStartHour >= $end_time) {
-                                            // echo "<pre>";
-                                            // print_r($start_time);
-                                            // echo "</pre>";  
-
-                                            if ($start_time == $rowStartHour) {
-                                                $isHidden = false;
-                                                $className = $className . " booked";
-                                                $start = new DateTime($record['aloitusaika']);
-                                                $end = new DateTime($record['lopetusaika']);
-                                                $end_time = (int) $end->format("H");
-                                                $diff = $start->diff($end);
-                                                $rowSpan = ($diff->h) * 2;
-                                                $cellInnerText = "<div class='cell-description'>" .
-                                                    "<div class='description-course'>" .
-                                                    "<a target='_blank' rel='noopener' href='./get-course-info.php?course-id=" .
-                                                    $record['kurssin_id'] . "'>" .
-                                                    $record['kurssin_nimi'] .
-                                                    "</div>" .
-                                                    "<div class='description-auditory'>" .
-                                                    "<a target='_blank' rel='noopener' href='./get-auditory-info.php?auditory-id=" .
-                                                    $record['tilan_id'] . "'>" .
-                                                    $record['tilan_nimi'] .
-                                                    "</div>" .
-                                                    "</div>";
-                                            } else {
-                                                // $rowSpan = 1;
-                                                // $className = "tbl-content";
-                                                $isHidden = false;
-                                            }
-                                        } else {
-                                            $isHidden = true;
-                                        }
+                                    if ($recordDate->format("Y-m-d") !== $cellDate->format("Y-m-d")) {
+                                        continue;
                                     }
+
+                                    // Define the start time and end time of the course:
+                                    $start_time = DateTime::createFromFormat("H:i:s", $record['aloitusaika'])->format("H:i");
+                                    $end_time = DateTime::createFromFormat("H:i:s", $record['lopetusaika'])->format("H:i");
+
+                                    // Check if the date of the column is the same, as date in the timetable of the student:
+                                        if ($start_time == $rowStartHour) {
+                                            $className .= " booked";
+                                            $isHidden = false;
+                                            $start = new DateTime($record['aloitusaika']);
+                                            $end = new DateTime($record['lopetusaika']);
+                                            $end_time = (int) $end->format("H");
+                                            $diff = $start->diff($end);
+                                            $rowSpan = ($diff->h) * 2;
+                                            $cellInnerText = "<div class='cell-description'>" .
+                                                "<div class='description-course'>" .
+                                                "<a class='underline-link' title='Tarkastele kurssin tietoja' target='_blank' rel='noopener' href='./get-course-info.php?course-id=" .
+                                                $record['kurssin_id'] . "'>" .
+                                                $record['kurssin_nimi'] .
+                                                "</a></div>" .
+                                                "<div class='description-auditory'>" .
+                                                "<a class='underline-link' title='Tarkastele tilan tietoja' target='_blank' rel='noopener' href='./get-auditory-info.php?auditory-id=" .
+                                                $record['tilan_id'] . "'>" .
+                                                $record['tilan_nimi'] .
+                                                "</a></div>" .
+                                                "</div>";
+
+                                                break;
+                                        }
+                                        
+                                        if ($rowStartHour > $start_time && $rowStartHour < $end_time) {
+                                            $isHidden = true;
+
+                                            break;
+                                        } 
                                 }
                             }
                         ?>
