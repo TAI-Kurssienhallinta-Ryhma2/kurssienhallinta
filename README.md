@@ -49,10 +49,10 @@ The project is not deployed online and is intended for local development.
 ## Screenshots
 
 ### Home page
-![Home page](screenshots/home.png)
+![Home page](screenshots/home page.png)
 
 ### Edit page example
-![Edit page](screenshots/edit-delete-course.png)
+![Edit page](screenshots/edit-delete course.png)
 
 ### Get info page
 ![Get info page](screenshots/get-teacher-info.png)
