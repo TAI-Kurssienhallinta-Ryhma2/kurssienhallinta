@@ -45,6 +45,22 @@ Example setup:
 
 The project is not deployed online and is intended for local development.
 
+
+## Screenshots
+
+### Home page
+![Home page](screenshots/home.png)
+
+### Edit page example
+![Edit page](screenshots/edit-delete-course.png)
+
+### Get info page
+![Get info page](screenshots/get-teacher-info.png)
+![Get info page](screenshots/get-timetable-info.png)
+
+### Add page
+![Add page](screenshots/add-student.png)
+
 ---
 
 ## Notes
